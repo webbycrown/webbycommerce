@@ -1,0 +1,628 @@
+{
+  "webbycommerce.name": "Strapi Advanced Ecommerce",
+  "webbycommerce.description": "Complete ecommerce solution for Strapi CMS",
+
+  "webbycommerce.settings.section": "Advanced Ecommerce",
+  "webbycommerce.settings.configure.title": "Configure",
+  "webbycommerce.settings.configure.description": "Global settings for the Strapi Advanced Ecommerce plugin.",
+  "webbycommerce.settings.configure.placeholder": "Configuration options (such as base URLs, default currencies, or feature toggles) can be added here as the ecommerce plugin evolves.",
+  "webbycommerce.settings.configure.origins.title": "Allowed frontend domains",
+  "webbycommerce.settings.configure.origins.description": "Only requests coming from these domains will be allowed to use the ecommerce facility. Leave empty to allow all domains.",
+  "webbycommerce.settings.configure.origins.label": "Frontend domain",
+  "webbycommerce.settings.configure.origins.placeholder": "e.g. https://shop.example.com",
+  "webbycommerce.settings.configure.origins.entryTitle": "Domain #{index}",
+  "webbycommerce.settings.configure.origins.add": "Add domain",
+  "webbycommerce.settings.configure.origins.remove": "Remove domain",
+  "webbycommerce.settings.configure.routePrefix.title": "API Route Prefix",
+  "webbycommerce.settings.configure.routePrefix.description": "Customize the API route prefix. All ecommerce API endpoints will use this prefix. Default: webbycommerce",
+  "webbycommerce.settings.configure.routePrefix.label": "Route prefix",
+  "webbycommerce.settings.configure.routePrefix.placeholder": "e.g. ecommerce, v1, api/ecommerce",
+  "webbycommerce.settings.configure.routePrefix.hint": "API endpoints will be available at /api/{prefix}/...",
+  "webbycommerce.settings.configure.save": "Save settings",
+  "webbycommerce.settings.configure.save.success": "Settings updated successfully.",
+  "webbycommerce.settings.configure.save.error": "Failed to save settings.",
+  "webbycommerce.settings.configure.load.error": "Failed to load settings.",
+  "webbycommerce.settings.configure.demo.title": "Demo Data",
+  "webbycommerce.settings.configure.demo.description": "Import sample products, categories, tags, and shipping settings to test the plugin. This will not overwrite existing data with the same slugs.",
+  "webbycommerce.settings.configure.demo.button": "Seed Demo Data",
+  "webbycommerce.settings.configure.demo.success": "Demo data seeded successfully!",
+  "webbycommerce.settings.configure.demo.error": "Failed to seed demo data.",
+
+  "webbycommerce.settings.smtp.title": "SMTP Configuration",
+  "webbycommerce.settings.smtp.description": "Configure SMTP settings for sending emails. These settings are used for OTP emails and other automated communications.",
+  "webbycommerce.settings.smtp.save": "Save SMTP settings",
+  "webbycommerce.settings.smtp.save.success": "SMTP settings updated successfully.",
+  "webbycommerce.settings.smtp.save.error": "Failed to save SMTP settings.",
+  "webbycommerce.settings.smtp.load.error": "Failed to load SMTP settings.",
+
+  "webbycommerce.settings.apiCollections.title": "API Collections",
+  "webbycommerce.settings.apiCollections.description": "Reference for the public endpoints exposed by the Strapi Advanced Ecommerce plugin.",
+
+  "webbycommerce.settings.apiCollections.health.title": "Health Check",
+  "webbycommerce.settings.apiCollections.health.summary": "Simple endpoint to verify that the ecommerce plugin is installed and running.",
+  "webbycommerce.settings.apiCollections.health.auth": "Auth: public (no authentication required by default).",
+  "webbycommerce.settings.apiCollections.health.response.title": "Successful response (200 OK)",
+
+  "webbycommerce.settings.apiCollections.health.usage.title": "Typical usage",
+  "webbycommerce.settings.apiCollections.health.usage.monitoring": "Use in uptime monitors to check ecommerce availability.",
+  "webbycommerce.settings.apiCollections.health.usage.deploy": "Use in deployment or CI pipelines to validate the plugin is bootstrapped.",
+  "webbycommerce.settings.apiCollections.health.usage.manual": "Quick manual verification from a browser or API client (Postman, Insomnia, curl).",
+
+  "webbycommerce.settings.apiCollections.wishlist.title": "Wishlist Management",
+  "webbycommerce.settings.apiCollections.wishlist.summary": "Manage user wishlists - add, remove, and view favorite products.",
+  "webbycommerce.settings.apiCollections.wishlist.auth": "Auth: JWT token required (user authentication).",
+  "webbycommerce.settings.apiCollections.wishlist.getWishlist.title": "Get Wishlist",
+  "webbycommerce.settings.apiCollections.wishlist.getWishlist.summary": "Retrieve all products in the authenticated user's wishlist.",
+  "webbycommerce.settings.apiCollections.wishlist.addToWishlist.title": "Add to Wishlist",
+  "webbycommerce.settings.apiCollections.wishlist.addToWishlist.summary": "Add a product to the authenticated user's wishlist.",
+  "webbycommerce.settings.apiCollections.wishlist.removeFromWishlist.title": "Remove from Wishlist",
+  "webbycommerce.settings.apiCollections.wishlist.removeFromWishlist.summary": "Remove a specific product from the authenticated user's wishlist.",
+  "webbycommerce.settings.apiCollections.wishlist.clearWishlist.title": "Clear Wishlist",
+  "webbycommerce.settings.apiCollections.wishlist.clearWishlist.summary": "Remove all products from the authenticated user's wishlist.",
+  "webbycommerce.settings.apiCollections.wishlist.updateWishlist.title": "Update Wishlist Settings",
+  "webbycommerce.settings.apiCollections.wishlist.updateWishlist.summary": "Update wishlist settings and preferences.",
+  "webbycommerce.settings.apiCollections.wishlist.checkWishlistStatus.title": "Check Wishlist Status",
+  "webbycommerce.settings.apiCollections.wishlist.checkWishlistStatus.summary": "Check if specific products are in the authenticated user's wishlist.",
+
+  "webbycommerce.settings.apiCollections.compare.title": "Compare Products",
+  "webbycommerce.settings.apiCollections.compare.summary": "Compare up to 4 products side-by-side with detailed specifications.",
+  "webbycommerce.settings.apiCollections.compare.auth": "Auth: JWT token required (user authentication).",
+  "webbycommerce.settings.apiCollections.compare.getCompareList.title": "Get Compare List",
+  "webbycommerce.settings.apiCollections.compare.getCompareList.summary": "Retrieve all products in the authenticated user's compare list.",
+  "webbycommerce.settings.apiCollections.compare.addToCompare.title": "Add to Compare",
+  "webbycommerce.settings.apiCollections.compare.addToCompare.summary": "Add a product to the authenticated user's compare list.",
+  "webbycommerce.settings.apiCollections.compare.removeFromCompare.title": "Remove from Compare",
+  "webbycommerce.settings.apiCollections.compare.removeFromCompare.summary": "Remove a specific product from the authenticated user's compare list.",
+  "webbycommerce.settings.apiCollections.compare.clearCompare.title": "Clear Compare List",
+  "webbycommerce.settings.apiCollections.compare.clearCompare.summary": "Remove all products from the authenticated user's compare list.",
+  "webbycommerce.settings.apiCollections.compare.updateCompare.title": "Update Compare Settings",
+  "webbycommerce.settings.apiCollections.compare.updateCompare.summary": "Update compare list settings and preferences.",
+  "webbycommerce.settings.apiCollections.compare.getCompareData.title": "Get Compare Data",
+  "webbycommerce.settings.apiCollections.compare.getCompareData.summary": "Retrieve comparison data matrix for products in the compare list.",
+  "webbycommerce.settings.apiCollections.compare.checkCompareStatus.title": "Check Compare Status",
+  "webbycommerce.settings.apiCollections.compare.checkCompareStatus.summary": "Check if specific products are in the authenticated user's compare list.",
+
+  "webbycommerce.settings.apiCollections.loginRegister.title": "Login/Register (OTP)",
+  "webbycommerce.settings.apiCollections.loginRegister.summary": "Initiate login or registration via email or mobile and send a one-time password (OTP) to the user.",
+  "webbycommerce.settings.apiCollections.loginRegister.auth": "Auth: public (OTP method must be enabled in plugin settings).",
+  "webbycommerce.settings.apiCollections.loginRegister.usage.request": "Send email or mobile number to receive an OTP code.",
+  "webbycommerce.settings.apiCollections.loginRegister.usage.verify": "User enters the OTP code in your frontend application.",
+  "webbycommerce.settings.apiCollections.loginRegister.usage.next": "Call the verify-otp endpoint to complete authentication.",
+
+  "webbycommerce.settings.apiCollections.verifyOtp.title": "Verify OTP",
+  "webbycommerce.settings.apiCollections.verifyOtp.summary": "Verify the OTP for a given email or mobile number and return a JWT token for authenticated access.",
+  "webbycommerce.settings.apiCollections.verifyOtp.auth": "Auth: public (OTP method must be enabled in plugin settings).",
+  "webbycommerce.settings.apiCollections.verifyOtp.usage.verify": "Submit the OTP code received via email or SMS.",
+  "webbycommerce.settings.apiCollections.verifyOtp.usage.token": "Receive a JWT token for authenticated API requests.",
+  "webbycommerce.settings.apiCollections.verifyOtp.usage.store": "Store the JWT token securely and include it in subsequent requests.",
+
+  "webbycommerce.settings.apiCollections.defaultLogin.title": "Default Login (Email/Password)",
+  "webbycommerce.settings.apiCollections.defaultLogin.summary": "Use Strapi's built-in /auth/local endpoint for email/password login when the authentication method is set to Default.",
+  "webbycommerce.settings.apiCollections.defaultLogin.auth": "Auth: public (uses Strapi's core Users & Permissions authentication).",
+  "webbycommerce.settings.apiCollections.defaultLogin.usage.request": "Send identifier (email or username) and password to authenticate the user.",
+  "webbycommerce.settings.apiCollections.defaultLogin.usage.next": "Store the returned JWT token and use it for authenticated requests.",
+
+  "webbycommerce.settings.apiCollections.defaultRegister.title": "Default Register (Email/Password)",
+  "webbycommerce.settings.apiCollections.defaultRegister.summary": "Use Strapi's built-in /auth/local/register endpoint for email/password registration when the authentication method is set to Default.",
+  "webbycommerce.settings.apiCollections.defaultRegister.auth": "Auth: public (uses Strapi's core Users & Permissions registration).",
+  "webbycommerce.settings.apiCollections.defaultRegister.usage.request": "Send username, email and password to create a new user.",
+  "webbycommerce.settings.apiCollections.defaultRegister.usage.next": "Use the returned JWT token or confirmation flow according to your Users & Permissions settings.",
+
+  "webbycommerce.settings.apiCollections.profile.title": "Get User Profile",
+  "webbycommerce.settings.apiCollections.profile.summary": "Get complete user profile details for the authenticated user. Requires a valid JWT token.",
+  "webbycommerce.settings.apiCollections.profile.auth": "Auth: requires JWT token (Authorization: Bearer {token}) and ecommerce permission enabled.",
+  "webbycommerce.settings.apiCollections.profile.usage.token": "Include the JWT token in the Authorization header.",
+  "webbycommerce.settings.apiCollections.profile.usage.details": "Returns all user details including custom fields from the user schema.",
+
+  "webbycommerce.settings.apiCollections.updateProfile.title": "Update User Profile",
+  "webbycommerce.settings.apiCollections.updateProfile.summary": "Update user profile details including name, email, phone number, and optionally change password (if default login method is enabled).",
+  "webbycommerce.settings.apiCollections.updateProfile.auth": "Auth: requires JWT token (Authorization: Bearer {token}) and ecommerce permission enabled.",
+  "webbycommerce.settings.apiCollections.updateProfile.usage.required": "First name, last name, email, and phone number are required fields.",
+  "webbycommerce.settings.apiCollections.updateProfile.usage.unique": "Email and phone number must be unique (not used by other users).",
+  "webbycommerce.settings.apiCollections.updateProfile.usage.password": "Password update is only available when default login method is enabled.",
+
+  "webbycommerce.settings.apiCollections.request.title": "Request body",
+  "webbycommerce.settings.apiCollections.response.title": "Successful response (200 OK)",
+  "webbycommerce.settings.apiCollections.usage.title": "Typical usage",
+
+  "webbycommerce.settings.apiCollections.footer": "As you add more ecommerce endpoints (products, cart, orders, etc.), they can be documented here for your team.",
+  "webbycommerce.settings.tabs.label": "Ecommerce settings tabs",
+  "webbycommerce.settings.apiCollections.column.method": "Method",
+  "webbycommerce.settings.apiCollections.column.name": "Name",
+  "webbycommerce.settings.apiCollections.column.path": "Path",
+  "webbycommerce.settings.apiCollections.column.summary": "Summary",
+  "webbycommerce.settings.apiCollections.column.actions": "Actions",
+  "webbycommerce.settings.apiCollections.action.details": "Show details",
+  "webbycommerce.settings.apiCollections.modal.close": "Close",
+
+  "webbycommerce.settings.loginRegister.title": "Login/Register Configuration",
+  "webbycommerce.settings.loginRegister.description": "Choose the authentication method for user login and registration. Default uses Strapi's standard email/password authentication. OTP allows users to login or register using email or mobile number with OTP verification.",
+  "webbycommerce.settings.loginRegister.loading": "Loading settings...",
+  "webbycommerce.settings.loginRegister.method.label": "Authentication Method",
+  "webbycommerce.settings.loginRegister.method.hint": "Select the method users will use to login and register.",
+  "webbycommerce.settings.loginRegister.method.default": "Default (Email/Password)",
+  "webbycommerce.settings.loginRegister.method.default.description": "Uses Strapi's built-in authentication system with email and password.",
+  "webbycommerce.settings.loginRegister.method.otp": "OTP (Email/Mobile Verification)",
+  "webbycommerce.settings.loginRegister.method.otp.description": "Users can login or register using email or mobile number. An OTP (One-Time Password) will be sent for verification.",
+  "webbycommerce.settings.loginRegister.save": "Save settings",
+  "webbycommerce.settings.loginRegister.save.success": "Settings updated successfully.",
+  "webbycommerce.settings.loginRegister.save.error": "Failed to save settings.",
+  "webbycommerce.settings.loginRegister.load.error": "Failed to load settings.",
+
+  "webbycommerce.settings.configure.smtp.title": "SMTP Configuration (for OTP emails)",
+  "webbycommerce.settings.configure.smtp.description": "Configure SMTP settings to send OTP emails. If not configured, Strapi's default email plugin will be used.",
+  "webbycommerce.settings.configure.smtp.host.label": "SMTP Host",
+  "webbycommerce.settings.configure.smtp.host.placeholder": "e.g. smtp.gmail.com",
+  "webbycommerce.settings.configure.smtp.port.label": "SMTP Port",
+  "webbycommerce.settings.configure.smtp.secure.label": "Secure (TLS)",
+  "webbycommerce.settings.configure.smtp.secure.hint": "Use \"true\" for port 465 (SSL), \"false\" for port 587 (TLS)",
+  "webbycommerce.settings.configure.smtp.username.label": "SMTP Username",
+  "webbycommerce.settings.configure.smtp.username.placeholder": "Your email address",
+  "webbycommerce.settings.configure.smtp.password.label": "SMTP Password",
+  "webbycommerce.settings.configure.smtp.password.placeholder": "Your email password or app password",
+  "webbycommerce.settings.configure.smtp.from.label": "From Email",
+  "webbycommerce.settings.configure.smtp.from.placeholder": "noreply@example.com",
+  "webbycommerce.settings.configure.smtp.fromName.label": "From Name",
+  "webbycommerce.settings.configure.smtp.fromName.placeholder": "Strapi Advanced Ecommerce",
+
+  "webbycommerce.settings.shippingType.title": "Shipping",
+  "webbycommerce.settings.shippingType.description": "Configure how users can manage their billing and shipping addresses.",
+  "webbycommerce.settings.shippingType.loading": "Loading settings...",
+  "webbycommerce.settings.shippingType.method.label": "Address Management Type",
+  "webbycommerce.settings.shippingType.single.label": "Single Address Mode",
+  "webbycommerce.settings.shippingType.single.description": "Users can have one billing address and one shipping address. Suitable for simple e-commerce sites.",
+  "webbycommerce.settings.shippingType.multiple.label": "Multiple Address Mode",
+  "webbycommerce.settings.shippingType.multiple.description": "Users can have multiple billing and shipping addresses. They can select any address during checkout. Similar to Amazon/Flipkart.",
+  "webbycommerce.settings.shippingType.save.button": "Save Settings",
+  "webbycommerce.settings.shippingType.save.success": "Settings saved successfully!",
+  "webbycommerce.settings.shippingType.save.error": "Failed to save settings. Please try again.",
+  "webbycommerce.settings.shippingType.load.error": "Failed to load settings.",
+
+  "webbycommerce.settings.apiCollections.addresses.title": "Address Management",
+  "webbycommerce.settings.apiCollections.addresses.summary": "Manage user billing and shipping addresses. Supports both single and multiple address modes.",
+  "webbycommerce.settings.apiCollections.addresses.auth": "Auth: requires JWT token (Authorization: Bearer {token}) and ecommerce permission enabled.",
+  "webbycommerce.settings.apiCollections.addresses.getList.title": "Get All Addresses",
+  "webbycommerce.settings.apiCollections.addresses.getList.summary": "Retrieve all addresses for the authenticated user. Optionally filter by type (0=billing, 1=shipping).",
+  "webbycommerce.settings.apiCollections.addresses.getSingle.title": "Get Single Address",
+  "webbycommerce.settings.apiCollections.addresses.getSingle.summary": "Retrieve a specific address by ID for the authenticated user.",
+  "webbycommerce.settings.apiCollections.addresses.create.title": "Create Address",
+  "webbycommerce.settings.apiCollections.addresses.create.summary": "Create a new billing or shipping address for the authenticated user.",
+  "webbycommerce.settings.apiCollections.addresses.update.title": "Update Address",
+  "webbycommerce.settings.apiCollections.addresses.update.summary": "Update an existing address for the authenticated user.",
+  "webbycommerce.settings.apiCollections.addresses.delete.title": "Delete Address",
+  "webbycommerce.settings.apiCollections.addresses.delete.summary": "Delete an address for the authenticated user.",
+
+  "webbycommerce.settings.apiCollections.products.title": "Products",
+  "webbycommerce.settings.apiCollections.products.summary": "Manage products in the ecommerce system.",
+  "webbycommerce.settings.apiCollections.products.auth": "Auth: public (no authentication required by default).",
+  "webbycommerce.settings.apiCollections.products.getList.title": "Get All Products",
+  "webbycommerce.settings.apiCollections.products.getList.summary": "Retrieve a list of products with optional filtering by category, tag, or search term.",
+  "webbycommerce.settings.apiCollections.products.getSingle.title": "Get Single Product",
+  "webbycommerce.settings.apiCollections.products.getSingle.summary": "Retrieve detailed information for a specific product by ID.",
+  "webbycommerce.settings.apiCollections.products.getBySlug.title": "Get Single Product (By Slug)",
+  "webbycommerce.settings.apiCollections.products.getBySlug.summary": "Retrieve detailed information for a specific product by slug.",
+  "webbycommerce.settings.apiCollections.products.create.title": "Create Product",
+  "webbycommerce.settings.apiCollections.products.create.summary": "Create a new product (admin functionality).",
+  "webbycommerce.settings.apiCollections.products.update.title": "Update Product",
+  "webbycommerce.settings.apiCollections.products.update.summary": "Update an existing product (admin functionality).",
+  "webbycommerce.settings.apiCollections.products.delete.title": "Delete Product",
+  "webbycommerce.settings.apiCollections.products.delete.summary": "Delete a product (admin functionality).",
+  "webbycommerce.settings.apiCollections.products.authAdmin": "Auth: requires JWT token (Authorization: Bearer {token}) and administrator role.",
+  "webbycommerce.settings.apiCollections.tags.title": "Tags",
+  "webbycommerce.settings.apiCollections.tags.summary": "Manage product tags.",
+  "webbycommerce.settings.apiCollections.tags.auth": "Auth: public (no authentication required by default).",
+  "webbycommerce.settings.apiCollections.tags.authAdmin": "Auth: requires JWT token (Authorization: Bearer {token}) and administrator role.",
+
+  "webbycommerce.settings.apiCollections.tags.getList.title": "Get All Tags",
+  "webbycommerce.settings.apiCollections.tags.getList.summary": "Retrieve all product tags with optional search.",
+  "webbycommerce.settings.apiCollections.tags.getSingle.title": "Get Single Tag",
+  "webbycommerce.settings.apiCollections.tags.getSingle.summary": "Retrieve detailed information for a specific tag by ID.",
+
+  "webbycommerce.settings.apiCollections.tags.create.title": "Create Tag",
+  "webbycommerce.settings.apiCollections.tags.create.summary": "Create a new product tag (admin functionality).",
+  "webbycommerce.settings.apiCollections.tags.update.title": "Update Tag",
+  "webbycommerce.settings.apiCollections.tags.update.summary": "Update an existing tag (admin functionality).",
+  "webbycommerce.settings.apiCollections.tags.delete.title": "Delete Tag",
+  "webbycommerce.settings.apiCollections.tags.delete.summary": "Delete a tag (admin functionality).",
+  "webbycommerce.settings.apiCollections.productCategories.title": "Product Categories",
+  "webbycommerce.settings.apiCollections.productCategories.summary": "Manage product categories.",
+  "webbycommerce.settings.apiCollections.productCategories.auth": "Auth: public (no authentication required by default).",
+  "webbycommerce.settings.apiCollections.productCategories.authAdmin": "Auth: requires JWT token (Authorization: Bearer {token}) and administrator role.",
+
+  "webbycommerce.settings.apiCollections.productCategories.getList.title": "Get All Product Categories",
+  "webbycommerce.settings.apiCollections.productCategories.getList.summary": "Retrieve all product categories with optional search.",
+  "webbycommerce.settings.apiCollections.productCategories.getSingle.title": "Get Single Product Category",
+  "webbycommerce.settings.apiCollections.productCategories.getSingle.summary": "Retrieve detailed information for a specific product category by ID.",
+
+  "webbycommerce.settings.apiCollections.productCategories.create.title": "Create Product Category",
+  "webbycommerce.settings.apiCollections.productCategories.create.summary": "Create a new product category (admin functionality).",
+  "webbycommerce.settings.apiCollections.productCategories.update.title": "Update Product Category",
+  "webbycommerce.settings.apiCollections.productCategories.update.summary": "Update an existing product category (admin functionality).",
+  "webbycommerce.settings.apiCollections.productCategories.delete.title": "Delete Product Category",
+  "webbycommerce.settings.apiCollections.productCategories.delete.summary": "Delete a product category (admin functionality).",
+
+  "webbycommerce.settings.apiCollections.cart.title": "Shopping Cart",
+  "webbycommerce.settings.apiCollections.cart.summary": "Manage shopping cart for authenticated users (cart + items + totals).",
+  "webbycommerce.settings.apiCollections.cart.auth": "Auth: requires JWT token (Authorization: Bearer {token}) and ecommerce permission enabled.",
+
+  "webbycommerce.settings.apiCollections.cart.getCart.title": "Get My Cart",
+  "webbycommerce.settings.apiCollections.cart.getCart.summary": "Retrieve the authenticated user's active cart with items and totals.",
+
+  "webbycommerce.settings.apiCollections.cart.createCart.title": "Create Cart (If Missing)",
+  "webbycommerce.settings.apiCollections.cart.createCart.summary": "Create the authenticated user's cart if it does not already exist.",
+
+  "webbycommerce.settings.apiCollections.cart.addItem.title": "Add Item to Cart",
+  "webbycommerce.settings.apiCollections.cart.addItem.summary": "Add a product to the authenticated user's shopping cart or update quantity if product already exists.",
+
+  "webbycommerce.settings.apiCollections.cart.updateItem.title": "Update Cart Item",
+  "webbycommerce.settings.apiCollections.cart.updateItem.summary": "Update the quantity of a specific item in the authenticated user's shopping cart.",
+
+  "webbycommerce.settings.apiCollections.cart.removeItem.title": "Remove Cart Item",
+  "webbycommerce.settings.apiCollections.cart.removeItem.summary": "Remove a specific item from the authenticated user's shopping cart.",
+
+  "webbycommerce.settings.apiCollections.cart.clearCart.title": "Clear Cart",
+  "webbycommerce.settings.apiCollections.cart.clearCart.summary": "Remove all items from the authenticated user's shopping cart.",
+
+  "webbycommerce.settings.apiCollections.cart.getCart.usage.cart": "Returns cart with calculated subtotal/tax/discount/total.",
+  "webbycommerce.settings.apiCollections.cart.getCart.usage.items": "Includes cart items with product details and pricing snapshot.",
+  "webbycommerce.settings.apiCollections.cart.createCart.usage.create": "Useful on login or app bootstrap to ensure a cart exists.",
+  "webbycommerce.settings.apiCollections.cart.addItem.usage.product": "Provide product ID and quantity to add to cart.",
+  "webbycommerce.settings.apiCollections.cart.addItem.usage.existing": "If product already exists in cart, quantity will be increased.",
+  "webbycommerce.settings.apiCollections.cart.addItem.usage.stock": "System validates stock availability before adding to cart.",
+  "webbycommerce.settings.apiCollections.cart.updateItem.usage.quantity": "Update quantity for an existing cart item.",
+  "webbycommerce.settings.apiCollections.cart.updateItem.usage.zero": "Setting quantity to 0 will remove the item from cart.",
+  "webbycommerce.settings.apiCollections.cart.removeItem.usage.item": "Remove a specific item by providing cart item ID.",
+  "webbycommerce.settings.apiCollections.cart.clearCart.usage.all": "Removes all items from the cart in one operation.",
+
+  "webbycommerce.settings.apiCollections.cart.checkout.title": "Checkout Cart (Mark Ordered)",
+  "webbycommerce.settings.apiCollections.cart.checkout.summary": "Mark the authenticated user's cart as ordered.",
+  "webbycommerce.settings.apiCollections.cart.checkout.usage.status": "Updates cart status to ordered (order creation is handled by the /checkout endpoint).",
+
+  "webbycommerce.settings.apiCollections.checkout.title": "Checkout",
+  "webbycommerce.settings.apiCollections.checkout.summary": "Process checkout for the authenticated user's cart, create an order, update inventory, and clear the cart.",
+  "webbycommerce.settings.apiCollections.checkout.auth": "Auth: requires JWT token (Authorization: Bearer {token}) and ecommerce permission enabled.",
+  "webbycommerce.settings.apiCollections.checkout.usage.cart": "Requires items in the user's cart before checkout.",
+  "webbycommerce.settings.apiCollections.checkout.usage.validation": "Validates stock availability and cart contents.",
+  "webbycommerce.settings.apiCollections.checkout.usage.inventory": "Automatically updates product inventory after successful checkout.",
+  "webbycommerce.settings.apiCollections.checkout.usage.clear": "Clears the cart after successful order creation.",
+
+  "webbycommerce.settings.apiCollections.orders.title": "Order Management",
+  "webbycommerce.settings.apiCollections.orders.summary": "Manage user orders and order history.",
+  "webbycommerce.settings.apiCollections.orders.auth": "Auth: requires JWT token (Authorization: Bearer {token}) and ecommerce permission enabled.",
+  "webbycommerce.settings.apiCollections.orders.getList.title": "Get Orders",
+  "webbycommerce.settings.apiCollections.orders.getList.summary": "Retrieve all orders for the authenticated user with optional filtering and pagination.",
+  "webbycommerce.settings.apiCollections.orders.getList.usage.pagination": "Supports pagination with ?page=1&limit=10 parameters.",
+  "webbycommerce.settings.apiCollections.orders.getList.usage.filter": "Filter by status with ?status=delivered parameter.",
+  "webbycommerce.settings.apiCollections.orders.getList.usage.sort": "Orders are sorted by creation date (newest first).",
+  "webbycommerce.settings.apiCollections.orders.getSingle.title": "Get Order Details",
+  "webbycommerce.settings.apiCollections.orders.getSingle.summary": "Retrieve detailed information for a specific order by ID.",
+  "webbycommerce.settings.apiCollections.orders.getSingle.usage.id": "Replace :id with the actual order ID.",
+  "webbycommerce.settings.apiCollections.orders.getSingle.usage.ownership": "Users can only view their own orders.",
+  "webbycommerce.settings.apiCollections.orders.getSingle.usage.details": "Returns complete order information including addresses and payment details.",
+  "webbycommerce.settings.apiCollections.orders.cancel.title": "Cancel Order",
+  "webbycommerce.settings.apiCollections.orders.cancel.summary": "Cancel a pending order and restore product inventory.",
+  "webbycommerce.settings.apiCollections.orders.cancel.usage.pending": "Only pending orders can be cancelled.",
+  "webbycommerce.settings.apiCollections.orders.cancel.usage.inventory": "Automatically restores product inventory when order is cancelled.",
+  "webbycommerce.settings.apiCollections.orders.cancel.usage.ownership": "Users can only cancel their own orders.",
+  "webbycommerce.settings.apiCollections.orders.updateStatus.title": "Update Order Status",
+  "webbycommerce.settings.apiCollections.orders.updateStatus.summary": "Update the status of an existing order (admin functionality or user's own orders).",
+  "webbycommerce.settings.apiCollections.orders.updateStatus.usage.admin": "Administrators can update any order status.",
+  "webbycommerce.settings.apiCollections.orders.updateStatus.usage.user": "Regular users can only update their own orders.",
+  "webbycommerce.settings.apiCollections.orders.updateStatus.usage.stock": "Cancelling an order automatically restores product inventory.",
+  "webbycommerce.settings.apiCollections.orders.updateStatus.usage.email": "Status updates trigger email notifications to customers.",
+  "webbycommerce.settings.apiCollections.orders.getTracking.title": "Get Order Tracking",
+  "webbycommerce.settings.apiCollections.orders.getTracking.summary": "Retrieve detailed tracking information and timeline for a specific order.",
+  "webbycommerce.settings.apiCollections.orders.getTracking.usage.timeline": "Returns a complete tracking timeline showing order progress.",
+  "webbycommerce.settings.apiCollections.orders.getTracking.usage.location": "Shows current location and delivery status.",
+  "webbycommerce.settings.apiCollections.orders.getTracking.usage.ownership": "Users can only track their own orders.",
+  "webbycommerce.settings.apiCollections.orders.getTracking.usage.realTime": "Tracking information updates in real-time based on order status.",
+
+  "webbycommerce.settings.apiCollections.productVariants.title": "Product Variants",
+  "webbycommerce.settings.apiCollections.productVariants.summary": "Manage product variants (sizes, colors, etc.) for products.",
+  "webbycommerce.settings.apiCollections.productVariants.auth": "Auth: public (no authentication required by default).",
+  "webbycommerce.settings.apiCollections.productVariants.authAdmin": "Auth: requires JWT token (Authorization: Bearer {token}) and administrator role.",
+
+  "webbycommerce.settings.apiCollections.productVariants.getList.title": "Get All Product Variants",
+  "webbycommerce.settings.apiCollections.productVariants.getList.summary": "Retrieve all product variants with optional filtering by product ID.",
+
+  "webbycommerce.settings.apiCollections.productVariants.getSingle.title": "Get Single Product Variant",
+  "webbycommerce.settings.apiCollections.productVariants.getSingle.summary": "Retrieve a specific product variant by ID.",
+
+  "webbycommerce.settings.apiCollections.productVariants.create.title": "Create Product Variant",
+  "webbycommerce.settings.apiCollections.productVariants.create.summary": "Create a new product variant (admin functionality).",
+
+  "webbycommerce.settings.apiCollections.productVariants.update.title": "Update Product Variant",
+  "webbycommerce.settings.apiCollections.productVariants.update.summary": "Update an existing product variant (admin functionality).",
+
+  "webbycommerce.settings.apiCollections.productVariants.delete.title": "Delete Product Variant",
+  "webbycommerce.settings.apiCollections.productVariants.delete.summary": "Delete a product variant (admin functionality).",
+
+  "webbycommerce.settings.apiCollections.payments.title": "Payment Integration",
+  "webbycommerce.settings.apiCollections.payments.summary": "Handle payment processing, refunds, and transaction management.",
+  "webbycommerce.settings.apiCollections.payments.auth": "Auth: requires JWT token (Authorization: Bearer {token}) and ecommerce permission enabled.",
+  "webbycommerce.settings.apiCollections.payments.authWebhook": "Auth: public (webhook signatures are validated internally).",
+  "webbycommerce.settings.apiCollections.payments.authAdmin": "Auth: requires JWT token (Authorization: Bearer {token}) and administrator privileges.",
+
+  "webbycommerce.settings.apiCollections.payments.createIntent.title": "Create Payment Intent",
+  "webbycommerce.settings.apiCollections.payments.createIntent.summary": "Create a payment intent for an order using Stripe, PayPal, or other payment gateways.",
+
+  "webbycommerce.settings.apiCollections.payments.confirm.title": "Confirm Payment",
+  "webbycommerce.settings.apiCollections.payments.confirm.summary": "Confirm a payment after successful processing by the payment gateway.",
+
+  "webbycommerce.settings.apiCollections.payments.webhook.title": "Payment Webhook",
+  "webbycommerce.settings.apiCollections.payments.webhook.summary": "Handle webhooks from payment gateways (Stripe, PayPal, etc.) for payment status updates.",
+
+  "webbycommerce.settings.apiCollections.payments.refund.title": "Process Refund",
+  "webbycommerce.settings.apiCollections.payments.refund.summary": "Process a refund for a completed payment transaction.",
+
+  "webbycommerce.settings.apiCollections.payments.transactions.title": "List Payment Transactions",
+  "webbycommerce.settings.apiCollections.payments.transactions.summary": "Get all payment transactions with optional filtering (admin only).",
+
+  "webbycommerce.settings.apiCollections.payments.createIntent.usage.intent": "Creates a payment intent with the specified gateway.",
+  "webbycommerce.settings.apiCollections.payments.createIntent.usage.client": "Returns client secret or payment URL for frontend payment processing.",
+  "webbycommerce.settings.apiCollections.payments.createIntent.usage.order": "Order must exist and belong to the authenticated user.",
+
+  "webbycommerce.settings.apiCollections.payments.confirm.usage.transaction": "Confirms payment using transaction ID and gateway response.",
+  "webbycommerce.settings.apiCollections.payments.confirm.usage.update": "Updates order payment status and creates transaction record.",
+  "webbycommerce.settings.apiCollections.payments.confirm.usage.status": "Automatically moves order to processing status.",
+
+  "webbycommerce.settings.apiCollections.payments.webhook.usage.gateway": "Called automatically by payment gateways.",
+  "webbycommerce.settings.apiCollections.payments.webhook.usage.signature": "Validates webhook signatures to ensure authenticity.",
+  "webbycommerce.settings.apiCollections.payments.webhook.usage.update": "Updates payment and order status based on gateway events.",
+
+  "webbycommerce.settings.apiCollections.payments.refund.usage.amount": "Specify refund amount (defaults to full refund).",
+  "webbycommerce.settings.apiCollections.payments.refund.usage.completed": "Only completed payments can be refunded.",
+  "webbycommerce.settings.apiCollections.payments.refund.usage.inventory": "Refund processing may require manual inventory adjustment.",
+
+  "webbycommerce.settings.apiCollections.payments.transactions.usage.admin": "Admin-only endpoint for viewing all payment transactions.",
+  "webbycommerce.settings.apiCollections.payments.transactions.usage.filter": "Filter by order ID, status, or date range.",
+  "webbycommerce.settings.apiCollections.payments.transactions.usage.pagination": "Supports pagination for large transaction lists.",
+
+  "webbycommerce.settings.apiCollections.products.getRelated.title": "Get Related Products",
+  "webbycommerce.settings.apiCollections.products.getRelated.summary": "Get products related to a specific product (same categories or tags).",
+
+  "webbycommerce.settings.apiCollections.products.getCategories.title": "List Product Categories",
+  "webbycommerce.settings.apiCollections.products.getCategories.summary": "Get all active product categories with optional filtering.",
+
+  "webbycommerce.settings.apiCollections.products.getTags.title": "List Product Tags",
+  "webbycommerce.settings.apiCollections.products.getTags.summary": "Get all product tags with optional search and pagination.",
+
+  "webbycommerce.settings.apiCollections.productAttributes.title": "Product Attributes",
+  "webbycommerce.settings.apiCollections.productAttributes.summary": "Manage product attributes (like Size, Color, Material) that define product variations.",
+  "webbycommerce.settings.apiCollections.productAttributes.auth": "Auth: public for reading, admin for writing.",
+  "webbycommerce.settings.apiCollections.productAttributes.authAdmin": "Auth: requires JWT token (Authorization: Bearer {token}) and administrator role.",
+
+  "webbycommerce.settings.apiCollections.productAttributes.getList.title": "Get All Product Attributes",
+  "webbycommerce.settings.apiCollections.productAttributes.getList.summary": "Retrieve all product attributes with optional filtering by variation status.",
+
+  "webbycommerce.settings.apiCollections.productAttributes.getSingle.title": "Get Single Product Attribute",
+  "webbycommerce.settings.apiCollections.productAttributes.getSingle.summary": "Retrieve detailed information for a specific product attribute by ID.",
+
+  "webbycommerce.settings.apiCollections.productAttributes.create.title": "Create Product Attribute",
+  "webbycommerce.settings.apiCollections.productAttributes.create.summary": "Create a new product attribute (admin functionality).",
+
+  "webbycommerce.settings.apiCollections.productAttributes.update.title": "Update Product Attribute",
+  "webbycommerce.settings.apiCollections.productAttributes.update.summary": "Update an existing product attribute (admin functionality).",
+
+  "webbycommerce.settings.apiCollections.productAttributes.delete.title": "Delete Product Attribute",
+  "webbycommerce.settings.apiCollections.productAttributes.delete.summary": "Delete a product attribute (admin functionality).",
+
+  "webbycommerce.settings.apiCollections.productAttributes.getList.usage.filter": "Optional query parameters: ?is_variation=true&limit=20&start=0",
+  "webbycommerce.settings.apiCollections.productAttributes.getList.usage.variation": "Filter attributes that are used for product variations.",
+  "webbycommerce.settings.apiCollections.productAttributes.getList.usage.sort": "Attributes are sorted by sort_order field.",
+
+  "webbycommerce.settings.apiCollections.productAttributes.getSingle.usage.id": "Replace :id with the actual attribute ID.",
+  "webbycommerce.settings.apiCollections.productAttributes.getSingle.usage.populate": "Returns attribute with all associated attribute values.",
+
+  "webbycommerce.settings.apiCollections.productAttributes.create.usage.required": "Required fields: name, is_variation (boolean).",
+  "webbycommerce.settings.apiCollections.productAttributes.create.usage.sort": "Optional sort_order field to control display order.",
+
+  "webbycommerce.settings.apiCollections.productAttributes.update.usage.fields": "Update name, is_variation, or sort_order fields.",
+  "webbycommerce.settings.apiCollections.productAttributes.update.usage.impact": "Changing is_variation may affect existing product variations.",
+
+  "webbycommerce.settings.apiCollections.productAttributes.delete.usage.cascade": "Deleting an attribute also removes all associated attribute values.",
+  "webbycommerce.settings.apiCollections.productAttributes.delete.usage.impact": "May affect products that use this attribute in their variations.",
+
+  "webbycommerce.settings.apiCollections.productAttributeValues.title": "Product Attribute Values",
+  "webbycommerce.settings.apiCollections.productAttributeValues.summary": "Manage values for product attributes (like Small, Medium, Large for Size attribute).",
+  "webbycommerce.settings.apiCollections.productAttributeValues.auth": "Auth: public for reading, admin for writing.",
+  "webbycommerce.settings.apiCollections.productAttributeValues.authAdmin": "Auth: requires JWT token (Authorization: Bearer {token}) and administrator role.",
+
+  "webbycommerce.settings.apiCollections.productAttributeValues.getList.title": "Get All Product Attribute Values",
+  "webbycommerce.settings.apiCollections.productAttributeValues.getList.summary": "Retrieve all product attribute values with optional filtering by attribute ID.",
+
+  "webbycommerce.settings.apiCollections.productAttributeValues.getSingle.title": "Get Single Product Attribute Value",
+  "webbycommerce.settings.apiCollections.productAttributeValues.getSingle.summary": "Retrieve detailed information for a specific attribute value by ID.",
+
+  "webbycommerce.settings.apiCollections.productAttributeValues.create.title": "Create Product Attribute Value",
+  "webbycommerce.settings.apiCollections.productAttributeValues.create.summary": "Create a new value for a product attribute (admin functionality).",
+
+  "webbycommerce.settings.apiCollections.productAttributeValues.update.title": "Update Product Attribute Value",
+  "webbycommerce.settings.apiCollections.productAttributeValues.update.summary": "Update an existing attribute value (admin functionality).",
+
+  "webbycommerce.settings.apiCollections.productAttributeValues.delete.title": "Delete Product Attribute Value",
+  "webbycommerce.settings.apiCollections.productAttributeValues.delete.summary": "Delete an attribute value (admin functionality).",
+
+  "webbycommerce.settings.apiCollections.productAttributeValues.getList.usage.filter": "Optional query parameters: ?product_attribute=1&limit=20&start=0",
+  "webbycommerce.settings.apiCollections.productAttributeValues.getList.usage.attribute": "Filter values by parent attribute ID.",
+  "webbycommerce.settings.apiCollections.productAttributeValues.getList.usage.sort": "Values are sorted by sort_order field.",
+
+  "webbycommerce.settings.apiCollections.productAttributeValues.getSingle.usage.id": "Replace :id with the actual attribute value ID.",
+  "webbycommerce.settings.apiCollections.productAttributeValues.getSingle.usage.populate": "Returns value with associated attribute information.",
+
+  "webbycommerce.settings.apiCollections.productAttributeValues.create.usage.required": "Required fields: value, product_attribute (ID of parent attribute).",
+  "webbycommerce.settings.apiCollections.productAttributeValues.create.usage.sort": "Optional sort_order field to control display order.",
+  "webbycommerce.settings.apiCollections.productAttributeValues.create.usage.unique": "Value must be unique within the same attribute.",
+
+  "webbycommerce.settings.apiCollections.productAttributeValues.update.usage.fields": "Update value, sort_order, or product_attribute fields.",
+  "webbycommerce.settings.apiCollections.productAttributeValues.update.usage.impact": "Changing product_attribute may affect existing product variations.",
+
+  "webbycommerce.settings.apiCollections.productAttributeValues.delete.usage.impact": "May affect products that use this attribute value in their variations.",
+  "webbycommerce.settings.apiCollections.productAttributeValues.delete.usage.check": "Ensure no products are currently using this value before deletion.",
+
+  "webbycommerce.settings.apiCollections.products.getAttributes.title": "List Product Attributes",
+  "webbycommerce.settings.apiCollections.products.getAttributes.summary": "Get all product attributes with optional filtering.",
+
+  "webbycommerce.settings.apiCollections.cart.applyCoupon.title": "Apply Coupon to Cart",
+  "webbycommerce.settings.apiCollections.cart.applyCoupon.summary": "Apply a discount coupon to the authenticated user's cart.",
+
+  "webbycommerce.settings.apiCollections.cart.removeCoupon.title": "Remove Coupon from Cart",
+  "webbycommerce.settings.apiCollections.cart.removeCoupon.summary": "Remove any applied coupon from the authenticated user's cart.",
+
+  "webbycommerce.settings.apiCollections.cart.getTotals.title": "Get Cart Totals",
+  "webbycommerce.settings.apiCollections.cart.getTotals.summary": "Calculate and return the authenticated user's cart totals.",
+
+  "webbycommerce.settings.apiCollections.wishlist.moveToCart.title": "Move Wishlist Item to Cart",
+  "webbycommerce.settings.apiCollections.wishlist.moveToCart.summary": "Move a product from the authenticated user's wishlist to their cart.",
+
+  "webbycommerce.settings.apiCollections.products.getRelated.usage.product": "Replace :id with the actual product ID.",
+  "webbycommerce.settings.apiCollections.products.getRelated.usage.limit": "Optional query parameter: ?limit=4",
+
+  "webbycommerce.settings.apiCollections.products.getCategories.usage.filter": "Optional query parameters: ?parent=1&limit=20&start=0",
+  "webbycommerce.settings.apiCollections.products.getCategories.usage.hierarchy": "Returns hierarchical product categories.",
+
+  "webbycommerce.settings.apiCollections.products.getTags.usage.search": "Optional query parameters: ?search=tag&limit=20&start=0",
+  "webbycommerce.settings.apiCollections.products.getTags.usage.pagination": "Returns paginated list of product tags.",
+
+  "webbycommerce.settings.apiCollections.products.getAttributes.usage.filter": "Optional query parameters: ?is_variation=true&limit=20&start=0",
+  "webbycommerce.settings.apiCollections.products.getAttributes.usage.variation": "Returns product attributes for variations.",
+
+  "webbycommerce.settings.apiCollections.cart.applyCoupon.usage.code": "Provide valid coupon code to apply discount.",
+  "webbycommerce.settings.apiCollections.cart.applyCoupon.usage.validation": "Validates coupon expiry, usage limits, and minimum order amount.",
+  "webbycommerce.settings.apiCollections.cart.applyCoupon.usage.totals": "Returns updated cart totals with discount applied.",
+
+  "webbycommerce.settings.apiCollections.cart.removeCoupon.usage.active": "Removes any active coupon from the user's cart.",
+  "webbycommerce.settings.apiCollections.cart.removeCoupon.usage.reset": "Resets cart totals to original values.",
+
+  "webbycommerce.settings.apiCollections.cart.getTotals.usage.calculate": "Calculates subtotal, tax, shipping, and discounts.",
+  "webbycommerce.settings.apiCollections.cart.getTotals.usage.comprehensive": "Returns complete cart totals breakdown.",
+
+  "webbycommerce.settings.apiCollections.wishlist.moveToCart.usage.product": "Replace :id with the actual product ID from wishlist.",
+  "webbycommerce.settings.apiCollections.wishlist.moveToCart.usage.quantity": "Optional quantity parameter (defaults to 1).",
+  "webbycommerce.settings.apiCollections.wishlist.moveToCart.usage.remove": "Automatically removes the product from wishlist after adding to cart.",
+
+  "webbycommerce.settings.apiCollections.shipping.calculate.title": "Calculate Shipping Costs",
+  "webbycommerce.settings.apiCollections.shipping.calculate.summary": "Calculate available shipping methods and costs for cart items and delivery address.",
+  "webbycommerce.settings.apiCollections.shipping.calculate.auth": "Auth: requires JWT token (Authorization: Bearer <token>) and ecommerce permission enabled.",
+
+  "webbycommerce.settings.apiCollections.shipping.zones.getList.title": "Get All Shipping Zones",
+  "webbycommerce.settings.apiCollections.shipping.zones.getList.summary": "Retrieve all shipping zones with optional filtering (admin only).",
+  "webbycommerce.settings.apiCollections.shipping.zones.authAdmin": "Auth: requires JWT token (Authorization: Bearer <token>) and administrator role.",
+
+  "webbycommerce.settings.apiCollections.shipping.zones.create.title": "Create Shipping Zone",
+  "webbycommerce.settings.apiCollections.shipping.zones.create.summary": "Create a new shipping zone with countries, states, and postal codes (admin only).",
+
+  "webbycommerce.settings.apiCollections.shipping.zones.update.title": "Update Shipping Zone",
+  "webbycommerce.settings.apiCollections.shipping.zones.update.summary": "Update an existing shipping zone (admin only).",
+
+  "webbycommerce.settings.apiCollections.shipping.zones.delete.title": "Delete Shipping Zone",
+  "webbycommerce.settings.apiCollections.shipping.zones.delete.summary": "Delete a shipping zone (admin only).",
+
+  "webbycommerce.settings.apiCollections.shipping.methods.getList.title": "Get All Shipping Methods",
+  "webbycommerce.settings.apiCollections.shipping.methods.getList.summary": "Retrieve all shipping methods with optional filtering (admin only).",
+
+  "webbycommerce.settings.apiCollections.shipping.methods.create.title": "Create Shipping Method",
+  "webbycommerce.settings.apiCollections.shipping.methods.create.summary": "Create a new shipping method with carrier and pricing (admin only).",
+
+  "webbycommerce.settings.apiCollections.shipping.methods.update.title": "Update Shipping Method",
+  "webbycommerce.settings.apiCollections.shipping.methods.update.summary": "Update an existing shipping method (admin only).",
+
+  "webbycommerce.settings.apiCollections.shipping.methods.delete.title": "Delete Shipping Method",
+  "webbycommerce.settings.apiCollections.shipping.methods.delete.summary": "Delete a shipping method (admin only).",
+
+  "webbycommerce.settings.apiCollections.shipping.rates.getList.title": "Get Shipping Rates",
+  "webbycommerce.settings.apiCollections.shipping.rates.getList.summary": "Retrieve shipping rates for a specific method (admin only).",
+
+  "webbycommerce.settings.apiCollections.shipping.rates.create.title": "Create Shipping Rate",
+  "webbycommerce.settings.apiCollections.shipping.rates.create.summary": "Create a new shipping rate tier (admin only).",
+
+  "webbycommerce.settings.apiCollections.shipping.rates.update.title": "Update Shipping Rate",
+  "webbycommerce.settings.apiCollections.shipping.rates.update.summary": "Update an existing shipping rate (admin only).",
+
+  "webbycommerce.settings.apiCollections.shipping.rates.delete.title": "Delete Shipping Rate",
+  "webbycommerce.settings.apiCollections.shipping.rates.delete.summary": "Delete a shipping rate (admin only).",
+
+  "webbycommerce.settings.apiCollections.shipping.calculate.usage.cart": "Requires cart items and valid shipping address.",
+  "webbycommerce.settings.apiCollections.shipping.calculate.usage.methods": "Returns all eligible shipping methods with calculated costs.",
+  "webbycommerce.settings.apiCollections.shipping.calculate.usage.free": "Automatically applies free shipping when cart meets threshold.",
+  "webbycommerce.settings.apiCollections.shipping.calculate.usage.rules": "Applies shipping rules, restrictions, and surcharges.",
+
+  "webbycommerce.settings.apiCollections.shipping.zones.getList.usage.zones": "Returns all active shipping zones.",
+  "webbycommerce.settings.apiCollections.shipping.zones.getList.usage.filter": "Optional query parameters: ?is_active=true&limit=20&start=0",
+
+  "webbycommerce.settings.apiCollections.shipping.zones.create.usage.required": "Required fields: name, countries array.",
+  "webbycommerce.settings.apiCollections.shipping.zones.create.usage.geography": "Define geographical areas using countries, states, or postal codes.",
+
+  "webbycommerce.settings.apiCollections.shipping.zones.update.usage.fields": "Update zone name, geography, or active status.",
+  "webbycommerce.settings.apiCollections.shipping.zones.update.usage.methods": "Zone changes may affect associated shipping methods.",
+
+  "webbycommerce.settings.apiCollections.shipping.zones.delete.usage.methods": "Cannot delete zones with associated shipping methods.",
+  "webbycommerce.settings.apiCollections.shipping.zones.delete.usage.check": "Ensure no shipping methods reference this zone before deletion.",
+
+  "webbycommerce.settings.apiCollections.shipping.methods.getList.usage.methods": "Returns all shipping methods with carrier information.",
+  "webbycommerce.settings.apiCollections.shipping.methods.getList.usage.filter": "Optional query parameters: ?carrier=UPS&is_active=true&zone=1",
+
+  "webbycommerce.settings.apiCollections.shipping.methods.create.usage.required": "Required fields: name, carrier, service_type, zone.",
+  "webbycommerce.settings.apiCollections.shipping.methods.create.usage.carrier": "Supports UPS, FedEx, USPS, DHL, and custom carriers.",
+  "webbycommerce.settings.apiCollections.shipping.methods.create.usage.free": "Set is_free_shipping=true and free_shipping_threshold for free shipping.",
+
+  "webbycommerce.settings.apiCollections.shipping.methods.update.usage.fields": "Update carrier, pricing, or free shipping settings.",
+  "webbycommerce.settings.apiCollections.shipping.methods.update.usage.rates": "Method changes affect associated shipping rates.",
+
+  "webbycommerce.settings.apiCollections.shipping.methods.delete.usage.rates": "Cannot delete methods with associated shipping rates.",
+  "webbycommerce.settings.apiCollections.shipping.methods.delete.usage.check": "Ensure no shipping rates reference this method before deletion.",
+
+  "webbycommerce.settings.apiCollections.shipping.rates.getList.usage.method": "Replace :methodId with the actual shipping method ID.",
+  "webbycommerce.settings.apiCollections.shipping.rates.getList.usage.rates": "Returns all rate tiers for the specified method.",
+
+  "webbycommerce.settings.apiCollections.shipping.rates.create.usage.required": "Required fields: name, condition_type, min_value, rate, method.",
+  "webbycommerce.settings.apiCollections.shipping.rates.create.usage.condition": "Conditions: weight, price, quantity, volume, dimension.",
+  "webbycommerce.settings.apiCollections.shipping.rates.create.usage.tier": "Use min_value and max_value to create pricing tiers.",
+
+  "webbycommerce.settings.apiCollections.shipping.rates.update.usage.fields": "Update rate values, conditions, or pricing tiers.",
+  "webbycommerce.settings.apiCollections.shipping.rates.update.usage.calculation": "Rate changes affect shipping cost calculations.",
+
+  "webbycommerce.settings.apiCollections.shipping.rates.delete.usage.rates": "Deleting rates may affect shipping cost calculations.",
+
+  "webbycommerce.settings.apiCollections.shipping.calculate.usage.weight": "Weight-based pricing: charges based on total cart weight.",
+  "webbycommerce.settings.apiCollections.shipping.calculate.usage.price": "Price-based pricing: charges based on order subtotal.",
+  "webbycommerce.settings.apiCollections.shipping.calculate.usage.quantity": "Quantity-based pricing: charges based on number of items.",
+  "webbycommerce.settings.apiCollections.shipping.calculate.usage.zone": "Zone-based shipping: different rates for different regions.",
+
+  "webbycommerce.settings.dashboard.title": "Dashboard",
+  "webbycommerce.settings.dashboard.subtitle": "Monitor your ecommerce plugin performance and generate demo data",
+  "webbycommerce.settings.dashboard.refresh": "Refresh Stats",
+  "webbycommerce.settings.dashboard.generateDemo": "Generate Demo Data",
+
+  "webbycommerce.dashboard.title": "Ecommerce Dashboard",
+  "webbycommerce.dashboard.subtitle": "Monitor your ecommerce plugin performance and generate demo data",
+  "webbycommerce.dashboard.refresh": "Refresh Stats",
+  "webbycommerce.dashboard.generateDemo": "Generate Demo Data",
+
+  "webbycommerce.dashboard.users.title": "User Statistics",
+  "webbycommerce.dashboard.users.total": "Total Users",
+  "webbycommerce.dashboard.users.recent": "Recent Registrations (24h)",
+
+  "webbycommerce.dashboard.addresses.title": "Address Statistics",
+  "webbycommerce.dashboard.addresses.total": "Total Addresses",
+  "webbycommerce.dashboard.addresses.billing": "Billing",
+  "webbycommerce.dashboard.addresses.shipping": "Shipping",
+
+  "webbycommerce.dashboard.auth.title": "Authentication Methods",
+  "webbycommerce.dashboard.auth.default": "Email/Password",
+  "webbycommerce.dashboard.auth.otp": "OTP Login",
+
+  "webbycommerce.dashboard.api.title": "API Performance",
+  "webbycommerce.dashboard.api.calls": "API Calls (24h)",
+  "webbycommerce.dashboard.api.errors": "Error Responses",
+  "webbycommerce.dashboard.api.testEndpoints": "Test API Endpoints",
+
+  "webbycommerce.dashboard.quickActions.title": "Quick Actions",
+  "webbycommerce.dashboard.quickActions.subtitle": "Common tasks and testing utilities",
+  "webbycommerce.dashboard.quickActions.viewUsers": "View Users",
+  "webbycommerce.dashboard.quickActions.viewAddresses": "View Addresses",
+  "webbycommerce.dashboard.quickActions.apiDocs": "API Documentation"
+
+}
+
+

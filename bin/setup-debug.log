@@ -1,0 +1,6 @@
+[2026-01-20T07:18:40.892Z] Starting setup script
+[2026-01-20T07:18:40.900Z] Platform: Windows. Opening CONIN$ and CONOUT$
+[2026-01-20T07:18:40.901Z] Failed to open TTY: ENOENT: no such file or directory, open 'D:\chandrika\webbycrown-ecommerce-strapi\src\plugins\webbycommerce\CONIN$'
+[2026-01-20T07:19:24.844Z] Starting setup script
+[2026-01-20T07:19:24.845Z] Platform: Windows. Opening CONIN$ and CONOUT$
+[2026-01-20T07:19:24.846Z] Failed to open TTY: ENOENT: no such file or directory, open 'D:\chandrika\webbycrown-ecommerce-strapi\src\plugins\webbycommerce\CONIN$'
