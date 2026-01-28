@@ -1,0 +1,74 @@
+{
+  "kind": "collectionType",
+  "collectionName": "product_variations",
+  "info": {
+    "singularName": "product-variation",
+    "pluralName": "product-variations",
+    "displayName": "Product Variation",
+    "description": "Product variations like size, color"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {
+    "content-manager": {
+      "visible": true
+    },
+    "content-api": {
+      "visible": true
+    }
+  },
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "name",
+      "required": false
+    },
+    "sku": {
+      "type": "string",
+      "required": false
+    },
+    "price": {
+      "type": "decimal",
+      "required": false,
+      "min": 0
+    },
+    "sale_price": {
+      "type": "decimal",
+      "required": false,
+      "min": 0
+    },
+    "stock_quantity": {
+      "type": "integer",
+      "required": false,
+      "min": 0,
+      "default": 0
+    },
+    "stock_status": {
+      "type": "enumeration",
+      "enum": ["in_stock", "out_of_stock", "on_backorder"],
+      "default": "in_stock",
+      "required": false
+    },
+    "attributes": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "plugin::webbycommerce.product-attribute"
+    },
+    "attributeValues": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "plugin::webbycommerce.product-attribute-value"
+    },
+    "product": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::webbycommerce.product",
+      "inversedBy": "variations"
+    }
+  }
+}

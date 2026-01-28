@@ -1,0 +1,67 @@
+{
+  "kind": "collectionType",
+  "collectionName": "coupons",
+  "info": {
+    "singularName": "coupon",
+    "pluralName": "coupons",
+    "displayName": "Coupon",
+    "description": "Discount coupons for orders"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {
+    "content-manager": {
+      "visible": true
+    },
+    "content-api": {
+      "visible": true
+    }
+  },
+  "attributes": {
+    "code": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "type": {
+      "type": "enumeration",
+      "enum": ["percentage", "fixed"],
+      "required": true
+    },
+    "value": {
+      "type": "decimal",
+      "required": true,
+      "min": 0
+    },
+    "description": {
+      "type": "text",
+      "required": false
+    },
+    "usage_limit": {
+      "type": "integer",
+      "required": false,
+      "min": 0
+    },
+    "used_count": {
+      "type": "integer",
+      "required": false,
+      "min": 0,
+      "default": 0
+    },
+    "minimum_order_amount": {
+      "type": "decimal",
+      "required": false,
+      "min": 0
+    },
+    "expires_at": {
+      "type": "datetime",
+      "required": false
+    },
+    "is_active": {
+      "type": "boolean",
+      "required": false,
+      "default": true
+    }
+  }
+}

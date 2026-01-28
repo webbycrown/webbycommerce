@@ -1,0 +1,73 @@
+{
+  "kind": "collectionType",
+  "collectionName": "product_attributes",
+  "info": {
+    "singularName": "product-attribute",
+    "pluralName": "product-attributes",
+    "displayName": "Product Attribute",
+    "description": "Product attributes for variations"
+  },
+  "options": {
+    "draftAndPublish": false,
+    "timestamps": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "name",
+      "required": true
+    },
+    "type": {
+      "type": "enumeration",
+      "enum": [
+        "text",
+        "select",
+        "multiselect",
+        "color",
+        "size",
+        "number"
+      ],
+      "default": "text",
+      "required": true
+    },
+    "is_variation": {
+      "type": "boolean",
+      "default": false,
+      "required": true
+    },
+    "is_visible": {
+      "type": "boolean",
+      "default": true,
+      "required": true
+    },
+    "is_filterable": {
+      "type": "boolean",
+      "default": false,
+      "required": true
+    },
+    "sort_order": {
+      "type": "integer",
+      "default": 0,
+      "required": true
+    },
+    "display_name": {
+      "type": "string",
+      "required": true
+    },
+    "description": {
+      "type": "text"
+    },
+    "product_attribute_values": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "plugin::webbycommerce.product-attribute-value",
+      "mappedBy": "product_attribute"
+    }
+  }
+}

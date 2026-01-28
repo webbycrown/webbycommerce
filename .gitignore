@@ -8,7 +8,6 @@ coverage
 
 # Production
 build
-server
 # Misc
 .DS_Store
 *.pem
@@ -30,3 +29,5 @@ ecommerce-setup-debug.log
 .tmp/
 .cache/
 public/uploads/
+
+.npmignore

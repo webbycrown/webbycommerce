@@ -1,0 +1,45 @@
+{
+  "kind": "collectionType",
+  "collectionName": "product_attribute_values",
+  "info": {
+    "singularName": "product-attribute-value",
+    "pluralName": "product-attribute-values",
+    "displayName": "Product Attribute Value",
+    "description": "Values for product attributes"
+  },
+  "options": {
+    "draftAndPublish": false,
+    "timestamps": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "value": {
+      "type": "string",
+      "required": true
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "value",
+      "required": true
+    },
+    "color_hex": {
+      "type": "string"
+    },
+    "sort_order": {
+      "type": "integer",
+      "default": 0,
+      "required": true
+    },
+    "is_default": {
+      "type": "boolean",
+      "default": false,
+      "required": true
+    },
+    "product_attribute": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::webbycommerce.product-attribute",
+      "inversedBy": "product_attribute_values"
+    }
+  }
+}

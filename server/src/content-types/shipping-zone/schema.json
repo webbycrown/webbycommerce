@@ -1,0 +1,57 @@
+{
+  "kind": "collectionType",
+  "collectionName": "shipping_zones",
+  "info": {
+    "singularName": "shipping-zone",
+    "pluralName": "shipping-zones",
+    "displayName": "Shipping Zone",
+    "description": "Geographical shipping zones for rate calculation"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {
+    "content-manager": {
+      "visible": true
+    },
+    "content-api": {
+      "visible": true
+    }
+  },
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "description": {
+      "type": "text",
+      "required": false
+    },
+    "location": {
+      "type": "component",
+      "repeatable": true,
+      "component": "plugin::webbycommerce.shared.shipping-zone-location",
+      "required": false,
+      "description": "Location rules for matching shipping addresses"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "required": true
+    },
+    "sort_order": {
+      "type": "integer",
+      "default": 0,
+      "required": false
+    },
+    "shippingMethods": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "plugin::webbycommerce.shipping-method",
+      "required": false
+
+      
+    }
+  }
+}

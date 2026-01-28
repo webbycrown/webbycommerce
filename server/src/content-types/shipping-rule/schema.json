@@ -1,0 +1,84 @@
+{
+  "kind": "collectionType",
+  "collectionName": "shipping_rules",
+  "info": {
+    "singularName": "shipping-rule",
+    "pluralName": "shipping-rules",
+    "displayName": "Shipping Rule",
+    "description": "Rules and conditions for shipping eligibility"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {
+    "content-manager": {
+      "visible": true
+    },
+    "content-api": {
+      "visible": true
+    }
+  },
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "description": {
+      "type": "text",
+      "required": false
+    },
+    "rule_type": {
+      "type": "enumeration",
+      "enum": ["restriction", "surcharge", "discount", "requirement"],
+      "required": true
+    },
+    "condition_type": {
+      "type": "enumeration",
+      "enum": ["product_category", "product_tag", "product_weight", "order_total", "customer_group", "shipping_address", "cart_quantity"],
+      "required": true
+    },
+    "condition_operator": {
+      "type": "enumeration",
+      "enum": ["equals", "not_equals", "greater_than", "less_than", "contains", "not_contains", "in", "not_in"],
+      "required": true
+    },
+    "condition_value": {
+      "type": "json",
+      "required": true,
+      "description": "Value(s) to compare against (string, number, or array)"
+    },
+    "action_type": {
+      "type": "enumeration",
+      "enum": ["hide_method", "add_fee", "subtract_fee", "set_rate", "multiply_rate"],
+      "required": true
+    },
+    "action_value": {
+      "type": "decimal",
+      "required": false,
+      "description": "Value for the action (fee amount, multiplier, etc.)"
+    },
+    "action_message": {
+      "type": "string",
+      "required": false,
+      "description": "Message to display when rule applies"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "required": true
+    },
+    "priority": {
+      "type": "integer",
+      "default": 0,
+      "required": false,
+      "description": "Higher priority rules are evaluated first"
+    },
+    "applies_to_methods": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "plugin::webbycommerce.shipping-method",
+      "required": false,
+      "description": "Shipping methods this rule applies to (empty/null for all)"
+    }
+  }
+}
