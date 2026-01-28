@@ -25,6 +25,9 @@
   },
   "files": [
     "dist",
+    "server",
+    "strapi-server.js",
+    "bin",
     "README.md",
     "LICENSE"
   ],

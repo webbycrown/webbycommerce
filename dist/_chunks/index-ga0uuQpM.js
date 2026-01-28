@@ -53,7 +53,7 @@ const index = {
           defaultMessage: "Configure"
         },
         to: `${PLUGIN_ID}`,
-        Component: () => Promise.resolve().then(() => require("./Settings-DFWX7U9g.js"))
+        Component: () => Promise.resolve().then(() => require("./Settings-LT7ZsTSs.js"))
       }
     );
   },
