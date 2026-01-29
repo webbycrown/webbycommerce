@@ -4,9 +4,7 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Production builds
-src
-admin/src
+
 
 # Environment variables
 .env
@@ -22,6 +20,8 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
+ecommerce-setup-debug.log
+
 
 # Runtime data
 pids

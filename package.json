@@ -24,7 +24,12 @@
     "./strapi-server": "./strapi-server.js"
   },
   "files": [
+    "server",
+    "admin",
     "dist",
+    "bin",
+    "strapi-server.js",
+    "public",
     "README.md",
     "LICENSE"
   ],
