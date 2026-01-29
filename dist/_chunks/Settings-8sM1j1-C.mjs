@@ -3,7 +3,7 @@ import * as React from "react";
 import React__default, { useContext, useRef, useCallback, useDebugValue, useMemo, useState, useEffect, useLayoutEffect, createContext as createContext$1, createElement, useReducer } from "react";
 import { useIntl, FormattedMessage } from "react-intl";
 import { Flex, Box, Popover, Typography, Button, LinkButton, Link as Link$1, Portal, Alert, Field, SubNav, Badge, TextInput, Pagination, PreviousLink, Dots, PageLink, NextLink, Modal, DesignSystemProvider, Main } from "@strapi/design-system";
-import { P as PLUGIN_ID } from "./index-CxGoTRf4.mjs";
+import { P as PLUGIN_ID } from "./index-g9YAlVV5.mjs";
 import { WarningCircle, CaretDown, Trash } from "@strapi/icons";
 import "react-dom/client";
 import ReactDOM, { unstable_batchedUpdates as unstable_batchedUpdates$1 } from "react-dom";
@@ -21684,12 +21684,28 @@ styled(Box)`
   }
 `;
 styled(Badge)`
+  width: 100%;
   background: linear-gradient(
     90deg,
     ${({ theme }) => theme.colors.primary600} 0%,
     ${({ theme }) => theme.colors.alternative600} 121.48%
   );
-  padding: 0.4rem 1rem;
+  padding: 1.1rem 1rem;
+
+  ${({ theme }) => theme.breakpoints.small} {
+    padding: 1.2rem 1rem;
+  }
+  ${({ theme }) => theme.breakpoints.medium} {
+    padding: 0.4rem 1rem;
+  }
+`;
+styled(Typography)`
+  font-size: 1.2rem;
+
+  ${({ theme }) => theme.breakpoints.small} {
+    font-size: 1.4rem;
+    line-height: 1.6rem;
+  }
 `;
 const useFetchClient = () => {
   const controller = React.useRef(null);
@@ -30917,7 +30933,7 @@ const SmtpContent = () => {
     const loadSettings = async () => {
       try {
         setIsLoading(true);
-        const { data } = await fetchClient.get(`/webbycommerce-ecommerce/settings`);
+        const { data } = await fetchClient.get(`/webbycommerce/settings`);
         const smtp = data?.smtp || {};
         if (!isMounted) return;
         setSmtpSettings({
@@ -30955,7 +30971,7 @@ const SmtpContent = () => {
     try {
       setIsSaving(true);
       setFeedback(null);
-      const { data } = await fetchClient.put(`/webbycommerce-ecommerce/settings`, {
+      const { data } = await fetchClient.put(`/webbycommerce/settings`, {
         smtp: smtpSettings
       });
       setFeedback({

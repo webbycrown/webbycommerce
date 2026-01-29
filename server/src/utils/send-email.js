@@ -6,14 +6,9 @@ const PLUGIN_ID = 'webbycommerce';
  * Get SMTP settings from plugin store
  */
 const getSmtpSettings = async () => {
-  try {
-    const store = strapi.store({ type: 'plugin', name: PLUGIN_ID });
-    const value = (await store.get({ key: 'settings' })) || {};
-    return value.smtp || null;
-  } catch (error) {
-    strapi.log.warn(`[${PLUGIN_ID}] Failed to load SMTP settings from store, using defaults:`, error.message);
-    return null; // Return null to indicate no SMTP settings available
-  }
+  const store = strapi.store({ type: 'plugin', name: PLUGIN_ID });
+  const value = (await store.get({ key: 'settings' })) || {};
+  return value.smtp || null;
 };
 
 /**
@@ -22,7 +17,7 @@ const getSmtpSettings = async () => {
 const sendEmail = async ({ to, subject, html, from = undefined, fromName = undefined }) => {
   const smtpSettings = await getSmtpSettings();
 
-  // If SMTP is configured, use nodemailer directly 
+  // If SMTP is configured, use nodemailer directly
   if (smtpSettings && smtpSettings.host && smtpSettings.port) {
     try {
       // Dynamically require nodemailer (should be available via Strapi's email plugin)

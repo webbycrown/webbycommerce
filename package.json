@@ -25,9 +25,6 @@
   },
   "files": [
     "dist",
-    "server/**",
-    "strapi-server.js",
-    "bin/**",
     "README.md",
     "LICENSE"
   ],
@@ -62,7 +59,7 @@
   "strapi": {
     "kind": "plugin",
     "name": "webbycommerce",
-    "displayName": "Webbycommerce",
+    "displayName": "WebbyCommerce",
     "description": "Complete ecommerce solution for Strapi: products, cart, orders, payments, and more with role-based permissions."
   },
   "description": "Complete ecommerce solution for Strapi: products, cart, orders, payments, and more with role-based permissions.",

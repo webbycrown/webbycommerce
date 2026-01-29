@@ -29,7 +29,7 @@ const schema = {
     cart: {
       type: 'relation',
       relation: 'manyToOne',
-      target: 'plugin::webbycommerce.cart',
+      target: 'plugin::webbycommerce.cart',  
       inversedBy: 'items',
     },
     product: {

@@ -41,7 +41,7 @@ const SmtpContent = () => {
     const loadSettings = async () => {
       try {
         setIsLoading(true);
-        const { data } = await fetchClient.get(`/webbycommerce-ecommerce/settings`);
+        const { data } = await fetchClient.get(`/webbycommerce/settings`);
         const smtp = data?.smtp || {};
         if (!isMounted) return;
 
@@ -84,7 +84,7 @@ const SmtpContent = () => {
       setIsSaving(true);
       setFeedback(null);
 
-      const { data } = await fetchClient.put(`/webbycommerce-ecommerce/settings`, {
+      const { data } = await fetchClient.put(`/webbycommerce/settings`, {
         smtp: smtpSettings,
       });
 

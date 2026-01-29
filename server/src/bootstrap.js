@@ -49,45 +49,20 @@ module.exports = async ({ strapi }) => {
         const value = (await store.get({ key: 'settings' })) || {};
         return value.routePrefix || 'webbycommerce';
       } catch (error) {
-        strapi.log.warn('[webbycommerce] Failed to get route prefix from settings, using default:', error.message);
         return 'webbycommerce';
       }
     };
-
-    // Initialize default settings if not already set
-    try {
-      const store = strapi.store({ type: 'plugin', name: 'webbycommerce' });
-      const existingSettings = await store.get({ key: 'settings' });
-
-      if (!existingSettings) {
-        strapi.log.info('[webbycommerce] Initializing default settings...');
-        await store.set({
-          key: 'settings',
-          value: {
-            allowedOrigins: [],
-            loginRegisterMethod: 'default',
-            routePrefix: 'webbycommerce',
-            smtp: null,
-            shippingType: 'single',
-          },
-        });
-        strapi.log.info('[webbycommerce] Default settings initialized successfully');
-      }
-    } catch (error) {
-      strapi.log.warn('[webbycommerce] Failed to initialize default settings:', error.message);
-      // Continue with bootstrap even if settings initialization fails
-    }
 
     // Handle custom route prefix for all content-api endpoints
     // This middleware rewrites custom prefix paths to default prefix so Strapi's routing works
     strapi.server.use(async (ctx, next) => {
       const routePrefix = await getRoutePrefix();
-
+      
       // Only rewrite if using custom prefix
       if (routePrefix !== 'webbycommerce') {
         const customBasePath = `/api/${routePrefix}`;
         const defaultBasePath = `/api/webbycommerce`;
-
+        
         // Rewrite custom prefix paths to default paths for route matching
         if (ctx.path.startsWith(customBasePath)) {
           // Store original path before rewriting
@@ -160,9 +135,9 @@ module.exports = async ({ strapi }) => {
           }
         } catch (error) {
           // If settings cannot be read, fall back to Strapi default behavior
-          strapi.log.warn(
-            '[webbycommerce] Failed to read loginRegisterMethod for auth guard, allowing default auth:',
-            error.message
+          strapi.log.error(
+            '[webbycommerce] Failed to read loginRegisterMethod for auth guard:',
+            error
           );
         }
       }

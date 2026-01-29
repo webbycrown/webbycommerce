@@ -42,7 +42,7 @@ const index = {
         id: "webbycommerce",
         intlLabel: {
           id: `${PLUGIN_ID}.settings.section`,
-          defaultMessage: "Advanced Ecommerce"
+          defaultMessage: "WebbyCommerce"
         },
         icon: PluginIcon
       },
@@ -53,7 +53,7 @@ const index = {
           defaultMessage: "Configure"
         },
         to: `${PLUGIN_ID}`,
-        Component: () => Promise.resolve().then(() => require("./Settings-Dj7WbIY4.js"))
+        Component: () => Promise.resolve().then(() => require("./Settings-CQp6hlpr.js"))
       }
     );
   },
@@ -64,14 +64,14 @@ const index = {
       locales.map(async (locale) => {
         if (locale === "en") {
           try {
-            const { default: data } = await Promise.resolve().then(() => require("./en-DSLzcw5q.js"));
+            const { default: data } = await Promise.resolve().then(() => require("./en-Dj8IzRXD.js"));
             return { data, locale };
           } catch {
             return { data: {}, locale };
           }
         }
         try {
-          const { default: data } = await __variableDynamicImportRuntimeHelper(/* @__PURE__ */ Object.assign({ "./translations/en.json": () => Promise.resolve().then(() => require("./en-DSLzcw5q.js")) }), `./translations/${locale}.json`, 3);
+          const { default: data } = await __variableDynamicImportRuntimeHelper(/* @__PURE__ */ Object.assign({ "./translations/en.json": () => Promise.resolve().then(() => require("./en-Dj8IzRXD.js")) }), `./translations/${locale}.json`, 3);
           return { data, locale };
         } catch {
           return { data: {}, locale };

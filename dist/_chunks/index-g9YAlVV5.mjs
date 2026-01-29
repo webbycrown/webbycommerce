@@ -41,7 +41,7 @@ const index = {
         id: "webbycommerce",
         intlLabel: {
           id: `${PLUGIN_ID}.settings.section`,
-          defaultMessage: "Advanced Ecommerce"
+          defaultMessage: "WebbyCommerce"
         },
         icon: PluginIcon
       },
@@ -52,7 +52,7 @@ const index = {
           defaultMessage: "Configure"
         },
         to: `${PLUGIN_ID}`,
-        Component: () => import("./Settings-BiFmg4Su.mjs")
+        Component: () => import("./Settings-8sM1j1-C.mjs")
       }
     );
   },
@@ -63,14 +63,14 @@ const index = {
       locales.map(async (locale) => {
         if (locale === "en") {
           try {
-            const { default: data } = await import("./en-CgCtE2r4.mjs");
+            const { default: data } = await import("./en-CN5945VW.mjs");
             return { data, locale };
           } catch {
             return { data: {}, locale };
           }
         }
         try {
-          const { default: data } = await __variableDynamicImportRuntimeHelper(/* @__PURE__ */ Object.assign({ "./translations/en.json": () => import("./en-CgCtE2r4.mjs") }), `./translations/${locale}.json`, 3);
+          const { default: data } = await __variableDynamicImportRuntimeHelper(/* @__PURE__ */ Object.assign({ "./translations/en.json": () => import("./en-CN5945VW.mjs") }), `./translations/${locale}.json`, 3);
           return { data, locale };
         } catch {
           return { data: {}, locale };

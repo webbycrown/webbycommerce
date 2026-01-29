@@ -98,7 +98,7 @@ const calculateShippingCost = async (cartItems, shippingAddress, method) => {
   let totalCost = parseFloat(method.handling_fee || 0);
 
   // Get active rates for this method
-  const rates = await strapi.db.query('plugin::strapi-advanced-ecommerce.shipping-rate').findMany({
+  const rates = await strapi.db.query('plugin::webbycommerce.shipping-rate').findMany({
     where: {
       shippingMethod: method.id,
       is_active: true,
@@ -168,7 +168,7 @@ const getAppliesToMethodIds = (appliesToMethods) => {
  * Apply shipping rules to available methods
  */
 const applyShippingRules = async (methods, cartItems, shippingAddress) => {
-  const rules = await strapi.db.query('plugin::strapi-advanced-ecommerce.shipping-rule').findMany({
+  const rules = await strapi.db.query('plugin::webbycommerce.shipping-rule').findMany({
     where: { is_active: true },
     orderBy: { priority: 'desc' }, // Higher priority first
     populate: { applies_to_methods: true },
@@ -339,7 +339,7 @@ module.exports = {
       }
 
       // Get all active shipping zones
-      const zones = await strapi.db.query('plugin::strapi-advanced-ecommerce.shipping-zone').findMany({
+      const zones = await strapi.db.query('plugin::webbycommerce.shipping-zone').findMany({
         where: { is_active: true },
         orderBy: { sort_order: 'asc' },
         populate: ['shippingMethods'],
@@ -355,7 +355,7 @@ module.exports = {
       // Get all shipping methods from matching zones
       let availableMethods = [];
       for (const zone of matchingZones) {
-        const methods = await strapi.db.query('plugin::strapi-advanced-ecommerce.shipping-method').findMany({
+        const methods = await strapi.db.query('plugin::webbycommerce.shipping-method').findMany({
           where: {
             shippingZone: zone.id,
             is_active: true,
@@ -442,7 +442,7 @@ module.exports = {
         return ctx.forbidden('Admin access required.');
       }
 
-      const zones = await strapi.db.query('plugin::strapi-advanced-ecommerce.shipping-zone').findMany({
+      const zones = await strapi.db.query('plugin::webbycommerce.shipping-zone').findMany({
         orderBy: { sort_order: 'asc' },
         populate: ['shippingMethods', 'location'],
       });
@@ -499,7 +499,7 @@ module.exports = {
         }];
       }
 
-      const zone = await strapi.db.query('plugin::strapi-advanced-ecommerce.shipping-zone').create({
+      const zone = await strapi.db.query('plugin::webbycommerce.shipping-zone').create({
         data: {
           name: name.trim(),
           description: description ? description.trim() : null,
@@ -542,7 +542,7 @@ module.exports = {
         sort_order,
       } = ctx.request.body;
 
-      const existingZone = await strapi.db.query('plugin::strapi-advanced-ecommerce.shipping-zone').findOne({
+      const existingZone = await strapi.db.query('plugin::webbycommerce.shipping-zone').findOne({
         where: { id },
       });
 
@@ -575,7 +575,7 @@ module.exports = {
       if (is_active !== undefined) updateData.is_active = Boolean(is_active);
       if (sort_order !== undefined) updateData.sort_order = parseInt(sort_order, 10);
 
-      const updatedZone = await strapi.db.query('plugin::strapi-advanced-ecommerce.shipping-zone').update({
+      const updatedZone = await strapi.db.query('plugin::webbycommerce.shipping-zone').update({
         where: { id },
         data: updateData,
       });
@@ -601,7 +601,7 @@ module.exports = {
 
       const { id } = ctx.params;
 
-      const zone = await strapi.db.query('plugin::strapi-advanced-ecommerce.shipping-zone').findOne({
+      const zone = await strapi.db.query('plugin::webbycommerce.shipping-zone').findOne({
         where: { id },
         populate: ['shippingMethods'],
       });
@@ -614,7 +614,7 @@ module.exports = {
         return ctx.badRequest('Cannot delete zone with associated shipping methods. Please remove methods first.');
       }
 
-      await strapi.db.query('plugin::strapi-advanced-ecommerce.shipping-zone').delete({
+      await strapi.db.query('plugin::webbycommerce.shipping-zone').delete({
         where: { id },
       });
 
@@ -637,7 +637,7 @@ module.exports = {
         return ctx.forbidden('Admin access required.');
       }
 
-      const methods = await strapi.db.query('plugin::strapi-advanced-ecommerce.shipping-method').findMany({
+      const methods = await strapi.db.query('plugin::webbycommerce.shipping-method').findMany({
         orderBy: { sort_order: 'asc' },
         populate: ['shippingZone', 'shippingRates'],
       });
@@ -693,7 +693,7 @@ module.exports = {
       }
 
       // Verify zone exists
-      const existingZone = await strapi.db.query('plugin::strapi-advanced-ecommerce.shipping-zone').findOne({
+      const existingZone = await strapi.db.query('plugin::webbycommerce.shipping-zone').findOne({
         where: { id: zone.id },
       });
 
@@ -701,7 +701,7 @@ module.exports = {
         return ctx.notFound('Shipping zone not found.');
       }
 
-      const method = await strapi.db.query('plugin::strapi-advanced-ecommerce.shipping-method').create({
+      const method = await strapi.db.query('plugin::webbycommerce.shipping-method').create({
         data: {
           name: name.trim(),
           description: description ? description.trim() : null,
@@ -753,7 +753,7 @@ module.exports = {
         sort_order,
       } = ctx.request.body;
 
-      const existingMethod = await strapi.db.query('plugin::strapi-advanced-ecommerce.shipping-method').findOne({
+      const existingMethod = await strapi.db.query('plugin::webbycommerce.shipping-method').findOne({
         where: { id },
       });
 
@@ -763,7 +763,7 @@ module.exports = {
 
       // Verify zone exists if provided
       if (zone && zone.id) {
-        const existingZone = await strapi.db.query('plugin::strapi-advanced-ecommerce.shipping-zone').findOne({
+        const existingZone = await strapi.db.query('plugin::webbycommerce.shipping-zone').findOne({
           where: { id: zone.id },
         });
 
@@ -786,7 +786,7 @@ module.exports = {
       if (zone !== undefined && zone.id) updateData.shippingZone = zone.id;
       if (sort_order !== undefined) updateData.sort_order = parseInt(sort_order, 10);
 
-      const updatedMethod = await strapi.db.query('plugin::strapi-advanced-ecommerce.shipping-method').update({
+      const updatedMethod = await strapi.db.query('plugin::webbycommerce.shipping-method').update({
         where: { id },
         data: updateData,
       });
@@ -812,7 +812,7 @@ module.exports = {
 
       const { id } = ctx.params;
 
-      const method = await strapi.db.query('plugin::strapi-advanced-ecommerce.shipping-method').findOne({
+      const method = await strapi.db.query('plugin::webbycommerce.shipping-method').findOne({
         where: { id },
         populate: ['shippingRates'],
       });
@@ -825,7 +825,7 @@ module.exports = {
         return ctx.badRequest('Cannot delete method with associated rates. Please remove rates first.');
       }
 
-      await strapi.db.query('plugin::strapi-advanced-ecommerce.shipping-method').delete({
+      await strapi.db.query('plugin::webbycommerce.shipping-method').delete({
         where: { id },
       });
 
@@ -850,7 +850,7 @@ module.exports = {
 
       const { methodId } = ctx.params;
 
-      const rates = await strapi.db.query('plugin::strapi-advanced-ecommerce.shipping-rate').findMany({
+      const rates = await strapi.db.query('plugin::webbycommerce.shipping-rate').findMany({
         where: { shippingMethod: methodId },
         orderBy: { sort_order: 'asc', min_value: 'asc' },
         populate: ['shippingMethod'],
@@ -909,7 +909,7 @@ module.exports = {
       }
 
       // Verify method exists
-      const existingMethod = await strapi.db.query('plugin::strapi-advanced-ecommerce.shipping-method').findOne({
+      const existingMethod = await strapi.db.query('plugin::webbycommerce.shipping-method').findOne({
         where: { id: method.id },
       });
 
@@ -917,7 +917,7 @@ module.exports = {
         return ctx.notFound('Shipping method not found.');
       }
 
-      const shippingRate = await strapi.db.query('plugin::strapi-advanced-ecommerce.shipping-rate').create({
+      const shippingRate = await strapi.db.query('plugin::webbycommerce.shipping-rate').create({
         data: {
           name: name.trim(),
           condition_type,
@@ -963,7 +963,7 @@ module.exports = {
         sort_order,
       } = ctx.request.body;
 
-      const existingRate = await strapi.db.query('plugin::strapi-advanced-ecommerce.shipping-rate').findOne({
+      const existingRate = await strapi.db.query('plugin::webbycommerce.shipping-rate').findOne({
         where: { id },
       });
 
@@ -973,7 +973,7 @@ module.exports = {
 
       // Verify method exists if provided
       if (method && method.id) {
-        const existingMethod = await strapi.db.query('plugin::strapi-advanced-ecommerce.shipping-method').findOne({
+        const existingMethod = await strapi.db.query('plugin::webbycommerce.shipping-method').findOne({
           where: { id: method.id },
         });
 
@@ -999,7 +999,7 @@ module.exports = {
       if (is_active !== undefined) updateData.is_active = Boolean(is_active);
       if (sort_order !== undefined) updateData.sort_order = parseInt(sort_order, 10);
 
-      const updatedRate = await strapi.db.query('plugin::strapi-advanced-ecommerce.shipping-rate').update({
+      const updatedRate = await strapi.db.query('plugin::webbycommerce.shipping-rate').update({
         where: { id },
         data: updateData,
       });
@@ -1025,7 +1025,7 @@ module.exports = {
 
       const { id } = ctx.params;
 
-      const rate = await strapi.db.query('plugin::strapi-advanced-ecommerce.shipping-rate').findOne({
+      const rate = await strapi.db.query('plugin::webbycommerce.shipping-rate').findOne({
         where: { id },
       });
 
@@ -1033,7 +1033,7 @@ module.exports = {
         return ctx.notFound('Shipping rate not found.');
       }
 
-      await strapi.db.query('plugin::strapi-advanced-ecommerce.shipping-rate').delete({
+      await strapi.db.query('plugin::webbycommerce.shipping-rate').delete({
         where: { id },
       });
 

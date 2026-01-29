@@ -1,11 +1,9 @@
-"use strict";
-Object.defineProperty(exports, Symbol.toStringTag, { value: "Module" });
 const en = {
-  "webbycommerce.name": "Strapi Advanced Ecommerce",
+  "webbycommerce.name": "WebbyCommerce",
   "webbycommerce.description": "Complete ecommerce solution for Strapi CMS",
-  "webbycommerce.settings.section": "Advanced Ecommerce",
+  "webbycommerce.settings.section": "WebbyCommerce",
   "webbycommerce.settings.configure.title": "Configure",
-  "webbycommerce.settings.configure.description": "Global settings for the Strapi Advanced Ecommerce plugin.",
+  "webbycommerce.settings.configure.description": "Global settings for the WebbyCommerce plugin.",
   "webbycommerce.settings.configure.placeholder": "Configuration options (such as base URLs, default currencies, or feature toggles) can be added here as the ecommerce plugin evolves.",
   "webbycommerce.settings.configure.origins.title": "Allowed frontend domains",
   "webbycommerce.settings.configure.origins.description": "Only requests coming from these domains will be allowed to use the ecommerce facility. Leave empty to allow all domains.",
@@ -148,7 +146,7 @@ const en = {
   "webbycommerce.settings.configure.smtp.from.label": "From Email",
   "webbycommerce.settings.configure.smtp.from.placeholder": "noreply@example.com",
   "webbycommerce.settings.configure.smtp.fromName.label": "From Name",
-  "webbycommerce.settings.configure.smtp.fromName.placeholder": "Strapi Advanced Ecommerce",
+  "webbycommerce.settings.configure.smtp.fromName.placeholder": "WebbyCommerce",
   "webbycommerce.settings.shippingType.title": "Shipping",
   "webbycommerce.settings.shippingType.description": "Configure how users can manage their billing and shipping addresses.",
   "webbycommerce.settings.shippingType.loading": "Loading settings...",
@@ -501,4 +499,6 @@ const en = {
   "webbycommerce.dashboard.quickActions.viewAddresses": "View Addresses",
   "webbycommerce.dashboard.quickActions.apiDocs": "API Documentation"
 };
-exports.default = en;
+export {
+  en as default
+};

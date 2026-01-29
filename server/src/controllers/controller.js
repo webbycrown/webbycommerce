@@ -28,33 +28,20 @@ module.exports = {
   },
 
   async getSettings(ctx) {
-    try {
-      const store = getStore();
-      const value = (await store.get({ key: SETTINGS_KEY })) || {};
-      const allowedOrigins = sanitizeOrigins(value.allowedOrigins);
-      const loginRegisterMethod = value.loginRegisterMethod || 'default';
-      const routePrefix = value.routePrefix || 'webbycommerce';
-      const smtp = value.smtp || null;
-      const shippingType = value.shippingType || 'single';
-      ctx.body = {
-        allowedOrigins,
-        loginRegisterMethod,
-        routePrefix,
-        smtp,
-        shippingType,
-      };
-    } catch (error) {
-      strapi.log.warn(`[${PLUGIN_ID}] Failed to load settings from store, using defaults:`, error.message);
-
-      // Provide fallback defaults when store access fails
-      ctx.body = {
-        allowedOrigins: [],
-        loginRegisterMethod: 'default',
-        routePrefix: 'webbycommerce',
-        smtp: null,
-        shippingType: 'single',
-      };
-    }
+    const store = getStore();
+    const value = (await store.get({ key: SETTINGS_KEY })) || {};
+    const allowedOrigins = sanitizeOrigins(value.allowedOrigins);
+    const loginRegisterMethod = value.loginRegisterMethod || 'default';
+    const routePrefix = value.routePrefix || 'webbycommerce';
+    const smtp = value.smtp || null;
+    const shippingType = value.shippingType || 'single';
+    ctx.body = {
+      allowedOrigins,
+      loginRegisterMethod,
+      routePrefix,
+      smtp,
+      shippingType,
+    };
   },
 
   async updateSettings(ctx) {

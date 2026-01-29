@@ -17,7 +17,7 @@ export default {
         id: 'webbycommerce',
         intlLabel: {
           id: `${PLUGIN_ID}.settings.section`,
-          defaultMessage: 'Advanced Ecommerce',
+          defaultMessage: 'WebbyCommerce',
         },
         icon: PluginIcon,
       },
