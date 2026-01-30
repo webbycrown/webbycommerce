@@ -21,21 +21,19 @@
       "require": "./dist/admin/index.js",
       "default": "./dist/admin/index.js"
     },
-    "./strapi-server": "./strapi-server.js"
+    "./strapi-server": "./dist/server/index.js"
   },
   "files": [
-    "server",
-    "admin",
     "dist",
     "bin",
     "strapi-server.js",
-    "public",
     "README.md",
     "LICENSE"
   ],
   "scripts": {
-    "build": "npm run build:admin",
+    "build": "npm run build:admin && npm run build:server",
     "build:admin": "strapi-plugin build",
+    "build:server": "esbuild server/src/index.js --bundle --platform=node --format=cjs --outfile=dist/server/index.js --external:@strapi/*",
     "watch": "strapi-plugin watch",
     "watch:link": "strapi-plugin watch:link",
     "verify": "strapi-plugin verify",
@@ -49,6 +47,7 @@
   "devDependencies": {
     "@strapi/sdk-plugin": "^5.3.2",
     "@strapi/strapi": "^5.12.5",
+    "esbuild": "^0.27.2",
     "prettier": "^3.5.3",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
@@ -79,4 +78,3 @@
     "npm": ">=8.0.0"
   }
 }
-
