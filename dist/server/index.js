@@ -9070,13 +9070,9 @@ var require_seed_data = __commonJS({
     async function seedDemoData(strapi2) {
       try {
         strapi2.log.info("[webbycommerce] Starting demo data seeding...");
-        let demoDataPath = path.join(__dirname, "../data/demo-data.json");
+        let demoDataPath = path.join(__dirname, "../../data/demo-data.json");
         if (!fs.existsSync(demoDataPath)) {
-          const pluginRoot = path.resolve(__dirname, "../../../");
-          demoDataPath = path.join(pluginRoot, "server/src/data/demo-data.json");
-          if (!fs.existsSync(demoDataPath)) {
-            demoDataPath = path.join(process.cwd(), "node_modules/@webbycrown/webbycommerce/server/src/data/demo-data.json");
-          }
+          demoDataPath = path.join(__dirname, "../data/demo-data.json");
         }
         if (!fs.existsSync(demoDataPath)) {
           throw new Error(`Demo data file not found at: ${demoDataPath}`);

@@ -25,16 +25,16 @@
   },
   "files": [
     "dist",
-    "server",
     "bin",
     "strapi-server.js",
     "README.md",
     "LICENSE"
   ],
   "scripts": {
-    "build": "npm run build:admin && npm run build:server",
+    "build": "npm run build:admin && npm run build:server && npm run postbuild",
     "build:admin": "strapi-plugin build",
     "build:server": "esbuild server/src/index.js --bundle --platform=node --format=cjs --outfile=dist/server/index.js --external:@strapi/*",
+    "postbuild": "node -e \"const fs = require('fs'); const path = require('path'); const src = path.join('server', 'src', 'data', 'demo-data.json'); const dest = path.join('dist', 'data', 'demo-data.json'); fs.mkdirSync(path.dirname(dest), { recursive: true }); fs.copyFileSync(src, dest); console.log('Copied demo data to dist/data/');\"",
     "watch": "strapi-plugin watch",
     "watch:link": "strapi-plugin watch:link",
     "verify": "strapi-plugin verify",
