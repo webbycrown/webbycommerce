@@ -1,6 +1,6 @@
 # Dependencies
 node_modules/
-ecommerce-setup-debug.log
+
 
 # Builds and bundles
 build/
@@ -31,3 +31,4 @@ Thumbs.db
 npm-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+ecommerce-setup-debug.log

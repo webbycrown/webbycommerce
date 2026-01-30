@@ -4,6 +4,37 @@ var __commonJS = (cb, mod) => function __require() {
   return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
 };
 
+// server/src/components/shipping-zone-location.json
+var require_shipping_zone_location = __commonJS({
+  "server/src/components/shipping-zone-location.json"(exports2, module2) {
+    module2.exports = {
+      collectionName: "components_shared_shipping_zone_locations",
+      info: {
+        displayName: "Shipping Zone Location",
+        description: "Reusable location rules for shipping zones (stored as text, parsed by backend)."
+      },
+      options: {},
+      attributes: {
+        countries: {
+          type: "text",
+          required: false,
+          description: "Country codes. Use comma or new lines (e.g. US,CA,IN)."
+        },
+        states: {
+          type: "text",
+          required: false,
+          description: "State/province codes or names. Use comma or new lines."
+        },
+        postal_codes: {
+          type: "text",
+          required: false,
+          description: "Postal code patterns/ranges. One per line. Supports wildcards (123*) and ranges (1000-2000)."
+        }
+      }
+    };
+  }
+});
+
 // server/src/routes/index.js
 var require_routes = __commonJS({
   "server/src/routes/index.js"(exports2, module2) {
@@ -1148,6 +1179,25 @@ var require_register = __commonJS({
     module2.exports = async ({ strapi: strapi2 }) => {
       strapi2.log.info("[webbycommerce] ========================================");
       strapi2.log.info("[webbycommerce] Registering plugin...");
+      try {
+        const componentSchema = require_shipping_zone_location();
+        const uid = "plugin::webbycommerce.shipping-zone-location";
+        const existingComponent = strapi2.get("components").get(uid);
+        if (!existingComponent) {
+          strapi2.get("components").set(uid, {
+            ...componentSchema,
+            uid,
+            modelType: "component",
+            modelName: "shipping-zone-location",
+            globalId: "ComponentPluginWebbycommerceShippingZoneLocation"
+          });
+          strapi2.log.info(`[webbycommerce] Component registered: ${uid}`);
+        } else {
+          strapi2.log.info(`[webbycommerce] Component already exists: ${uid}`);
+        }
+      } catch (error) {
+        strapi2.log.error("[webbycommerce] Failed to register component:", error.message);
+      }
       try {
         const routes2 = require_routes();
         strapi2.log.info("[webbycommerce] Routes structure:", JSON.stringify({
@@ -2511,7 +2561,7 @@ var require_schema11 = __commonJS({
         location: {
           type: "component",
           repeatable: true,
-          component: "plugin::webbycommerce.shared.shipping-zone-location",
+          component: "plugin::webbycommerce.shipping-zone-location",
           required: false,
           description: "Location rules for matching shipping addresses"
         },
@@ -2916,6 +2966,9 @@ var require_bootstrap = __commonJS({
         }
         const contentTypes2 = require_content_types();
         strapi2.log.info("[webbycommerce] Content types loaded:", Object.keys(contentTypes2));
+        if (contentTypes2.components) {
+          strapi2.log.info("[webbycommerce] Components loaded:", Object.keys(contentTypes2.components));
+        }
         const routes2 = require_routes();
         strapi2.log.info("[webbycommerce] Routes structure verified");
         strapi2.log.info("[webbycommerce] Full routes object:", JSON.stringify(routes2, null, 2));
@@ -9017,7 +9070,17 @@ var require_seed_data = __commonJS({
     async function seedDemoData(strapi2) {
       try {
         strapi2.log.info("[webbycommerce] Starting demo data seeding...");
-        const demoDataPath = path.join(__dirname, "../data/demo-data.json");
+        let demoDataPath = path.join(__dirname, "../data/demo-data.json");
+        if (!fs.existsSync(demoDataPath)) {
+          const pluginRoot = path.resolve(__dirname, "../../../");
+          demoDataPath = path.join(pluginRoot, "server/src/data/demo-data.json");
+          if (!fs.existsSync(demoDataPath)) {
+            demoDataPath = path.join(process.cwd(), "node_modules/@webbycrown/webbycommerce/server/src/data/demo-data.json");
+          }
+        }
+        if (!fs.existsSync(demoDataPath)) {
+          throw new Error(`Demo data file not found at: ${demoDataPath}`);
+        }
         const demoData = JSON.parse(fs.readFileSync(demoDataPath, "utf8"));
         const entityMap = {
           users: /* @__PURE__ */ new Map(),
