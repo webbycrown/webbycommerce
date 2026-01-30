@@ -1145,32 +1145,9 @@ var require_routes = __commonJS({
 var require_register = __commonJS({
   "server/src/register.js"(exports2, module2) {
     "use strict";
-    var fs = require("fs");
-    var path = require("path");
     module2.exports = async ({ strapi: strapi2 }) => {
       strapi2.log.info("[webbycommerce] ========================================");
       strapi2.log.info("[webbycommerce] Registering plugin...");
-      try {
-        const schemaPath = path.join(__dirname, "components", "shared", "shipping-zone-location.json");
-        const componentSchema = JSON.parse(fs.readFileSync(schemaPath, "utf8"));
-        const uid = "plugin::webbycommerce.shared.shipping-zone-location";
-        const registered = strapi2.get("components").get(uid);
-        if (!registered) {
-          strapi2.get("components").set(uid, {
-            ...componentSchema,
-            __schema__: JSON.parse(JSON.stringify(componentSchema)),
-            uid,
-            category: "shared",
-            modelType: "component",
-            modelName: "shipping-zone-location",
-            globalId: componentSchema.globalId || "ComponentPluginStrapiAdvancedEcommerceSharedShippingZoneLocation"
-          });
-          strapi2.log.info(`[webbycommerce] Registered component: ${uid}`);
-        }
-      } catch (error) {
-        strapi2.log.error("[webbycommerce] Failed to register plugin component shipping-zone-location:", error.message);
-        strapi2.log.error("[webbycommerce] Error stack:", error.stack);
-      }
       try {
         const routes2 = require_routes();
         strapi2.log.info("[webbycommerce] Routes structure:", JSON.stringify({
@@ -10673,6 +10650,50 @@ var require_policies = __commonJS({
   }
 });
 
+// server/src/components/shared/shipping-zone-location.json
+var require_shipping_zone_location = __commonJS({
+  "server/src/components/shared/shipping-zone-location.json"(exports2, module2) {
+    module2.exports = {
+      collectionName: "components_shared_shipping_zone_locations",
+      info: {
+        displayName: "Shipping Zone Location",
+        description: "Reusable location rules for shipping zones (stored as text, parsed by backend)."
+      },
+      options: {},
+      attributes: {
+        countries: {
+          type: "text",
+          required: false,
+          description: "Country codes. Use comma or new lines (e.g. US,CA,IN)."
+        },
+        states: {
+          type: "text",
+          required: false,
+          description: "State/province codes or names. Use comma or new lines."
+        },
+        postal_codes: {
+          type: "text",
+          required: false,
+          description: "Postal code patterns/ranges. One per line. Supports wildcards (123*) and ranges (1000-2000)."
+        }
+      }
+    };
+  }
+});
+
+// server/src/components/index.js
+var require_components = __commonJS({
+  "server/src/components/index.js"(exports2, module2) {
+    "use strict";
+    var shippingZoneLocation = require_shipping_zone_location();
+    module2.exports = {
+      shared: {
+        "shipping-zone-location": shippingZoneLocation
+      }
+    };
+  }
+});
+
 // server/src/index.js
 var register = require_register();
 var bootstrap = require_bootstrap();
@@ -10684,6 +10705,7 @@ var services = require_services();
 var middlewares = require_middlewares();
 var policies = require_policies();
 var contentTypes = require_content_types();
+var components = require_components();
 module.exports = {
   register,
   bootstrap,
@@ -10691,6 +10713,7 @@ module.exports = {
   config,
   controllers,
   contentTypes,
+  components,
   policies,
   middlewares,
   routes,

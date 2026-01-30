@@ -1,5 +1,6 @@
 # Dependencies
 node_modules/
+ecommerce-setup-debug.log
 
 # Builds and bundles
 build/
@@ -7,7 +8,6 @@ build/
 .tmp/
 admin/
 server/
-
 
 !dist/
 !dist/uploads/
