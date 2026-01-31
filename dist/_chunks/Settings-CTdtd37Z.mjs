@@ -2,8 +2,8 @@ import { jsx, jsxs, Fragment } from "react/jsx-runtime";
 import * as React from "react";
 import React__default, { useContext, useRef, useCallback, useDebugValue, useMemo, useState, useEffect, useLayoutEffect, createContext as createContext$1, createElement, useReducer } from "react";
 import { useIntl, FormattedMessage } from "react-intl";
-import { Flex, Box, Popover, Typography, Button, LinkButton, Link as Link$1, Portal, Alert, Field, SubNav, Badge, TextInput, Pagination, PreviousLink, Dots, PageLink, NextLink, Modal, DesignSystemProvider, Main } from "@strapi/design-system";
-import { P as PLUGIN_ID } from "./index-BFH1VuAA.mjs";
+import { Flex, Box, Popover, Typography, Button, LinkButton, Link as Link$1, Portal, Alert, Field, SubNav, Badge, TextInput, Pagination, PreviousLink, Dots, PageLink, NextLink, Modal, Main } from "@strapi/design-system";
+import { P as PLUGIN_ID } from "./index-1SKau9oi.mjs";
 import { WarningCircle, CaretDown, Trash } from "@strapi/icons";
 import "react-dom/client";
 import ReactDOM, { unstable_batchedUpdates as unstable_batchedUpdates$1 } from "react-dom";
@@ -31137,7 +31137,7 @@ const Settings = () => {
   const { formatMessage } = useIntl();
   const [activeView, setActiveView] = useState("configure");
   const titleId = `${PLUGIN_ID}-settings-title`;
-  return /* @__PURE__ */ jsx(DesignSystemProvider, { children: /* @__PURE__ */ jsx(Main, { labelledBy: titleId, children: /* @__PURE__ */ jsxs(Box, { padding: 8, background: "neutral100", children: [
+  return /* @__PURE__ */ jsx(Main, { labelledBy: titleId, children: /* @__PURE__ */ jsxs(Box, { padding: 8, background: "neutral100", children: [
     /* @__PURE__ */ jsx(Box, { paddingBottom: 4, children: /* @__PURE__ */ jsx(Typography, { id: titleId, variant: "alpha", as: "h1", children: formatMessage({
       id: `${PLUGIN_ID}.settings.section`,
       defaultMessage: "Advanced Ecommerce"
@@ -31206,7 +31206,7 @@ const Settings = () => {
       activeView === "smtp" && /* @__PURE__ */ jsx(SmtpContent, {}),
       activeView === "api-collections" && /* @__PURE__ */ jsx(ApiCollectionsContent, {})
     ] })
-  ] }) }) });
+  ] }) });
 };
 export {
   Settings as default

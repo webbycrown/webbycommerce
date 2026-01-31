@@ -20,6 +20,7 @@ server/
 .env.*  
 .eslintcache
 .turbo/
+.npmignore
 
 # Editors / OS
 .DS_Store
