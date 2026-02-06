@@ -1,6 +1,7 @@
-import { useRef, useEffect } from "react";
-import { jsx } from "react/jsx-runtime";
-import { ShoppingCart } from "@strapi/icons";
+"use strict";
+const React = require("react");
+const jsxRuntime = require("react/jsx-runtime");
+const icons = require("@strapi/icons");
 const __variableDynamicImportRuntimeHelper = (glob, path, segs) => {
   const v = glob[path];
   if (v) {
@@ -19,15 +20,15 @@ const __variableDynamicImportRuntimeHelper = (glob, path, segs) => {
 };
 const PLUGIN_ID = "webbycommerce";
 const Initializer = () => {
-  const hasInitialized = useRef(false);
-  useEffect(() => {
+  const hasInitialized = React.useRef(false);
+  React.useEffect(() => {
     if (!hasInitialized.current) {
       hasInitialized.current = true;
     }
   }, []);
   return null;
 };
-const PluginIcon = () => /* @__PURE__ */ jsx(ShoppingCart, {});
+const PluginIcon = () => /* @__PURE__ */ jsxRuntime.jsx(icons.ShoppingCart, {});
 const index = {
   register(app) {
     app.registerPlugin({
@@ -52,7 +53,7 @@ const index = {
           defaultMessage: "Configure"
         },
         to: `${PLUGIN_ID}`,
-        Component: () => import("./Settings-CTdtd37Z.mjs")
+        Component: () => Promise.resolve().then(() => require("./Settings-FFmXhBSE.js"))
       }
     );
   },
@@ -63,14 +64,14 @@ const index = {
       locales.map(async (locale) => {
         if (locale === "en") {
           try {
-            const { default: data } = await import("./en-CN5945VW.mjs");
+            const { default: data } = await Promise.resolve().then(() => require("./en-CwvqDxF2.js"));
             return { data, locale };
           } catch {
             return { data: {}, locale };
           }
         }
         try {
-          const { default: data } = await __variableDynamicImportRuntimeHelper(/* @__PURE__ */ Object.assign({ "./translations/en.json": () => import("./en-CN5945VW.mjs") }), `./translations/${locale}.json`, 3);
+          const { default: data } = await __variableDynamicImportRuntimeHelper(/* @__PURE__ */ Object.assign({ "./translations/en.json": () => Promise.resolve().then(() => require("./en-CwvqDxF2.js")) }), `./translations/${locale}.json`, 3);
           return { data, locale };
         } catch {
           return { data: {}, locale };
@@ -79,7 +80,5 @@ const index = {
     );
   }
 };
-export {
-  PLUGIN_ID as P,
-  index as i
-};
+exports.PLUGIN_ID = PLUGIN_ID;
+exports.index = index;

@@ -2949,7 +2949,8 @@ var require_bootstrap = __commonJS({
       try {
         strapi2.log.info("[webbycommerce] ========================================");
         strapi2.log.info("[webbycommerce] Bootstrapping plugin...");
-        if (process.env.STRAPI_PLUGIN_ADVANCED_ECOMMERCE_SEED_DATA === "true") {
+        const disableSeeding = process.env.STRAPI_PLUGIN_ADVANCED_ECOMMERCE_DISABLE_SEED_DEMO === "true" || process.env.STRAPI_PLUGIN_ADVANCED_ECOMMERCE_DISABLE_SEED_DEMO === "1" || process.env.STRAPI_PLUGIN_ADVANCED_ECOMMERCE_DISABLE_SEED_DEMO === "yes";
+        if (!disableSeeding && process.env.STRAPI_PLUGIN_ADVANCED_ECOMMERCE_SEED_DATA === "true") {
           try {
             await new Promise((resolve) => setTimeout(resolve, 1e3));
             strapi2.log.info("[webbycommerce] Auto-seeding demo data as requested by environment variable...");
@@ -2963,6 +2964,10 @@ var require_bootstrap = __commonJS({
             strapi2.log.error("[webbycommerce] Auto-seeding failed:", seedError.message);
             strapi2.log.error("[webbycommerce] Stack:", seedError.stack);
           }
+        } else if (disableSeeding && process.env.STRAPI_PLUGIN_ADVANCED_ECOMMERCE_SEED_DATA === "true") {
+          strapi2.log.info(
+            "[webbycommerce] Demo seeding is disabled by STRAPI_PLUGIN_ADVANCED_ECOMMERCE_DISABLE_SEED_DEMO; skipping auto-seed."
+          );
         }
         const contentTypes2 = require_content_types();
         strapi2.log.info("[webbycommerce] Content types loaded:", Object.keys(contentTypes2));
@@ -5602,7 +5607,7 @@ var require_compare2 = __commonJS({
           ctx.send({
             data: compare,
             meta: {
-              totalProducts: compare.products.length,
+              totalProducts: compare?.products?.length || 0,
               comparisonData: compareData.comparisonData
             }
           });
@@ -5626,7 +5631,7 @@ var require_compare2 = __commonJS({
           ctx.send({
             data: compare,
             meta: {
-              totalProducts: compare.products.length,
+              totalProducts: compare?.products?.length || 0,
               comparisonData: compareData.comparisonData
             },
             message: "Product added to compare list successfully"
@@ -5651,7 +5656,7 @@ var require_compare2 = __commonJS({
           ctx.send({
             data: compare,
             meta: {
-              totalProducts: compare.products.length,
+              totalProducts: compare?.products?.length || 0,
               comparisonData: compareData.comparisonData
             },
             message: "Product removed from compare list successfully"
@@ -5726,9 +5731,12 @@ var require_compare2 = __commonJS({
           const compare = await strapi2.plugin("webbycommerce").service("compare").findUserCompare(user.id);
           const productIdArray = Array.isArray(productIds) ? productIds.map((id) => parseInt(id)) : [parseInt(productIds)];
           const inCompare = {};
-          if (compare) {
+          if (compare && compare.products && Array.isArray(compare.products)) {
             productIdArray.forEach((productId) => {
-              inCompare[productId] = compare.products.some((product) => product.id === productId);
+              inCompare[productId] = compare.products.some((product) => {
+                const productIdValue = typeof product === "object" && product !== null ? product.id : product;
+                return productIdValue === productId;
+              });
             });
           } else {
             productIdArray.forEach((productId) => {
@@ -5770,12 +5778,22 @@ var require_order2 = __commonJS({
             shipping_address,
             payment_method,
             shipping_method,
-            notes
+            notes,
+            tax_amount,
+            shipping_amount,
+            discount_amount
           } = ctx.request.body;
           if (!billing_address || !shipping_address || !payment_method) {
             return ctx.badRequest("Billing address, shipping address, and payment method are required");
           }
-          const normalizedPaymentMethod = payment_method;
+          let normalizedPaymentMethod = "COD";
+          if (payment_method) {
+            if (typeof payment_method === "object" && payment_method !== null) {
+              normalizedPaymentMethod = payment_method.type || payment_method.method || payment_method.name || "COD";
+            } else if (typeof payment_method === "string") {
+              normalizedPaymentMethod = payment_method;
+            }
+          }
           const cart = await strapi.db.query("plugin::webbycommerce.cart").findOne({
             where: { user: user.id },
             select: ["id"]
@@ -5816,30 +5834,37 @@ var require_order2 = __commonJS({
               product_image: product.images?.[0]?.url || null
             });
           }
-          const taxAmount = 0;
-          const shippingAmount = 0;
-          const discountAmount = 0;
-          const total = subtotal + taxAmount + shippingAmount - discountAmount;
+          const taxAmount = tax_amount != null ? parseFloat(tax_amount) || 0 : 0;
+          const finalShippingAmount = shipping_amount != null ? parseFloat(shipping_amount) || 0 : 0;
+          const finalDiscountAmount = discount_amount != null ? parseFloat(discount_amount) || 0 : 0;
+          const total = subtotal + taxAmount + finalShippingAmount - finalDiscountAmount;
           const orderNumber = await this.generateOrderNumber();
+          const itemsConnect = cartItems.length > 0 ? { connect: cartItems.map((item) => ({ id: item.product.id })) } : void 0;
+          const orderData = {
+            order_number: orderNumber,
+            status: "pending",
+            user: user.id,
+            subtotal: subtotal.toFixed(2),
+            tax_amount: taxAmount.toFixed(2),
+            shipping_amount: finalShippingAmount.toFixed(2),
+            // Use from request
+            discount_amount: finalDiscountAmount.toFixed(2),
+            // Use from request
+            total: total.toFixed(2),
+            currency: "USD",
+            billing_address,
+            shipping_address,
+            payment_method: normalizedPaymentMethod,
+            // Store as string
+            payment_status: "pending",
+            shipping_method: shipping_method || null,
+            notes: notes || null
+          };
+          if (itemsConnect) {
+            orderData.items = itemsConnect;
+          }
           const order = await strapi.db.query("plugin::webbycommerce.order").create({
-            data: {
-              order_number: orderNumber,
-              status: "pending",
-              user: user.id,
-              items: cartItems.map((item) => item.product.id),
-              subtotal: subtotal.toFixed(2),
-              tax_amount: taxAmount.toFixed(2),
-              shipping_amount: shippingAmount.toFixed(2),
-              discount_amount: discountAmount.toFixed(2),
-              total: total.toFixed(2),
-              currency: "USD",
-              billing_address,
-              shipping_address,
-              payment_method: normalizedPaymentMethod,
-              payment_status: "pending",
-              shipping_method: shipping_method || null,
-              notes: notes || null
-            }
+            data: orderData
           });
           for (const cartItem of cartItems) {
             const newStockQuantity = cartItem.product.stock_quantity - cartItem.quantity;
@@ -5865,8 +5890,15 @@ var require_order2 = __commonJS({
               order_id: order.id,
               order_number: order.order_number,
               status: order.status,
+              subtotal: parseFloat(order.subtotal),
+              tax_amount: parseFloat(order.tax_amount),
+              shipping_amount: parseFloat(order.shipping_amount),
+              discount_amount: parseFloat(order.discount_amount),
               total: parseFloat(order.total),
               currency: order.currency,
+              payment_method: order.payment_method,
+              // Return payment method as string
+              shipping_method: order.shipping_method,
               items: order.items,
               created_at: order.createdAt
             },
@@ -5892,7 +5924,7 @@ var require_order2 = __commonJS({
           const query = {
             where: { user: user.id },
             orderBy: { createdAt: "desc" },
-            populate: ["items"],
+            populate: ["items", "billing_address", "shipping_address", "user", "payment_transactions"],
             limit: parseInt(limit),
             offset: (parseInt(page) - 1) * parseInt(limit)
           };
@@ -5903,17 +5935,80 @@ var require_order2 = __commonJS({
           const total = await strapi.db.query("plugin::webbycommerce.order").count({
             where: { user: user.id, ...status && { status } }
           });
-          const formattedOrders = orders.map((order) => ({
-            id: order.id,
-            order_number: order.order_number,
-            status: order.status,
-            payment_method: order.payment_method,
-            payment_status: order.payment_status,
-            total: parseFloat(order.total),
-            currency: order.currency,
-            items_count: order.items.length,
-            created_at: order.createdAt,
-            estimated_delivery: order.estimated_delivery
+          const formattedOrders = await Promise.all(orders.map(async (order) => {
+            let formattedItems = [];
+            if (order.items && order.items.length > 0) {
+              const itemIds = order.items.map((item) => typeof item === "object" && item.id ? item.id : item);
+              const products = await strapi.db.query("plugin::webbycommerce.product").findMany({
+                where: {
+                  id: { $in: itemIds }
+                },
+                populate: {
+                  images: true
+                }
+              });
+              formattedItems = products.map((product) => ({
+                id: product.id,
+                name: product.name,
+                sku: product.sku,
+                price: parseFloat(product.price || 0),
+                sale_price: product.sale_price ? parseFloat(product.sale_price) : null,
+                images: product.images || [],
+                slug: product.slug,
+                description: product.description
+              }));
+            } else if (order.items && Array.isArray(order.items)) {
+              formattedItems = order.items.map((item) => ({
+                id: item.id,
+                name: item.name,
+                sku: item.sku,
+                price: parseFloat(item.price || 0),
+                sale_price: item.sale_price ? parseFloat(item.sale_price) : null,
+                images: item.images || [],
+                slug: item.slug,
+                description: item.description
+              }));
+            }
+            const shippingAmount = parseFloat(order.shipping_amount || 0);
+            const subtotalAmount = parseFloat(order.subtotal || 0);
+            const discountAmount = parseFloat(order.discount_amount || 0);
+            return {
+              id: order.id,
+              order_number: order.order_number,
+              status: order.status,
+              payment_status: order.payment_status,
+              items: formattedItems,
+              items_count: formattedItems.length,
+              subtotal: subtotalAmount,
+              tax_amount: parseFloat(order.tax_amount || 0),
+              shipping: shippingAmount,
+              shipping_amount: shippingAmount,
+              discount: discountAmount,
+              discount_amount: discountAmount,
+              total: parseFloat(order.total || 0),
+              currency: order.currency,
+              billing_address: order.billing_address,
+              shipping_address: order.shipping_address,
+              payment_method: (() => {
+                if (!order.payment_method) return "N/A";
+                if (typeof order.payment_method === "object" && order.payment_method !== null) {
+                  return order.payment_method.type || order.payment_method.method || order.payment_method.name || String(order.payment_method);
+                }
+                return String(order.payment_method);
+              })(),
+              shipping_method: order.shipping_method,
+              notes: order.notes,
+              tracking_number: order.tracking_number,
+              estimated_delivery: order.estimated_delivery,
+              payment_transactions: order.payment_transactions || [],
+              user: order.user ? {
+                id: order.user.id,
+                username: order.user.username,
+                email: order.user.email
+              } : null,
+              created_at: order.createdAt,
+              updated_at: order.updatedAt
+            };
           }));
           ctx.send({
             data: formattedOrders,
@@ -5944,34 +6039,86 @@ var require_order2 = __commonJS({
           }
           const { id } = ctx.params;
           if (!id) {
-            return ctx.badRequest("Order ID is required");
+            return ctx.badRequest("Order ID or order number is required");
           }
-          const order = await strapi.db.query("plugin::webbycommerce.order").findOne({
-            where: { id },
-            populate: ["billing_address", "shipping_address", "items"]
+          const isOrderNumber = id.toString().startsWith("ORD-");
+          const whereClause = {
+            user: user.id
+            // Filter by user ID directly for security
+          };
+          if (isOrderNumber) {
+            whereClause.order_number = id;
+          } else {
+            whereClause.id = id;
+          }
+          let order = await strapi.db.query("plugin::webbycommerce.order").findOne({
+            where: whereClause,
+            populate: ["billing_address", "shipping_address", "items", "user"]
           });
           if (!order) {
             return ctx.notFound("Order not found");
           }
-          if (order.user !== user.id) {
-            return ctx.forbidden("You can only view your own orders");
+          let formattedItems = [];
+          if (order.items && order.items.length > 0) {
+            const itemIds = order.items.map((item) => typeof item === "object" && item.id ? item.id : item);
+            const products = await strapi.db.query("plugin::webbycommerce.product").findMany({
+              where: {
+                id: { $in: itemIds }
+              },
+              populate: {
+                images: true
+              }
+            });
+            formattedItems = products.map((product) => ({
+              id: product.id,
+              name: product.name,
+              sku: product.sku,
+              price: parseFloat(product.price || 0),
+              sale_price: product.sale_price ? parseFloat(product.sale_price) : null,
+              images: product.images || [],
+              slug: product.slug,
+              description: product.description
+            }));
+          } else if (order.items && Array.isArray(order.items)) {
+            formattedItems = order.items.map((item) => ({
+              id: item.id,
+              name: item.name,
+              sku: item.sku,
+              price: parseFloat(item.price || 0),
+              sale_price: item.sale_price ? parseFloat(item.sale_price) : null,
+              images: item.images || [],
+              slug: item.slug,
+              description: item.description
+            }));
           }
+          const shippingAmount = parseFloat(order.shipping_amount || 0);
+          const subtotalAmount = parseFloat(order.subtotal || 0);
+          const discountAmount = parseFloat(order.discount_amount || 0);
           ctx.send({
             data: {
               id: order.id,
               order_number: order.order_number,
               status: order.status,
               payment_status: order.payment_status,
-              items: order.items,
-              subtotal: parseFloat(order.subtotal),
-              tax_amount: parseFloat(order.tax_amount),
-              shipping_amount: parseFloat(order.shipping_amount),
-              discount_amount: parseFloat(order.discount_amount),
-              total: parseFloat(order.total),
+              items: formattedItems,
+              items_count: formattedItems.length,
+              subtotal: subtotalAmount,
+              tax_amount: parseFloat(order.tax_amount || 0),
+              shipping: shippingAmount,
+              shipping_amount: shippingAmount,
+              discount: discountAmount,
+              discount_amount: discountAmount,
+              total: parseFloat(order.total || 0),
               currency: order.currency,
               billing_address: order.billing_address,
               shipping_address: order.shipping_address,
-              payment_method: order.payment_method,
+              payment_method: (() => {
+                if (!order.payment_method) return "N/A";
+                if (typeof order.payment_method === "object" && order.payment_method !== null) {
+                  return order.payment_method.type || order.payment_method.method || order.payment_method.name || String(order.payment_method);
+                }
+                return String(order.payment_method);
+              })(),
               shipping_method: order.shipping_method,
               notes: order.notes,
               tracking_number: order.tracking_number,
@@ -5985,64 +6132,162 @@ var require_order2 = __commonJS({
           ctx.badRequest("Failed to retrieve order");
         }
       },
-      // Cancel order (only if pending)
+      // Cancel order (only if pending or processing)
       async cancelOrder(ctx) {
         try {
           const user = ctx.state.user;
           if (!user) {
             return ctx.unauthorized("Authentication required");
           }
-          const hasPermission = await ensureEcommercePermission(ctx);
-          if (!hasPermission) {
-            return;
+          try {
+            const hasPermission = await ensureEcommercePermission(ctx);
+            if (!hasPermission) {
+              return;
+            }
+          } catch (permissionError) {
+            strapi.log.error(`[cancelOrder] Error checking permission:`, permissionError);
+            return ctx.badRequest("Permission check failed");
           }
           const { id } = ctx.params;
           if (!id) {
             return ctx.badRequest("Order ID is required");
           }
-          const order = await strapi.db.query("plugin::webbycommerce.order").findOne({
-            where: { id }
-          });
-          if (!order) {
-            return ctx.notFound("Order not found");
-          }
-          if (order.user !== user.id) {
-            return ctx.forbidden("You can only cancel your own orders");
-          }
-          if (order.status !== "pending") {
-            return ctx.badRequest("Only pending orders can be cancelled");
-          }
-          const updatedOrder = await strapi.db.query("plugin::webbycommerce.order").update({
-            where: { id },
-            data: { status: "cancelled" }
-          });
-          for (const item of order.items) {
-            const product = await strapi.db.query("plugin::webbycommerce.product").findOne({
-              where: { id: item.product_id }
+          const orderId = typeof id === "string" ? isNaN(id) ? id : parseInt(id, 10) : id;
+          strapi.log.info(`[cancelOrder] Attempting to cancel order ${orderId} (original: ${id}, type: ${typeof id}) for user ${user.id}`);
+          let order;
+          try {
+            order = await strapi.db.query("plugin::webbycommerce.order").findOne({
+              where: {
+                id: orderId,
+                user: user.id
+                // Filter by user ID directly for security
+              },
+              populate: ["items", "user"]
             });
-            if (product) {
-              const newStockQuantity = product.stock_quantity + item.quantity;
-              const newStockStatus = newStockQuantity > 0 ? "in_stock" : "out_of_stock";
-              await strapi.db.query("plugin::webbycommerce.product").update({
-                where: { id: item.product_id },
-                data: {
-                  stock_quantity: newStockQuantity,
-                  stock_status: newStockStatus
-                }
+            if (!order && orderId !== id) {
+              strapi.log.info(`[cancelOrder] Order not found with normalized ID ${orderId}, trying original ID ${id}`);
+              order = await strapi.db.query("plugin::webbycommerce.order").findOne({
+                where: {
+                  id,
+                  user: user.id
+                },
+                populate: ["items", "user"]
               });
             }
+          } catch (queryError) {
+            strapi.log.error(`[cancelOrder] Error querying order ${orderId}:`, queryError);
+            strapi.log.error(`[cancelOrder] Query error message:`, queryError.message);
+            return ctx.badRequest(`Failed to retrieve order: ${queryError.message || "Database error"}`);
           }
-          ctx.send({
-            data: {
-              id: updatedOrder.id,
-              order_number: updatedOrder.order_number,
-              status: updatedOrder.status
-            },
-            message: "Order cancelled successfully"
-          });
+          if (!order) {
+            strapi.log.warn(`[cancelOrder] Order ${orderId} not found for user ${user.id}`);
+            return ctx.notFound("Order not found");
+          }
+          strapi.log.info(`[cancelOrder] Found order ${order.id} (order_number: ${order.order_number}) with status: ${order.status || "null/undefined"}`);
+          const orderStatus = order.status || "";
+          const cancellableStatuses = ["pending", "processing"];
+          if (!orderStatus) {
+            strapi.log.warn(`[cancelOrder] Order ${order.id} has no status`);
+            return ctx.badRequest("Order status is invalid");
+          }
+          if (!cancellableStatuses.includes(orderStatus)) {
+            if (orderStatus === "cancelled") {
+              return ctx.badRequest("Order is already cancelled");
+            }
+            if (orderStatus === "delivered") {
+              return ctx.badRequest("Delivered orders cannot be cancelled");
+            }
+            if (orderStatus === "shipped") {
+              return ctx.badRequest("Shipped orders cannot be cancelled. Please contact support for returns.");
+            }
+            return ctx.badRequest(`Order with status '${orderStatus}' cannot be cancelled`);
+          }
+          let updatedOrder;
+          try {
+            updatedOrder = await strapi.db.query("plugin::webbycommerce.order").update({
+              where: { id: order.id },
+              data: { status: "cancelled" }
+            });
+            if (!updatedOrder) {
+              strapi.log.error(`[cancelOrder] Failed to update order ${order.id} status - update returned null`);
+              return ctx.badRequest("Failed to update order status");
+            }
+            strapi.log.info(`[cancelOrder] Successfully updated order ${order.id} status to cancelled`);
+          } catch (updateError) {
+            strapi.log.error(`[cancelOrder] Error updating order ${order.id}:`, updateError);
+            strapi.log.error(`[cancelOrder] Update error message:`, updateError.message);
+            strapi.log.error(`[cancelOrder] Update error stack:`, updateError.stack);
+            return ctx.badRequest(`Failed to update order status: ${updateError.message || "Unknown error"}`);
+          }
+          if (order.items && Array.isArray(order.items) && order.items.length > 0) {
+            try {
+              for (const item of order.items) {
+                const productId = typeof item === "object" && item.id ? item.id : item;
+                if (!productId) {
+                  strapi.log.warn(`[cancelOrder] Skipping item with invalid ID for order ${order.id}`);
+                  continue;
+                }
+                try {
+                  const product = await strapi.db.query("plugin::webbycommerce.product").findOne({
+                    where: { id: productId }
+                  });
+                  if (product) {
+                    const quantityToRestore = 1;
+                    const newStockQuantity = (product.stock_quantity || 0) + quantityToRestore;
+                    const newStockStatus = newStockQuantity > 0 ? "in_stock" : "out_of_stock";
+                    await strapi.db.query("plugin::webbycommerce.product").update({
+                      where: { id: productId },
+                      data: {
+                        stock_quantity: newStockQuantity,
+                        stock_status: newStockStatus
+                      }
+                    });
+                    strapi.log.info(`[cancelOrder] Restored ${quantityToRestore} unit(s) of product ${productId} for order ${order.id}`);
+                  } else {
+                    strapi.log.warn(`[cancelOrder] Product ${productId} not found for order ${order.id}`);
+                  }
+                } catch (productError) {
+                  strapi.log.error(`[cancelOrder] Error processing product ${productId} for order ${order.id}:`, productError);
+                }
+              }
+            } catch (stockError) {
+              strapi.log.error(`[cancelOrder] Error restoring stock for order ${order.id}:`, stockError);
+            }
+          }
+          try {
+            return ctx.send({
+              data: {
+                id: updatedOrder.id,
+                order_number: updatedOrder.order_number,
+                status: updatedOrder.status
+              },
+              message: "Order cancelled successfully"
+            });
+          } catch (sendError) {
+            strapi.log.error(`[cancelOrder] Error sending response for order ${order.id}:`, sendError);
+            return ctx.send({
+              data: {
+                id: updatedOrder.id,
+                order_number: updatedOrder.order_number,
+                status: updatedOrder.status
+              },
+              message: "Order cancelled successfully"
+            });
+          }
         } catch (error) {
-          strapi.log.error("Cancel order error:", error);
-          ctx.badRequest("Failed to cancel order");
+          strapi.log.error(`[cancelOrder] Unexpected error cancelling order:`, error);
+          strapi.log.error(`[cancelOrder] Error name:`, error.name);
+          strapi.log.error(`[cancelOrder] Error message:`, error.message);
+          strapi.log.error(`[cancelOrder] Error stack:`, error.stack);
+          const errorMessage = error.message || "Unknown error occurred";
+          const errorDetails = error.details ? JSON.stringify(error.details) : "";
+          strapi.log.error(`[cancelOrder] Full error details:`, {
+            name: error.name,
+            message: errorMessage,
+            details: errorDetails,
+            stack: error.stack
+          });
+          return ctx.badRequest(`Failed to cancel order: ${errorMessage}${errorDetails ? ` - ${errorDetails}` : ""}`);
         }
       },
       // Update order status (admin only)
@@ -6135,14 +6380,15 @@ var require_order2 = __commonJS({
             return ctx.badRequest("Order ID is required");
           }
           const order = await strapi.db.query("plugin::webbycommerce.order").findOne({
-            where: { id },
-            populate: ["shipping_address"]
+            where: {
+              id,
+              user: user.id
+              // Filter by user ID directly for security
+            },
+            populate: ["shipping_address", "user"]
           });
           if (!order) {
             return ctx.notFound("Order not found");
-          }
-          if (order.user !== user.id) {
-            return ctx.forbidden("You can only view your own order tracking");
           }
           const trackingTimeline = this.generateTrackingTimeline(order);
           ctx.send({
@@ -6172,87 +6418,142 @@ var require_order2 = __commonJS({
       },
       // Send order confirmation email
       async sendOrderConfirmationEmail(user, order) {
-        const settings = await strapi.store({ type: "plugin", name: "webbycommerce" }).get({ key: "settings" });
-        const smtpSettings = settings?.smtp;
-        if (!smtpSettings) {
-          strapi.log.warn("SMTP settings not configured, skipping order confirmation email");
-          return;
+        try {
+          const settings = await strapi.store({ type: "plugin", name: "webbycommerce" }).get({ key: "settings" });
+          const smtpSettings = settings?.smtp;
+          if (!smtpSettings) {
+            strapi.log.warn("SMTP settings not configured, skipping order confirmation email");
+            return;
+          }
+          let orderWithItems = order;
+          if (!order.items || !Array.isArray(order.items) || order.items.length === 0) {
+            orderWithItems = await strapi.db.query("plugin::webbycommerce.order").findOne({
+              where: { id: order.id },
+              populate: ["items"]
+            });
+          }
+          let itemsHtml = "<li>No items found</li>";
+          if (orderWithItems && orderWithItems.items && Array.isArray(orderWithItems.items) && orderWithItems.items.length > 0) {
+            itemsHtml = orderWithItems.items.map((item) => {
+              if (!item) return "";
+              const productName = item.name || item.product_name || "Unknown Product";
+              const productPrice = item.price || item.product_price || 0;
+              return `<li>${productName} - $${parseFloat(productPrice).toFixed(2)}</li>`;
+            }).filter((item) => item !== "").join("");
+            if (!itemsHtml) {
+              itemsHtml = "<li>No items found</li>";
+            }
+          }
+          const emailData = {
+            to: user.email,
+            subject: `Order Confirmation - ${order.order_number || orderWithItems?.order_number || "N/A"}`,
+            html: `
+          <h2>Order Confirmation</h2>
+          <p>Dear ${user.username || "Customer"},</p>
+          <p>Thank you for your order! Here are the details:</p>
+          <h3>Order #${order.order_number || orderWithItems?.order_number || "N/A"}</h3>
+          <p><strong>Total: $${order.total || orderWithItems?.total || 0} ${order.currency || orderWithItems?.currency || "USD"}</strong></p>
+          <p><strong>Status:</strong> ${order.status || orderWithItems?.status || "pending"}</p>
+          <p><strong>Items:</strong></p>
+          <ul>
+            ${itemsHtml}
+          </ul>
+          <p>We will process your order shortly.</p>
+          <p>Best regards,<br>Your Ecommerce Team</p>
+        `
+          };
+          await sendEmail(emailData);
+          strapi.log.info(`Order confirmation email sent successfully for order ${order.id || orderWithItems?.id}`);
+        } catch (error) {
+          strapi.log.error("Error sending order confirmation email:", error);
+          strapi.log.error("Email error details:", {
+            message: error.message,
+            stack: error.stack,
+            orderId: order?.id,
+            orderNumber: order?.order_number
+          });
         }
-        const emailData = {
-          to: user.email,
-          subject: `Order Confirmation - ${order.order_number}`,
-          html: `
-        <h2>Order Confirmation</h2>
-        <p>Dear ${user.username || "Customer"},</p>
-        <p>Thank you for your order! Here are the details:</p>
-        <h3>Order #${order.order_number}</h3>
-        <p><strong>Total: $${order.total} ${order.currency}</strong></p>
-        <p><strong>Status:</strong> ${order.status}</p>
-        <p><strong>Items:</strong></p>
-        <ul>
-          ${order.items.map((item) => `<li>${item.product_name} (x${item.quantity}) - $${item.total_price}</li>`).join("")}
-        </ul>
-        <p>We will process your order shortly.</p>
-        <p>Best regards,<br>Your Ecommerce Team</p>
-      `
-        };
-        await sendEmail(emailData);
       },
       // Send order status update email
       async sendOrderStatusUpdateEmail(user, order, newStatus) {
-        const settings = await strapi.store({ type: "plugin", name: "webbycommerce" }).get({ key: "settings" });
-        const smtpSettings = settings?.smtp;
-        if (!smtpSettings) {
-          strapi.log.warn("SMTP settings not configured, skipping order status update email");
-          return;
+        try {
+          const settings = await strapi.store({ type: "plugin", name: "webbycommerce" }).get({ key: "settings" });
+          const smtpSettings = settings?.smtp;
+          if (!smtpSettings) {
+            strapi.log.warn("SMTP settings not configured, skipping order status update email");
+            return;
+          }
+          const statusMessages = {
+            pending: "Your order is being prepared",
+            processing: "Your order is now being processed",
+            shipped: "Your order has been shipped",
+            delivered: "Your order has been delivered successfully",
+            cancelled: "Your order has been cancelled",
+            refunded: "Your order has been refunded"
+          };
+          const emailData = {
+            to: user.email,
+            subject: `Order Status Update - ${order.order_number || "N/A"}`,
+            html: `
+          <h2>Order Status Update</h2>
+          <p>Dear ${user.username || "Customer"},</p>
+          <p>Your order status has been updated:</p>
+          <h3>Order #${order.order_number || "N/A"}</h3>
+          <p><strong>Status: ${newStatus ? newStatus.toUpperCase() : "UPDATED"}</strong></p>
+          <p><strong>Message:</strong> ${statusMessages[newStatus] || "Status updated"}</p>
+          ${order.tracking_number ? `<p><strong>Tracking Number:</strong> ${order.tracking_number}</p>` : ""}
+          ${order.estimated_delivery ? `<p><strong>Estimated Delivery:</strong> ${new Date(order.estimated_delivery).toLocaleDateString()}</p>` : ""}
+          <p>You can track your order at any time using our order tracking feature.</p>
+          <p>Best regards,<br>Your Ecommerce Team</p>
+        `
+          };
+          await sendEmail(emailData);
+          strapi.log.info(`Order status update email sent successfully for order ${order.id}`);
+        } catch (error) {
+          strapi.log.error("Error sending order status update email:", error);
+          strapi.log.error("Email error details:", {
+            message: error.message,
+            stack: error.stack,
+            orderId: order?.id,
+            orderNumber: order?.order_number,
+            newStatus
+          });
         }
-        const statusMessages = {
-          pending: "Your order is being prepared",
-          processing: "Your order is now being processed",
-          shipped: "Your order has been shipped",
-          delivered: "Your order has been delivered successfully",
-          cancelled: "Your order has been cancelled",
-          refunded: "Your order has been refunded"
-        };
-        const emailData = {
-          to: user.email,
-          subject: `Order Status Update - ${order.order_number}`,
-          html: `
-        <h2>Order Status Update</h2>
-        <p>Dear ${user.username || "Customer"},</p>
-        <p>Your order status has been updated:</p>
-        <h3>Order #${order.order_number}</h3>
-        <p><strong>Status: ${newStatus.toUpperCase()}</strong></p>
-        <p><strong>Message:</strong> ${statusMessages[newStatus] || "Status updated"}</p>
-        ${order.tracking_number ? `<p><strong>Tracking Number:</strong> ${order.tracking_number}</p>` : ""}
-        ${order.estimated_delivery ? `<p><strong>Estimated Delivery:</strong> ${new Date(order.estimated_delivery).toLocaleDateString()}</p>` : ""}
-        <p>You can track your order at any time using our order tracking feature.</p>
-        <p>Best regards,<br>Your Ecommerce Team</p>
-      `
-        };
-        await sendEmail(emailData);
       },
       // Restore stock when order is cancelled
       async restoreOrderStock(order) {
         try {
+          if (!order.items || !Array.isArray(order.items) || order.items.length === 0) {
+            strapi.log.warn(`[restoreOrderStock] No items found for order ${order.id}`);
+            return;
+          }
           for (const item of order.items) {
+            const productId = typeof item === "object" && item.id ? item.id : item;
+            if (!productId) {
+              strapi.log.warn(`[restoreOrderStock] Skipping item with invalid ID for order ${order.id}`);
+              continue;
+            }
             const product = await strapi.db.query("plugin::webbycommerce.product").findOne({
-              where: { id: item.product_id }
+              where: { id: productId }
             });
             if (product) {
-              const newStockQuantity = product.stock_quantity + item.quantity;
+              const quantityToRestore = 1;
+              const newStockQuantity = (product.stock_quantity || 0) + quantityToRestore;
               const newStockStatus = newStockQuantity > 0 ? "in_stock" : "out_of_stock";
               await strapi.db.query("plugin::webbycommerce.product").update({
-                where: { id: item.product_id },
+                where: { id: productId },
                 data: {
                   stock_quantity: newStockQuantity,
                   stock_status: newStockStatus
                 }
               });
+              strapi.log.info(`[restoreOrderStock] Restored ${quantityToRestore} unit(s) of product ${productId} for order ${order.id}`);
+            } else {
+              strapi.log.warn(`[restoreOrderStock] Product ${productId} not found for order ${order.id}`);
             }
           }
         } catch (error) {
-          strapi.log.error("Failed to restore order stock:", error);
+          strapi.log.error(`[restoreOrderStock] Failed to restore order stock for order ${order.id}:`, error);
         }
       },
       // Generate tracking timeline based on order status
@@ -7744,7 +8045,7 @@ var require_cart2 = __commonJS({
           const guestId = user ? null : getGuestIdFromRequest(ctx) || randomUUID();
           const cart = await cartService.getOrCreateCart({ userId: user?.id, guestId });
           const items = await cartService.getCartItems({ cartId: cart.id });
-          const totals = await cartService.getTotalsFromItems(items);
+          const totals = await cartService.getTotalsFromItems(items, cart.coupon);
           ctx.send({
             data: {
               cart: {
@@ -7779,7 +8080,11 @@ var require_cart2 = __commonJS({
           const cart = await cartService.getOrCreateCart({ userId: user?.id, guestId });
           await cartService.addOrUpdateItem({ cartId: cart.id, userId: user?.id, productId, quantity });
           const items = await cartService.getCartItems({ cartId: cart.id });
-          const totals = await cartService.getTotalsFromItems(items);
+          const updatedCart = await strapi.db.query("plugin::webbycommerce.cart").findOne({
+            where: { id: cart.id },
+            populate: { coupon: true }
+          });
+          const totals = await cartService.getTotalsFromItems(items, updatedCart?.coupon);
           ctx.send({
             data: {
               cart: {
@@ -7812,7 +8117,11 @@ var require_cart2 = __commonJS({
           const cart = await cartService.getOrCreateCart({ userId: user?.id, guestId });
           await cartService.updateItemQuantity({ cartId: cart.id, userId: user?.id, cartItemId: id, quantity });
           const items = await cartService.getCartItems({ cartId: cart.id });
-          const totals = await cartService.getTotalsFromItems(items);
+          const updatedCart = await strapi.db.query("plugin::webbycommerce.cart").findOne({
+            where: { id: cart.id },
+            populate: { coupon: true }
+          });
+          const totals = await cartService.getTotalsFromItems(items, updatedCart?.coupon);
           ctx.send({
             data: {
               cart: {
@@ -7844,7 +8153,11 @@ var require_cart2 = __commonJS({
           const cart = await cartService.getOrCreateCart({ userId: user?.id, guestId });
           await cartService.removeItem({ cartId: cart.id, cartItemId: id });
           const items = await cartService.getCartItems({ cartId: cart.id });
-          const totals = await cartService.getTotalsFromItems(items);
+          const updatedCart = await strapi.db.query("plugin::webbycommerce.cart").findOne({
+            where: { id: cart.id },
+            populate: { coupon: true }
+          });
+          const totals = await cartService.getTotalsFromItems(items, updatedCart?.coupon);
           ctx.send({
             data: {
               cart: {
@@ -7901,7 +8214,7 @@ var require_cart2 = __commonJS({
           if (!user && !guestId) return ctx.badRequest("guest_id is required for guest cart");
           const cart = await cartService.getOrCreateCart({ userId: user?.id, guestId });
           const items = await cartService.getCartItems({ cartId: cart.id });
-          const totals = await cartService.getTotalsFromItems(items);
+          const totals = await cartService.getTotalsFromItems(items, cart.coupon);
           ctx.send({
             data: {
               cart: {
@@ -7918,10 +8231,81 @@ var require_cart2 = __commonJS({
         }
       },
       async applyCoupon(ctx) {
-        ctx.badRequest("Coupon support is not implemented yet");
+        try {
+          const user = ctx.state.user;
+          const hasPermission = await ensureEcommercePermission(ctx);
+          if (!hasPermission) return;
+          const { coupon_code } = ctx.request.body || {};
+          if (!coupon_code) {
+            return ctx.badRequest("Coupon code is required");
+          }
+          const cartService = strapi.plugin("webbycommerce").service("cart");
+          const guestId = user ? null : getGuestIdFromRequest(ctx);
+          if (!user && !guestId) return ctx.badRequest("guest_id is required for guest cart");
+          const cart = await cartService.getOrCreateCart({ userId: user?.id, guestId });
+          const coupon = await cartService.validateAndApplyCoupon({
+            cartId: cart.id,
+            couponCode: coupon_code
+          });
+          const items = await cartService.getCartItems({ cartId: cart.id });
+          const updatedCart = await strapi.db.query("plugin::webbycommerce.cart").findOne({
+            where: { id: cart.id },
+            populate: { coupon: true }
+          });
+          const totals = await cartService.getTotalsFromItems(items, updatedCart?.coupon);
+          ctx.send({
+            data: {
+              cart: {
+                id: cart.id,
+                guest_id: cart.guest_id || guestId || null,
+                currency: cart.currency || "USD"
+              },
+              coupon: {
+                code: coupon.code,
+                type: coupon.type,
+                value: coupon.value,
+                discount_amount: totals.discount
+              },
+              items,
+              totals
+            },
+            message: "Coupon applied successfully"
+          });
+        } catch (error) {
+          strapi.log.error("Error applying coupon:", error);
+          const status = error?.status || 400;
+          if (status === 404) return ctx.notFound(error.message);
+          return ctx.badRequest(error.message || "Invalid coupon code");
+        }
       },
       async removeCoupon(ctx) {
-        ctx.badRequest("Coupon support is not implemented yet");
+        try {
+          const user = ctx.state.user;
+          const hasPermission = await ensureEcommercePermission(ctx);
+          if (!hasPermission) return;
+          const cartService = strapi.plugin("webbycommerce").service("cart");
+          const guestId = user ? null : getGuestIdFromRequest(ctx);
+          if (!user && !guestId) return ctx.badRequest("guest_id is required for guest cart");
+          const cart = await cartService.getOrCreateCart({ userId: user?.id, guestId });
+          await cartService.removeCoupon({ cartId: cart.id });
+          const items = await cartService.getCartItems({ cartId: cart.id });
+          const totals = await cartService.getTotalsFromItems(items, null);
+          ctx.send({
+            data: {
+              cart: {
+                id: cart.id,
+                guest_id: cart.guest_id || guestId || null,
+                currency: cart.currency || "USD"
+              },
+              items,
+              totals
+            },
+            message: "Coupon removed successfully"
+          });
+        } catch (error) {
+          strapi.log.error("Error removing coupon:", error);
+          ctx.badRequest("Failed to remove coupon", { error: error.message });
+        }
       },
       async checkout(ctx) {
         const orderController = strapi.plugin("webbycommerce").controller("order");
@@ -9659,24 +10043,29 @@ var require_compare3 = __commonJS({
     module2.exports = createCoreService("plugin::webbycommerce.compare", ({ strapi: strapi2 }) => ({
       async findUserCompare(userId) {
         try {
-          const compare = await strapi2.entityService.findMany("plugin::webbycommerce.compare", {
-            filters: {
-              userId
+          const compares = await strapi2.db.query("plugin::webbycommerce.compare").findMany({
+            where: {
+              userId: String(userId)
             },
+            orderBy: { createdAt: "desc" },
             populate: {
               products: {
                 populate: {
                   images: true,
                   product_categories: true,
                   tags: true,
-                  variations: true
+                  variations: {
+                    populate: {
+                      attributes: true,
+                      attributeValues: true
+                    }
+                  }
                 }
               },
               category: true
-            },
-            sort: { createdAt: "desc" }
+            }
           });
-          return compare.length > 0 ? compare[0] : null;
+          return compares.length > 0 ? compares[0] : null;
         } catch (error) {
           throw new Error(`Failed to find user compare: ${error.message}`);
         }
@@ -9692,10 +10081,10 @@ var require_compare3 = __commonJS({
             notes: data.notes || null,
             category: data.categoryId || null
           };
-          const compare = await strapi2.entityService.create("plugin::webbycommerce.compare", {
+          await strapi2.entityService.create("plugin::webbycommerce.compare", {
             data: compareData
           });
-          return compare;
+          return await this.findUserCompare(userId);
         } catch (error) {
           throw new Error(`Failed to create user compare: ${error.message}`);
         }
@@ -9712,7 +10101,10 @@ var require_compare3 = __commonJS({
           if (compare.products.length >= 4) {
             throw new Error("Compare list is full. Maximum 4 products allowed.");
           }
-          const productExists = compare.products.some((product2) => product2.id === parseInt(productId));
+          const productExists = compare.products.some((product2) => {
+            const productIdValue = typeof product2 === "object" && product2 !== null ? product2.id : product2;
+            return productIdValue === parseInt(productId);
+          });
           if (productExists) {
             throw new Error("Product already exists in compare list");
           }
@@ -9725,13 +10117,16 @@ var require_compare3 = __commonJS({
           if (compare.category && product.product_categories && product.product_categories.length > 0 && compare.category.id !== product.product_categories[0].id) {
             strapi2.log.warn(`Adding product from different category to compare list. Compare category: ${compare.category.name}, Product category: ${product.product_categories[0].name}`);
           }
-          const updatedCompare = await strapi2.entityService.update("plugin::webbycommerce.compare", compare.id, {
+          const existingProductIds = compare.products.map((p) => {
+            return typeof p === "object" && p !== null ? p.id : p;
+          }).filter((id) => id != null);
+          await strapi2.entityService.update("plugin::webbycommerce.compare", compare.id, {
             data: {
-              products: { set: [...compare.products.map((p) => p.id), parseInt(productId, 10)].map((id) => ({ id })) },
+              products: { set: [...existingProductIds, parseInt(productId, 10)].map((id) => ({ id })) },
               category: compare.category || product.product_categories?.[0]?.id || null
             }
           });
-          return updatedCompare;
+          return await this.findUserCompare(userId);
         } catch (error) {
           throw new Error(`Failed to add product to compare: ${error.message}`);
         }
@@ -9745,15 +10140,20 @@ var require_compare3 = __commonJS({
           if (!compare.products) {
             compare.products = [];
           }
-          const updatedProducts = compare.products.filter((product) => product.id !== parseInt(productId)).map((product) => product.id);
-          const updatedCompare = await strapi2.entityService.update("plugin::webbycommerce.compare", compare.id, {
+          const updatedProducts = compare.products.filter((product) => {
+            const productIdValue = typeof product === "object" && product !== null ? product.id : product;
+            return productIdValue !== parseInt(productId);
+          }).map((product) => {
+            return typeof product === "object" && product !== null ? product.id : product;
+          });
+          await strapi2.entityService.update("plugin::webbycommerce.compare", compare.id, {
             data: {
               products: { set: updatedProducts.map((id) => ({ id })) },
               // Reset category if no products left
               category: updatedProducts.length === 0 ? null : compare.category
             }
           });
-          return updatedCompare;
+          return await this.findUserCompare(userId);
         } catch (error) {
           throw new Error(`Failed to remove product from compare: ${error.message}`);
         }
@@ -9764,13 +10164,13 @@ var require_compare3 = __commonJS({
           if (!compare) {
             throw new Error("Compare list not found");
           }
-          const updatedCompare = await strapi2.entityService.update("plugin::webbycommerce.compare", compare.id, {
+          await strapi2.entityService.update("plugin::webbycommerce.compare", compare.id, {
             data: {
               products: { set: [] },
               category: null
             }
           });
-          return updatedCompare;
+          return await this.findUserCompare(userId);
         } catch (error) {
           throw new Error(`Failed to clear compare list: ${error.message}`);
         }
@@ -9781,14 +10181,14 @@ var require_compare3 = __commonJS({
           if (!compare) {
             throw new Error("Compare list not found");
           }
-          const updatedCompare = await strapi2.entityService.update("plugin::webbycommerce.compare", compare.id, {
+          await strapi2.entityService.update("plugin::webbycommerce.compare", compare.id, {
             data: {
               name: data.name !== void 0 ? data.name : compare.name,
               notes: data.notes !== void 0 ? data.notes : compare.notes,
               isPublic: data.isPublic !== void 0 ? data.isPublic : compare.isPublic
             }
           });
-          return updatedCompare;
+          return await this.findUserCompare(userId);
         } catch (error) {
           throw new Error(`Failed to update compare list: ${error.message}`);
         }
@@ -9872,6 +10272,7 @@ var require_cart3 = __commonJS({
     var CART_UID = "plugin::webbycommerce.cart";
     var CART_ITEM_UID = "plugin::webbycommerce.cart-item";
     var PRODUCT_UID = "plugin::webbycommerce.product";
+    var COUPON_UID = "plugin::webbycommerce.coupon";
     var asInt = (value) => {
       const n = Number.parseInt(String(value), 10);
       return Number.isFinite(n) ? n : null;
@@ -9883,41 +10284,65 @@ var require_cart3 = __commonJS({
     };
     module2.exports = createCoreService(CART_ITEM_UID, ({ strapi: strapi2 }) => ({
       async getOrCreateCart({ userId, guestId }) {
+        let cart;
         if (userId) {
-          const existing = await strapi2.db.query(CART_UID).findOne({
+          cart = await strapi2.db.query(CART_UID).findOne({
             where: { user: userId },
             select: ["id", "guest_id", "currency"]
           });
-          if (existing?.id) return existing;
-          return await strapi2.db.query(CART_UID).create({
+          if (cart?.id) {
+            const cartWithCoupon = await strapi2.db.query(CART_UID).findOne({
+              where: { id: cart.id },
+              populate: { coupon: true }
+            });
+            return cartWithCoupon || cart;
+          }
+          cart = await strapi2.db.query(CART_UID).create({
             data: {
               user: userId,
               currency: "USD"
             },
             select: ["id", "guest_id", "currency"]
           });
+          return await strapi2.db.query(CART_UID).findOne({
+            where: { id: cart.id },
+            populate: { coupon: true }
+          });
         }
         if (guestId) {
-          const existing = await strapi2.db.query(CART_UID).findOne({
+          cart = await strapi2.db.query(CART_UID).findOne({
             where: { guest_id: String(guestId) },
             select: ["id", "guest_id", "currency"]
           });
-          if (existing?.id) return existing;
-          return await strapi2.db.query(CART_UID).create({
+          if (cart?.id) {
+            const cartWithCoupon = await strapi2.db.query(CART_UID).findOne({
+              where: { id: cart.id },
+              populate: { coupon: true }
+            });
+            return cartWithCoupon || cart;
+          }
+          cart = await strapi2.db.query(CART_UID).create({
             data: {
               guest_id: String(guestId),
               currency: "USD"
             },
             select: ["id", "guest_id", "currency"]
           });
+          return await strapi2.db.query(CART_UID).findOne({
+            where: { id: cart.id },
+            populate: { coupon: true }
+          });
         }
-        const created = await strapi2.db.query(CART_UID).create({
+        cart = await strapi2.db.query(CART_UID).create({
           data: {
             currency: "USD"
           },
           select: ["id", "guest_id", "currency"]
         });
-        return created;
+        return await strapi2.db.query(CART_UID).findOne({
+          where: { id: cart.id },
+          populate: { coupon: true }
+        });
       },
       async getCartItems({ cartId }) {
         return await strapi2.db.query(CART_ITEM_UID).findMany({
@@ -9931,13 +10356,23 @@ var require_cart3 = __commonJS({
           }
         });
       },
-      async getTotalsFromItems(items) {
+      async getTotalsFromItems(items, coupon = null) {
         const safe = Array.isArray(items) ? items : [];
         const totalItems = safe.reduce((sum, it) => sum + (Number(it.quantity) || 0), 0);
         const subtotal = safe.reduce((sum, it) => sum + (Number(it.total_price) || 0), 0);
+        let discount = 0;
+        if (coupon) {
+          if (coupon.type === "percentage") {
+            discount = subtotal * Number(coupon.value || 0) / 100;
+          } else if (coupon.type === "fixed") {
+            discount = Number(coupon.value || 0);
+            if (discount > subtotal) {
+              discount = subtotal;
+            }
+          }
+        }
         const tax = 0;
         const shipping = 0;
-        const discount = 0;
         const total = subtotal + tax + shipping - discount;
         return {
           totalItems,
@@ -10087,6 +10522,157 @@ var require_cart3 = __commonJS({
           where: { cart: cartId }
         });
         return true;
+      },
+      async validateAndApplyCoupon({ cartId, couponCode }) {
+        if (!couponCode || typeof couponCode !== "string" || !couponCode.trim()) {
+          const err = new Error("Coupon code is required");
+          err.status = 400;
+          throw err;
+        }
+        const normalizedCode = couponCode.trim();
+        strapi2.log.info(`[webbycommerce] Looking for coupon code: "${normalizedCode}"`);
+        let coupon = null;
+        try {
+          const coupons = await strapi2.entityService.findMany(COUPON_UID, {
+            filters: {
+              code: normalizedCode
+            }
+          });
+          strapi2.log.debug(`[webbycommerce] entityService found ${coupons?.length || 0} coupons with exact match`);
+          if (coupons && Array.isArray(coupons) && coupons.length > 0) {
+            coupon = coupons[0];
+            strapi2.log.debug(`[webbycommerce] Found via entityService: "${coupon.code}"`);
+          }
+        } catch (entityServiceError) {
+          strapi2.log.warn(`[webbycommerce] entityService query failed:`, entityServiceError.message);
+        }
+        if (!coupon) {
+          try {
+            coupon = await strapi2.db.query(COUPON_UID).findOne({
+              where: { code: normalizedCode }
+            });
+            if (coupon) {
+              strapi2.log.debug(`[webbycommerce] Found via db.query: "${coupon.code}"`);
+            } else {
+              strapi2.log.debug(`[webbycommerce] db.query exact match returned null`);
+            }
+          } catch (dbError) {
+            strapi2.log.warn(`[webbycommerce] db.query exact match failed:`, dbError.message);
+          }
+        }
+        if (!coupon) {
+          try {
+            coupon = await strapi2.db.query(COUPON_UID).findOne({
+              where: { code: normalizedCode.toUpperCase() }
+            });
+            if (coupon) {
+              strapi2.log.debug(`[webbycommerce] Found via db.query (uppercase): "${coupon.code}"`);
+            }
+          } catch (dbError) {
+          }
+        }
+        if (!coupon) {
+          try {
+            coupon = await strapi2.db.query(COUPON_UID).findOne({
+              where: { code: normalizedCode.toLowerCase() }
+            });
+            if (coupon) {
+              strapi2.log.debug(`[webbycommerce] Found via db.query (lowercase): "${coupon.code}"`);
+            }
+          } catch (dbError) {
+          }
+        }
+        if (!coupon) {
+          try {
+            strapi2.log.debug(`[webbycommerce] Trying fallback: fetching all coupons for case-insensitive match`);
+            const allCoupons = await strapi2.entityService.findMany(COUPON_UID, {
+              filters: {}
+            });
+            strapi2.log.debug(`[webbycommerce] Fetched ${allCoupons?.length || 0} total coupons`);
+            if (allCoupons && Array.isArray(allCoupons)) {
+              const allCodes = allCoupons.map((c) => `"${c.code || "N/A"}"`).join(", ");
+              strapi2.log.debug(`[webbycommerce] All coupon codes: ${allCodes}`);
+              coupon = allCoupons.find(
+                (c) => {
+                  const couponCode2 = c.code ? String(c.code).trim() : "";
+                  const searchCode = normalizedCode.toLowerCase();
+                  const match = couponCode2.toLowerCase() === searchCode;
+                  if (match) {
+                    strapi2.log.debug(`[webbycommerce] Case-insensitive match found: "${couponCode2}" === "${normalizedCode}"`);
+                  }
+                  return match;
+                }
+              );
+            }
+          } catch (fallbackError) {
+            strapi2.log.error(`[webbycommerce] Fallback query failed:`, fallbackError.message, fallbackError.stack);
+          }
+        }
+        if (!coupon) {
+          strapi2.log.error(`[webbycommerce] Coupon not found: "${normalizedCode}"`);
+          try {
+            const availableCoupons = await strapi2.entityService.findMany(COUPON_UID, {
+              filters: {}
+            });
+            if (availableCoupons && Array.isArray(availableCoupons)) {
+              const codes = availableCoupons.slice(0, 20).map((c) => `"${c.code || "N/A"}"`).join(", ");
+              strapi2.log.error(`[webbycommerce] Available coupons (${availableCoupons.length}): ${codes}`);
+            } else {
+              strapi2.log.error(`[webbycommerce] No coupons found in database or query returned invalid format`);
+            }
+          } catch (debugError) {
+            strapi2.log.error(`[webbycommerce] Error fetching coupons for debug:`, debugError.message, debugError.stack);
+          }
+          const err = new Error("Invalid coupon code");
+          err.status = 400;
+          throw err;
+        }
+        strapi2.log.info(`[webbycommerce] Found coupon: "${coupon.code}" (ID: ${coupon.id}, Active: ${coupon.is_active})`);
+        if (coupon.is_active === false) {
+          const err = new Error("This coupon is not active");
+          err.status = 400;
+          throw err;
+        }
+        if (coupon.expires_at) {
+          const now = /* @__PURE__ */ new Date();
+          const expiresAt = new Date(coupon.expires_at);
+          if (expiresAt < now) {
+            const err = new Error("This coupon has expired");
+            err.status = 400;
+            throw err;
+          }
+        }
+        if (coupon.usage_limit !== null && coupon.usage_limit !== void 0) {
+          const usedCount = coupon.used_count || 0;
+          if (usedCount >= coupon.usage_limit) {
+            const err = new Error("This coupon has reached its usage limit");
+            err.status = 400;
+            throw err;
+          }
+        }
+        const items = await this.getCartItems({ cartId });
+        const subtotal = items.reduce((sum, it) => sum + (Number(it.total_price) || 0), 0);
+        if (coupon.minimum_order_amount !== null && coupon.minimum_order_amount !== void 0) {
+          if (subtotal < Number(coupon.minimum_order_amount)) {
+            const err = new Error(
+              `Minimum order amount of ${coupon.minimum_order_amount} required for this coupon`
+            );
+            err.status = 400;
+            throw err;
+          }
+        }
+        await strapi2.db.query(CART_UID).update({
+          where: { id: cartId },
+          data: { coupon: coupon.id }
+        });
+        return coupon;
+      },
+      async removeCoupon({ cartId }) {
+        await strapi2.db.query(CART_UID).update({
+          where: { id: cartId },
+          data: { coupon: null }
+        });
+        return true;
       }
     }));
   }
@@ -10100,24 +10686,28 @@ var require_wishlist3 = __commonJS({
     module2.exports = createCoreService("plugin::webbycommerce.wishlist", ({ strapi: strapi2 }) => ({
       async findUserWishlist(userId) {
         try {
-          const wishlist = await strapi2.entityService.findMany("plugin::webbycommerce.wishlist", {
-            filters: {
-              // userId is stored as a string in this content-type; normalize to string for reliable matching
+          const wishlists = await strapi2.db.query("plugin::webbycommerce.wishlist").findMany({
+            where: {
               userId: String(userId)
             },
+            orderBy: { createdAt: "desc" },
             populate: {
               products: {
                 populate: {
                   images: true,
                   product_categories: true,
                   tags: true,
-                  variations: true
+                  variations: {
+                    populate: {
+                      attributes: true,
+                      attributeValues: true
+                    }
+                  }
                 }
               }
-            },
-            sort: { createdAt: "desc" }
+            }
           });
-          return wishlist.length > 0 ? wishlist[0] : null;
+          return wishlists.length > 0 ? wishlists[0] : null;
         } catch (error) {
           throw new Error(`Failed to find user wishlist: ${error.message}`);
         }
@@ -10132,10 +10722,10 @@ var require_wishlist3 = __commonJS({
             name: data.name || null,
             description: data.description || null
           };
-          const wishlist = await strapi2.entityService.create("plugin::webbycommerce.wishlist", {
+          await strapi2.entityService.create("plugin::webbycommerce.wishlist", {
             data: wishlistData
           });
-          return wishlist;
+          return await this.findUserWishlist(userId);
         } catch (error) {
           throw new Error(`Failed to create user wishlist: ${error.message}`);
         }
@@ -10149,7 +10739,10 @@ var require_wishlist3 = __commonJS({
           if (!wishlist.products) {
             wishlist.products = [];
           }
-          const productExists = wishlist.products.some((product2) => product2.id === parseInt(productId));
+          const productExists = wishlist.products.some((product2) => {
+            const productIdValue = typeof product2 === "object" && product2 !== null ? product2.id : product2;
+            return productIdValue === parseInt(productId);
+          });
           if (productExists) {
             throw new Error("Product already exists in wishlist");
           }
@@ -10160,12 +10753,15 @@ var require_wishlist3 = __commonJS({
           if (!product) {
             throw new Error("Product not found");
           }
-          const updatedWishlist = await strapi2.entityService.update("plugin::webbycommerce.wishlist", wishlist.id, {
+          const existingProductIds = wishlist.products.map((p) => {
+            return typeof p === "object" && p !== null ? p.id : p;
+          }).filter((id) => id != null);
+          await strapi2.entityService.update("plugin::webbycommerce.wishlist", wishlist.id, {
             data: {
-              products: [...wishlist.products.map((p) => p.id), productId]
+              products: { set: [...existingProductIds, parseInt(productId, 10)].map((id) => ({ id })) }
             }
           });
-          return updatedWishlist;
+          return await this.findUserWishlist(userId);
         } catch (error) {
           throw new Error(`Failed to add product to wishlist: ${error.message}`);
         }
@@ -10179,13 +10775,18 @@ var require_wishlist3 = __commonJS({
           if (!wishlist.products) {
             wishlist.products = [];
           }
-          const updatedProducts = wishlist.products.filter((product) => product.id !== parseInt(productId)).map((product) => product.id);
-          const updatedWishlist = await strapi2.entityService.update("plugin::webbycommerce.wishlist", wishlist.id, {
+          const updatedProducts = wishlist.products.filter((product) => {
+            const productIdValue = typeof product === "object" && product !== null ? product.id : product;
+            return productIdValue !== parseInt(productId);
+          }).map((product) => {
+            return typeof product === "object" && product !== null ? product.id : product;
+          });
+          await strapi2.entityService.update("plugin::webbycommerce.wishlist", wishlist.id, {
             data: {
-              products: updatedProducts
+              products: { set: updatedProducts.map((id) => ({ id })) }
             }
           });
-          return updatedWishlist;
+          return await this.findUserWishlist(userId);
         } catch (error) {
           throw new Error(`Failed to remove product from wishlist: ${error.message}`);
         }
@@ -10196,12 +10797,12 @@ var require_wishlist3 = __commonJS({
           if (!wishlist) {
             throw new Error("Wishlist not found");
           }
-          const updatedWishlist = await strapi2.entityService.update("plugin::webbycommerce.wishlist", wishlist.id, {
+          await strapi2.entityService.update("plugin::webbycommerce.wishlist", wishlist.id, {
             data: {
-              products: []
+              products: { set: [] }
             }
           });
-          return updatedWishlist;
+          return await this.findUserWishlist(userId);
         } catch (error) {
           throw new Error(`Failed to clear wishlist: ${error.message}`);
         }
@@ -10212,14 +10813,14 @@ var require_wishlist3 = __commonJS({
           if (!wishlist) {
             throw new Error("Wishlist not found");
           }
-          const updatedWishlist = await strapi2.entityService.update("plugin::webbycommerce.wishlist", wishlist.id, {
+          await strapi2.entityService.update("plugin::webbycommerce.wishlist", wishlist.id, {
             data: {
               name: data.name !== void 0 ? data.name : wishlist.name,
               description: data.description !== void 0 ? data.description : wishlist.description,
               isPublic: data.isPublic !== void 0 ? data.isPublic : wishlist.isPublic
             }
           });
-          return updatedWishlist;
+          return await this.findUserWishlist(userId);
         } catch (error) {
           throw new Error(`Failed to update wishlist: ${error.message}`);
         }

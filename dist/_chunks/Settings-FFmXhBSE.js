@@ -4,7 +4,7 @@ const jsxRuntime = require("react/jsx-runtime");
 const React = require("react");
 const reactIntl = require("react-intl");
 const designSystem = require("@strapi/design-system");
-const index = require("./index--HTNSWo0.js");
+const index = require("./index-DaVBMS-M.js");
 const icons = require("@strapi/icons");
 require("react-dom/client");
 const ReactDOM = require("react-dom");

@@ -46,7 +46,39 @@ module.exports = ({ env }) => ({
 });
 ```
 
+
 ## ⚙️ Initial Setup
+
+### 0. (Optional) Seed Demo Data
+
+You can populate your store with sample products/categories/etc using any of the following options:
+
+#### Option A: Run the setup and answer `y`
+
+```bash
+npx strapi-ecommerce-setup
+```
+
+When prompted **"Would you like to seed example data? (y/n):"**, answer **`y`**.
+
+#### Option B: Seed from Strapi Admin (works even if you answered `n`)
+
+- Go to **Strapi Admin → Settings → Advanced Ecommerce**
+- Click **"Seed Demo Data"**
+
+#### Option C: Seed via `.env` flag (programmatic / CI-friendly)
+
+Add this to your Strapi project’s `.env` and then start Strapi:
+
+```bash
+STRAPI_PLUGIN_ADVANCED_ECOMMERCE_SEED_DATA=true
+```
+
+```bash
+npm run develop
+```
+
+After the demo data is seeded once, set it back to `false` (or remove it) to avoid reseeding on every startup.
 
 ### 1. Enable Permissions
 
