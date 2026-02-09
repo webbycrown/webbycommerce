@@ -1350,6 +1350,153 @@ var require_check_ecommerce_permission = __commonJS({
   }
 });
 
+// server/src/utils/extend-user-schema.js
+var require_extend_user_schema = __commonJS({
+  "server/src/utils/extend-user-schema.js"(exports2, module2) {
+    "use strict";
+    async function extendUserSchemaWithOtpFields(strapi2) {
+      try {
+        const db = strapi2.db;
+        const client = db.config.connection.client;
+        const tableName = "up_users";
+        let fieldsExist = false;
+        try {
+          const contentType = strapi2.contentTypes["plugin::users-permissions.user"];
+          if (contentType && contentType.attributes) {
+            fieldsExist = "otp" in contentType.attributes && "isOtpVerified" in contentType.attributes;
+          }
+        } catch (err) {
+          try {
+            await db.query("plugin::users-permissions.user").findOne({
+              select: ["id", "otp", "isOtpVerified"],
+              limit: 1
+            });
+            fieldsExist = true;
+          } catch (queryErr) {
+            fieldsExist = false;
+          }
+        }
+        if (fieldsExist) {
+          strapi2.log.info("[webbycommerce] OTP fields already exist in user schema");
+          return true;
+        }
+        strapi2.log.info("[webbycommerce] OTP fields not found, adding them to user schema...");
+        const connection = db.connection;
+        const knex = connection;
+        let otpAdded = false;
+        let isOtpVerifiedAdded = false;
+        if (client === "sqlite" || client === "sqlite3") {
+          const tableInfo = await knex.raw(`PRAGMA table_info(${tableName})`);
+          const columns = tableInfo.map((col) => col.name);
+          if (!columns.includes("otp")) {
+            await knex.schema.alterTable(tableName, (table) => {
+              table.integer("otp").nullable();
+            });
+            otpAdded = true;
+            strapi2.log.info('[webbycommerce] Added "otp" column to user table');
+          }
+          if (!columns.includes("is_otp_verified")) {
+            await knex.schema.alterTable(tableName, (table) => {
+              table.boolean("is_otp_verified").defaultTo(false);
+            });
+            isOtpVerifiedAdded = true;
+            strapi2.log.info('[webbycommerce] Added "is_otp_verified" column to user table');
+          }
+        } else if (client === "postgres") {
+          const otpExists = await knex.raw(`
+        SELECT column_name 
+        FROM information_schema.columns 
+        WHERE table_name='${tableName}' AND column_name='otp'
+      `);
+          if (otpExists.rows.length === 0) {
+            await knex.raw(`ALTER TABLE ${tableName} ADD COLUMN otp INTEGER`);
+            otpAdded = true;
+            strapi2.log.info('[webbycommerce] Added "otp" column to user table');
+          }
+          const isOtpVerifiedExists = await knex.raw(`
+        SELECT column_name 
+        FROM information_schema.columns 
+        WHERE table_name='${tableName}' AND column_name='is_otp_verified'
+      `);
+          if (isOtpVerifiedExists.rows.length === 0) {
+            await knex.raw(`ALTER TABLE ${tableName} ADD COLUMN is_otp_verified BOOLEAN DEFAULT false`);
+            isOtpVerifiedAdded = true;
+            strapi2.log.info('[webbycommerce] Added "is_otp_verified" column to user table');
+          }
+        } else if (client === "mysql" || client === "mysql2") {
+          const otpExists = await knex.raw(`
+        SELECT COLUMN_NAME 
+        FROM INFORMATION_SCHEMA.COLUMNS 
+        WHERE TABLE_SCHEMA = DATABASE() 
+        AND TABLE_NAME = '${tableName}' 
+        AND COLUMN_NAME = 'otp'
+      `);
+          if (otpExists[0].length === 0) {
+            await knex.raw(`ALTER TABLE \`${tableName}\` ADD COLUMN \`otp\` INT NULL`);
+            otpAdded = true;
+            strapi2.log.info('[webbycommerce] Added "otp" column to user table');
+          }
+          const isOtpVerifiedExists = await knex.raw(`
+        SELECT COLUMN_NAME 
+        FROM INFORMATION_SCHEMA.COLUMNS 
+        WHERE TABLE_SCHEMA = DATABASE() 
+        AND TABLE_NAME = '${tableName}' 
+        AND COLUMN_NAME = 'is_otp_verified'
+      `);
+          if (isOtpVerifiedExists[0].length === 0) {
+            await knex.raw(`ALTER TABLE \`${tableName}\` ADD COLUMN \`is_otp_verified\` BOOLEAN DEFAULT false`);
+            isOtpVerifiedAdded = true;
+            strapi2.log.info('[webbycommerce] Added "is_otp_verified" column to user table');
+          }
+        } else {
+          strapi2.log.warn(
+            `[webbycommerce] Database client "${client}" not supported for automatic schema extension. Please manually add OTP fields to user schema.`
+          );
+          return false;
+        }
+        try {
+          const contentType = strapi2.contentTypes["plugin::users-permissions.user"];
+          if (contentType && contentType.attributes) {
+            if (otpAdded || !("otp" in contentType.attributes)) {
+              contentType.attributes.otp = {
+                type: "integer",
+                required: false,
+                private: true
+              };
+              strapi2.log.info('[webbycommerce] Registered "otp" field in Strapi content-type');
+            }
+            if (isOtpVerifiedAdded || !("isOtpVerified" in contentType.attributes)) {
+              contentType.attributes.isOtpVerified = {
+                type: "boolean",
+                default: false,
+                required: false,
+                private: true
+              };
+              strapi2.log.info('[webbycommerce] Registered "isOtpVerified" field in Strapi content-type');
+            }
+          }
+        } catch (schemaError) {
+          strapi2.log.warn("[webbycommerce] Could not register fields in content-type schema:", schemaError.message);
+          strapi2.log.warn("[webbycommerce] Database columns were added, but schema registration failed.");
+          strapi2.log.warn(
+            "[webbycommerce] You may need to restart Strapi or create a schema extension file in your main Strapi project."
+          );
+        }
+        strapi2.log.info("[webbycommerce] User schema extension completed successfully");
+        return true;
+      } catch (error) {
+        strapi2.log.error("[webbycommerce] Failed to extend user schema with OTP fields:", error);
+        strapi2.log.error("[webbycommerce] Error details:", error.message);
+        strapi2.log.error(
+          "[webbycommerce] Please manually extend the user schema by creating a schema extension file in your Strapi project."
+        );
+        return false;
+      }
+    }
+    module2.exports = { extendUserSchemaWithOtpFields };
+  }
+});
+
 // server/src/content-types/address/schema.json
 var require_schema = __commonJS({
   "server/src/content-types/address/schema.json"(exports2, module2) {
@@ -2945,10 +3092,19 @@ var require_bootstrap = __commonJS({
   "server/src/bootstrap.js"(exports2, module2) {
     "use strict";
     var { registerEcommerceActions, ensureEcommercePermission } = require_check_ecommerce_permission();
+    var { extendUserSchemaWithOtpFields } = require_extend_user_schema();
     module2.exports = async ({ strapi: strapi2 }) => {
       try {
         strapi2.log.info("[webbycommerce] ========================================");
         strapi2.log.info("[webbycommerce] Bootstrapping plugin...");
+        try {
+          await extendUserSchemaWithOtpFields(strapi2);
+        } catch (schemaError) {
+          strapi2.log.warn("[webbycommerce] Could not automatically extend user schema:", schemaError.message);
+          strapi2.log.warn(
+            "[webbycommerce] Please manually extend the user schema. See README for instructions."
+          );
+        }
         const disableSeeding = process.env.STRAPI_PLUGIN_ADVANCED_ECOMMERCE_DISABLE_SEED_DEMO === "true" || process.env.STRAPI_PLUGIN_ADVANCED_ECOMMERCE_DISABLE_SEED_DEMO === "1" || process.env.STRAPI_PLUGIN_ADVANCED_ECOMMERCE_DISABLE_SEED_DEMO === "yes";
         if (!disableSeeding && process.env.STRAPI_PLUGIN_ADVANCED_ECOMMERCE_SEED_DATA === "true") {
           try {
@@ -4908,17 +5064,61 @@ var require_auth = __commonJS({
           const otp = Math.floor(1e5 + Math.random() * 9e5);
           const otpDigits = otp.toString().split("");
           try {
-            await strapi.db.query("plugin::users-permissions.user").update({
-              where: { id: user.id },
-              data: { otp, isOtpVerified: false }
-            });
+            const db = strapi.db;
+            const knex = db.connection;
+            const tableName = "up_users";
+            const client = db.config.connection.client;
+            if (client === "postgres") {
+              await knex.raw(
+                `UPDATE ${tableName} SET otp = ?, is_otp_verified = ? WHERE id = ?`,
+                [otp, false, user.id]
+              );
+            } else if (client === "mysql" || client === "mysql2") {
+              await knex.raw(
+                `UPDATE \`${tableName}\` SET \`otp\` = ?, \`is_otp_verified\` = ? WHERE \`id\` = ?`,
+                [otp, false, user.id]
+              );
+            } else {
+              await knex.raw(
+                `UPDATE ${tableName} SET otp = ?, is_otp_verified = ? WHERE id = ?`,
+                [otp, false, user.id]
+              );
+            }
           } catch (err) {
             strapi.log.warn(
-              `[${PLUGIN_ID}] OTP fields not found in user schema. Please extend the user schema to include 'otp' and 'isOtpVerified' fields.`
+              `[${PLUGIN_ID}] OTP fields not found in database. Attempting to add them...`
             );
-            throw new Error(
-              "OTP fields are not available in the user schema. Please extend the user schema as described in the plugin README."
-            );
+            try {
+              const { extendUserSchemaWithOtpFields } = require_extend_user_schema();
+              await extendUserSchemaWithOtpFields(strapi);
+              const db = strapi.db;
+              const knex = db.connection;
+              const tableName = "up_users";
+              const client = db.config.connection.client;
+              if (client === "postgres") {
+                await knex.raw(
+                  `UPDATE ${tableName} SET otp = ?, is_otp_verified = ? WHERE id = ?`,
+                  [otp, false, user.id]
+                );
+              } else if (client === "mysql" || client === "mysql2") {
+                await knex.raw(
+                  `UPDATE \`${tableName}\` SET \`otp\` = ?, \`is_otp_verified\` = ? WHERE \`id\` = ?`,
+                  [otp, false, user.id]
+                );
+              } else {
+                await knex.raw(
+                  `UPDATE ${tableName} SET otp = ?, is_otp_verified = ? WHERE id = ?`,
+                  [otp, false, user.id]
+                );
+              }
+            } catch (retryErr) {
+              strapi.log.error(
+                `[${PLUGIN_ID}] Failed to add OTP fields: ${retryErr.message}`
+              );
+              throw new Error(
+                "OTP fields are not available in the user schema. Please extend the user schema as described in the plugin README."
+              );
+            }
           }
           let emailSent = false;
           if (type === "email") {
@@ -5001,7 +5201,7 @@ var require_auth = __commonJS({
             try {
               await sendEmail({
                 to: email,
-                subject: "Your OTP Code - Strapi Advanced Ecommerce",
+                subject: "Your OTP Code - Strapi WebbyCommerce",
                 html: otpEmailHTML
               });
               emailSent = true;
@@ -5050,21 +5250,110 @@ var require_auth = __commonJS({
             where: { [type === "email" ? "email" : "phone_no"]: identifier }
           });
           if (!user) return ctx.badRequest("User not found.");
-          if (user.isOtpVerified === void 0 || user.otp === void 0) {
+          const db = strapi.db;
+          const knex = db.connection;
+          const tableName = "up_users";
+          const client = db.config.connection.client;
+          let userOtpData;
+          let columnsExist = false;
+          try {
+            if (client === "postgres") {
+              const result = await knex.raw(
+                `SELECT otp, is_otp_verified FROM ${tableName} WHERE id = ?`,
+                [user.id]
+              );
+              userOtpData = result.rows[0];
+              columnsExist = userOtpData && userOtpData.hasOwnProperty("otp") && userOtpData.hasOwnProperty("is_otp_verified");
+            } else if (client === "mysql" || client === "mysql2") {
+              const result = await knex.raw(
+                `SELECT \`otp\`, \`is_otp_verified\` FROM \`${tableName}\` WHERE \`id\` = ?`,
+                [user.id]
+              );
+              userOtpData = result[0][0];
+              columnsExist = userOtpData && userOtpData.hasOwnProperty("otp") && userOtpData.hasOwnProperty("is_otp_verified");
+            } else {
+              const result = await knex.raw(
+                `SELECT otp, is_otp_verified FROM ${tableName} WHERE id = ?`,
+                [user.id]
+              );
+              userOtpData = result[0];
+              columnsExist = userOtpData && userOtpData.hasOwnProperty("otp") && userOtpData.hasOwnProperty("is_otp_verified");
+            }
+          } catch (queryErr) {
+            strapi.log.warn(`[${PLUGIN_ID}] OTP columns not found, attempting to add them:`, queryErr.message);
+            columnsExist = false;
+          }
+          if (!columnsExist) {
+            const { extendUserSchemaWithOtpFields } = require_extend_user_schema();
+            const schemaExtended = await extendUserSchemaWithOtpFields(strapi);
+            if (!schemaExtended) {
+              return ctx.badRequest(
+                "OTP fields are not available in the user schema. Please extend the user schema as described in the plugin README."
+              );
+            }
+            await new Promise((resolve) => setTimeout(resolve, 200));
+            try {
+              if (client === "postgres") {
+                const result = await knex.raw(
+                  `SELECT otp, is_otp_verified FROM ${tableName} WHERE id = ?`,
+                  [user.id]
+                );
+                userOtpData = result.rows[0];
+                columnsExist = userOtpData && userOtpData.hasOwnProperty("otp") && userOtpData.hasOwnProperty("is_otp_verified");
+              } else if (client === "mysql" || client === "mysql2") {
+                const result = await knex.raw(
+                  `SELECT \`otp\`, \`is_otp_verified\` FROM \`${tableName}\` WHERE \`id\` = ?`,
+                  [user.id]
+                );
+                userOtpData = result[0][0];
+                columnsExist = userOtpData && userOtpData.hasOwnProperty("otp") && userOtpData.hasOwnProperty("is_otp_verified");
+              } else {
+                const result = await knex.raw(
+                  `SELECT otp, is_otp_verified FROM ${tableName} WHERE id = ?`,
+                  [user.id]
+                );
+                userOtpData = result[0];
+                columnsExist = userOtpData && userOtpData.hasOwnProperty("otp") && userOtpData.hasOwnProperty("is_otp_verified");
+              }
+              if (!columnsExist) {
+                return ctx.badRequest(
+                  "OTP fields were added but could not be queried. Please restart Strapi."
+                );
+              }
+            } catch (retryErr) {
+              strapi.log.error(`[${PLUGIN_ID}] Failed to query OTP fields after extension:`, retryErr);
+              return ctx.badRequest(
+                "OTP fields are not available. Please restart Strapi after extending the user schema."
+              );
+            }
+          }
+          const userOtp = userOtpData?.otp;
+          const isOtpVerified = userOtpData?.is_otp_verified;
+          if (isOtpVerified) return ctx.badRequest("User already verified.");
+          if (userOtp !== parseInt(otp, 10)) return ctx.badRequest("Invalid OTP.");
+          try {
+            if (client === "postgres") {
+              await knex.raw(
+                `UPDATE ${tableName} SET is_otp_verified = ?, confirmed = true, otp = NULL WHERE id = ?`,
+                [true, user.id]
+              );
+            } else if (client === "mysql" || client === "mysql2") {
+              await knex.raw(
+                `UPDATE \`${tableName}\` SET \`is_otp_verified\` = ?, \`confirmed\` = true, \`otp\` = NULL WHERE \`id\` = ?`,
+                [true, user.id]
+              );
+            } else {
+              await knex.raw(
+                `UPDATE ${tableName} SET is_otp_verified = ?, confirmed = 1, otp = NULL WHERE id = ?`,
+                [true, user.id]
+              );
+            }
+          } catch (dbErr) {
+            strapi.log.error(`[${PLUGIN_ID}] Database error during OTP verification:`, dbErr);
             return ctx.badRequest(
               "OTP fields are not available in the user schema. Please extend the user schema as described in the plugin README."
             );
           }
-          if (user.isOtpVerified) return ctx.badRequest("User already verified.");
-          if (user.otp !== parseInt(otp, 10)) return ctx.badRequest("Invalid OTP.");
-          await strapi.db.query("plugin::users-permissions.user").update({
-            where: { id: user.id },
-            data: {
-              isOtpVerified: true,
-              confirmed: true,
-              otp: null
-            }
-          });
           const jwt = strapi.plugins["users-permissions"].services.jwt.issue({
             id: user.id
           });

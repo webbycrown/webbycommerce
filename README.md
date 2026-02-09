@@ -109,7 +109,7 @@ Navigate to **Settings → WebbyCommerce** in the Strapi admin panel. You'll fin
 
 ### 3. User Schema Extension
 
-The plugin automatically extends the user schema with ecommerce-specific fields. Ensure your user schema includes:
+The plugin automatically extends the user schema with ecommerce-specific fields. The plugin will attempt to automatically add OTP fields to the user schema when it starts up.
 
 **Required Fields:**
 - `username` (string, required, unique)
@@ -122,11 +122,53 @@ The plugin automatically extends the user schema with ecommerce-specific fields.
 - `display_name` (string)
 - `company_name` (string)
 
-**OTP Fields (if using OTP authentication):**
-- `otp` (integer)
-- `isOtpVerified` (boolean, default: false)
+**OTP Fields (required if using OTP authentication):**
+- `otp` (integer, nullable) - Stores the OTP code
+- `isOtpVerified` (boolean, default: false) - Tracks if OTP has been verified
 
-The plugin includes a schema extension file at `src/extensions/users-permissions/content-types/user/schema.json` that adds these fields automatically.
+#### Automatic Schema Extension
+
+The plugin automatically adds OTP fields to the user schema on startup. If you see an error about OTP fields not being available, you may need to manually extend the schema.
+
+#### Manual Schema Extension (if automatic extension fails)
+
+If the automatic schema extension doesn't work, create a schema extension file in your main Strapi project:
+
+1. Create the directory structure:
+   ```
+   src/extensions/users-permissions/content-types/user/
+   ```
+
+2. Create `schema.json` in that directory with the following content:
+   ```json
+   {
+     "kind": "collectionType",
+     "collectionName": "up_users",
+     "info": {
+       "name": "user",
+       "description": "",
+       "singularName": "user",
+       "pluralName": "users"
+     },
+     "options": {},
+     "pluginOptions": {},
+     "attributes": {
+       "otp": {
+         "type": "integer",
+         "required": false,
+         "private": true
+       },
+       "isOtpVerified": {
+         "type": "boolean",
+         "default": false,
+         "required": false,
+         "private": true
+       }
+     }
+   }
+   ```
+
+3. Restart Strapi to apply the schema changes.
 
 ### 4. Address Content Type
 
