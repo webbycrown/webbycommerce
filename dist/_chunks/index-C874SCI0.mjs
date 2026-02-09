@@ -52,7 +52,7 @@ const index = {
           defaultMessage: "Configure"
         },
         to: `${PLUGIN_ID}`,
-        Component: () => import("./Settings-DpLvkyId.mjs")
+        Component: () => import("./Settings-BpQYq668.mjs")
       }
     );
   },

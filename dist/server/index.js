@@ -2255,7 +2255,14 @@ var require_schema6 = __commonJS({
         draftAndPublish: false,
         timestamps: true
       },
-      pluginOptions: {},
+      pluginOptions: {
+        "content-manager": {
+          visible: true
+        },
+        "content-api": {
+          visible: true
+        }
+      },
       attributes: {
         name: {
           type: "string",
@@ -2345,7 +2352,14 @@ var require_schema7 = __commonJS({
         draftAndPublish: false,
         timestamps: true
       },
-      pluginOptions: {},
+      pluginOptions: {
+        "content-manager": {
+          visible: true
+        },
+        "content-api": {
+          visible: true
+        }
+      },
       attributes: {
         value: {
           type: "string",
