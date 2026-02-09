@@ -580,7 +580,15 @@ Authorization: Bearer YOUR_JWT_TOKEN
 
 ## 📜 Changelog
 
-### [1.0.0] – Initial Stable Release
+## [1.0.1] – Patch Release
+
+### Changed
+- Updated README documentation
+
+### Fixed
+- Resolved reported bugs
+
+## [1.0.0] – Initial Stable Release
 
 🎉 First production-ready release of WebbyCommerce, a complete ecommerce backend plugin for Strapi CMS.
 
