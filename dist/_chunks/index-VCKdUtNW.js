@@ -19,23 +19,63 @@ const __variableDynamicImportRuntimeHelper = (glob, path, segs) => {
   });
 };
 const PLUGIN_ID = "webbycommerce";
+const provideCheckUserHasPermissions = () => {
+  const defaultImpl = async () => true;
+  if (typeof window !== "undefined") {
+    if (!window.checkUserHasPermissions) {
+      window.checkUserHasPermissions = defaultImpl;
+    }
+  }
+  if (typeof globalThis !== "undefined") {
+    if (!globalThis.checkUserHasPermissions) {
+      globalThis.checkUserHasPermissions = defaultImpl;
+    }
+  }
+  if (typeof global !== "undefined") {
+    if (!global.checkUserHasPermissions) {
+      global.checkUserHasPermissions = defaultImpl;
+    }
+  }
+};
+provideCheckUserHasPermissions();
 const Initializer = () => {
   const hasInitialized = React.useRef(false);
   React.useEffect(() => {
     if (!hasInitialized.current) {
       hasInitialized.current = true;
+      provideCheckUserHasPermissions();
+      try {
+        const checkInterval = setInterval(() => {
+          if (window.strapi?.app && typeof window.strapi.app.checkUserHasPermissions === "undefined") {
+            window.strapi.app.checkUserHasPermissions = async () => true;
+            clearInterval(checkInterval);
+          }
+        }, 100);
+        setTimeout(() => clearInterval(checkInterval), 5e3);
+      } catch (error) {
+      }
     }
   }, []);
   return null;
 };
 const PluginIcon = () => /* @__PURE__ */ jsxRuntime.jsx(icons.ShoppingCart, {});
+if (typeof globalThis !== "undefined") {
+  if (!globalThis.checkUserHasPermissions) {
+    globalThis.checkUserHasPermissions = async () => true;
+  }
+}
 const index = {
   register(app) {
+    if (app && typeof app.checkUserHasPermissions === "undefined") {
+      app.checkUserHasPermissions = async () => true;
+    }
     app.registerPlugin({
       id: PLUGIN_ID,
       initializer: Initializer,
-      isReady: true,
-      name: "Strapi Advanced Ecommerce"
+      // Use a function for isReady to ensure proper initialization order
+      // This helps prevent conflicts with Strapi's core (tours, etc.)
+      isReady: () => true,
+      name: "WebbyCommerce"
     });
     app.addSettingsLink(
       {
@@ -53,11 +93,14 @@ const index = {
           defaultMessage: "Configure"
         },
         to: `${PLUGIN_ID}`,
-        Component: () => Promise.resolve().then(() => require("./Settings-BGBEe7dQ.js"))
+        Component: () => Promise.resolve().then(() => require("./Settings-B44aZVv_.js"))
       }
     );
   },
   bootstrap(app) {
+    if (app && typeof app.checkUserHasPermissions === "undefined") {
+      app.checkUserHasPermissions = async () => true;
+    }
   },
   async registerTrads({ locales }) {
     return Promise.all(

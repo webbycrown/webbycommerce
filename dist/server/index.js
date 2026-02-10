@@ -1361,23 +1361,35 @@ var require_extend_user_schema = __commonJS({
         const tableName = "up_users";
         let fieldsExist = false;
         try {
-          const contentType = strapi2.contentTypes["plugin::users-permissions.user"];
-          if (contentType && contentType.attributes) {
-            fieldsExist = "otp" in contentType.attributes && "isOtpVerified" in contentType.attributes;
+          const connection2 = db.connection;
+          const knex2 = connection2;
+          if (client === "postgres") {
+            const result = await knex2.raw(`
+          SELECT column_name 
+          FROM information_schema.columns 
+          WHERE table_name='${tableName}' 
+          AND (column_name='otp' OR column_name='is_otp_verified')
+        `);
+            fieldsExist = result.rows.length >= 2;
+          } else if (client === "mysql" || client === "mysql2") {
+            const result = await knex2.raw(`
+          SELECT COLUMN_NAME 
+          FROM INFORMATION_SCHEMA.COLUMNS 
+          WHERE TABLE_SCHEMA = DATABASE() 
+          AND TABLE_NAME = '${tableName}' 
+          AND (COLUMN_NAME = 'otp' OR COLUMN_NAME = 'is_otp_verified')
+        `);
+            fieldsExist = result[0].length >= 2;
+          } else {
+            const tableInfo = await knex2.raw(`PRAGMA table_info(${tableName})`);
+            const columns = tableInfo.map((col) => col.name);
+            fieldsExist = columns.includes("otp") && columns.includes("is_otp_verified");
           }
         } catch (err) {
-          try {
-            await db.query("plugin::users-permissions.user").findOne({
-              select: ["id", "otp", "isOtpVerified"],
-              limit: 1
-            });
-            fieldsExist = true;
-          } catch (queryErr) {
-            fieldsExist = false;
-          }
+          fieldsExist = false;
         }
         if (fieldsExist) {
-          strapi2.log.info("[webbycommerce] OTP fields already exist in user schema");
+          strapi2.log.info("[webbycommerce] OTP fields already exist in database");
           return true;
         }
         strapi2.log.info("[webbycommerce] OTP fields not found, adding them to user schema...");
@@ -1453,34 +1465,6 @@ var require_extend_user_schema = __commonJS({
             `[webbycommerce] Database client "${client}" not supported for automatic schema extension. Please manually add OTP fields to user schema.`
           );
           return false;
-        }
-        try {
-          const contentType = strapi2.contentTypes["plugin::users-permissions.user"];
-          if (contentType && contentType.attributes) {
-            if (otpAdded || !("otp" in contentType.attributes)) {
-              contentType.attributes.otp = {
-                type: "integer",
-                required: false,
-                private: true
-              };
-              strapi2.log.info('[webbycommerce] Registered "otp" field in Strapi content-type');
-            }
-            if (isOtpVerifiedAdded || !("isOtpVerified" in contentType.attributes)) {
-              contentType.attributes.isOtpVerified = {
-                type: "boolean",
-                default: false,
-                required: false,
-                private: true
-              };
-              strapi2.log.info('[webbycommerce] Registered "isOtpVerified" field in Strapi content-type');
-            }
-          }
-        } catch (schemaError) {
-          strapi2.log.warn("[webbycommerce] Could not register fields in content-type schema:", schemaError.message);
-          strapi2.log.warn("[webbycommerce] Database columns were added, but schema registration failed.");
-          strapi2.log.warn(
-            "[webbycommerce] You may need to restart Strapi or create a schema extension file in your main Strapi project."
-          );
         }
         strapi2.log.info("[webbycommerce] User schema extension completed successfully");
         return true;
@@ -3290,7 +3274,7 @@ var require_bootstrap = __commonJS({
                     }
                   }
                 } catch (error) {
-                  strapi2.log.error(`[webbycommerce] JWT verification failed:`, error.message);
+                  strapi2.log.debug(`[webbycommerce] JWT verification failed:`, error.message);
                 }
               }
             }
@@ -3336,7 +3320,7 @@ var require_bootstrap = __commonJS({
                     }
                   }
                 } catch (error) {
-                  strapi2.log.error(`[webbycommerce] JWT verification failed for address route:`, error.message);
+                  strapi2.log.debug(`[webbycommerce] JWT verification failed for address route:`, error.message);
                 }
               }
             }
@@ -3429,7 +3413,7 @@ var require_bootstrap = __commonJS({
                     }
                   }
                 } catch (error) {
-                  strapi2.log.error(`[webbycommerce] JWT verification failed for product route:`, error.message);
+                  strapi2.log.debug(`[webbycommerce] JWT verification failed for product route:`, error.message);
                 }
               }
             }
@@ -3559,7 +3543,7 @@ var require_bootstrap = __commonJS({
                     }
                   }
                 } catch (error) {
-                  strapi2.log.error(`[webbycommerce] JWT verification failed for cart route:`, error.message);
+                  strapi2.log.debug(`[webbycommerce] JWT verification failed for cart route:`, error.message);
                 }
               }
             }
@@ -3666,7 +3650,7 @@ var require_bootstrap = __commonJS({
                     }
                   }
                 } catch (error) {
-                  strapi2.log.error(`[webbycommerce] JWT verification failed for product-variant route:`, error.message);
+                  strapi2.log.debug(`[webbycommerce] JWT verification failed for product-variant route:`, error.message);
                 }
               }
             }
@@ -3749,7 +3733,7 @@ var require_bootstrap = __commonJS({
                     }
                   }
                 } catch (error) {
-                  strapi2.log.error(`[webbycommerce] JWT verification failed for product-attribute route:`, error.message);
+                  strapi2.log.debug(`[webbycommerce] JWT verification failed for product-attribute route:`, error.message);
                 }
               }
             }
@@ -3852,7 +3836,7 @@ var require_bootstrap = __commonJS({
                     }
                   }
                 } catch (error) {
-                  strapi2.log.error(`[webbycommerce] JWT verification failed for product-attribute-value route:`, error.message);
+                  strapi2.log.debug(`[webbycommerce] JWT verification failed for product-attribute-value route:`, error.message);
                 }
               }
             }
@@ -3957,7 +3941,7 @@ var require_bootstrap = __commonJS({
                     }
                   }
                 } catch (error) {
-                  strapi2.log.error(`[webbycommerce] JWT verification failed for wishlist route:`, error.message);
+                  strapi2.log.debug(`[webbycommerce] JWT verification failed for wishlist route:`, error.message);
                 }
               }
             }
@@ -4032,7 +4016,7 @@ var require_bootstrap = __commonJS({
                     }
                   }
                 } catch (error) {
-                  strapi2.log.error(`[webbycommerce] JWT verification failed for move-to-cart route:`, error.message);
+                  strapi2.log.debug(`[webbycommerce] JWT verification failed for move-to-cart route:`, error.message);
                 }
               }
             }
@@ -4104,7 +4088,7 @@ var require_bootstrap = __commonJS({
                     }
                   }
                 } catch (error) {
-                  strapi2.log.error(`[webbycommerce] JWT verification failed for compare route:`, error.message);
+                  strapi2.log.debug(`[webbycommerce] JWT verification failed for compare route:`, error.message);
                 }
               }
             }
@@ -4195,7 +4179,7 @@ var require_bootstrap = __commonJS({
                     }
                   }
                 } catch (error) {
-                  strapi2.log.error(`[webbycommerce] JWT verification failed for product-category route:`, error.message);
+                  strapi2.log.debug(`[webbycommerce] JWT verification failed for product-category route:`, error.message);
                 }
               }
             }
@@ -4278,7 +4262,7 @@ var require_bootstrap = __commonJS({
                     }
                   }
                 } catch (error) {
-                  strapi2.log.error(`[webbycommerce] JWT verification failed for tag route:`, error.message);
+                  strapi2.log.debug(`[webbycommerce] JWT verification failed for tag route:`, error.message);
                 }
               }
             }
@@ -4383,7 +4367,7 @@ var require_bootstrap = __commonJS({
                       }
                     }
                   } catch (error) {
-                    strapi2.log.error(`[webbycommerce] JWT verification failed for payment route:`, error.message);
+                    strapi2.log.debug(`[webbycommerce] JWT verification failed for payment route:`, error.message);
                   }
                 }
               }
@@ -4476,7 +4460,7 @@ var require_bootstrap = __commonJS({
                     }
                   }
                 } catch (error) {
-                  strapi2.log.error(`[webbycommerce] JWT verification failed for order route:`, error.message);
+                  strapi2.log.debug(`[webbycommerce] JWT verification failed for order route:`, error.message);
                 }
               }
             }
@@ -4627,7 +4611,7 @@ var require_bootstrap = __commonJS({
                       }
                     }
                   } catch (error) {
-                    strapi2.log.error(`[webbycommerce] JWT verification failed for shipping admin route:`, error.message);
+                    strapi2.log.debug(`[webbycommerce] JWT verification failed for shipping admin route:`, error.message);
                     ctx.forbidden("Authentication failed.");
                     return;
                   }
@@ -4656,7 +4640,7 @@ var require_bootstrap = __commonJS({
                       }
                     }
                   } catch (error) {
-                    strapi2.log.error(`[webbycommerce] JWT verification failed for shipping route:`, error.message);
+                    strapi2.log.debug(`[webbycommerce] JWT verification failed for shipping route:`, error.message);
                   }
                 }
               }

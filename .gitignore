@@ -1,7 +1,6 @@
 # Dependencies
 node_modules/
 
-
 # Builds and bundles
 build/
 .cache/

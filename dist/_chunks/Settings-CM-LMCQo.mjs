@@ -1,35 +1,14 @@
-"use strict";
-Object.defineProperty(exports, Symbol.toStringTag, { value: "Module" });
-const jsxRuntime = require("react/jsx-runtime");
-const React = require("react");
-const reactIntl = require("react-intl");
-const designSystem = require("@strapi/design-system");
-const index = require("./index-BV1MS2oC.js");
-const icons = require("@strapi/icons");
-require("react-dom/client");
-const ReactDOM = require("react-dom");
-require("@strapi/icons/symbols");
-const styled = require("styled-components");
-const _interopDefault = (e2) => e2 && e2.__esModule ? e2 : { default: e2 };
-function _interopNamespace(e2) {
-  if (e2 && e2.__esModule) return e2;
-  const n2 = Object.create(null, { [Symbol.toStringTag]: { value: "Module" } });
-  if (e2) {
-    for (const k2 in e2) {
-      if (k2 !== "default") {
-        const d2 = Object.getOwnPropertyDescriptor(e2, k2);
-        Object.defineProperty(n2, k2, d2.get ? d2 : {
-          enumerable: true,
-          get: () => e2[k2]
-        });
-      }
-    }
-  }
-  n2.default = e2;
-  return Object.freeze(n2);
-}
-const React__namespace = /* @__PURE__ */ _interopNamespace(React);
-const ReactDOM__default = /* @__PURE__ */ _interopDefault(ReactDOM);
+import { jsx, jsxs, Fragment } from "react/jsx-runtime";
+import * as React from "react";
+import React__default, { useContext, useRef, useCallback, useDebugValue, useMemo, useState, useEffect, useLayoutEffect, createContext as createContext$1, createElement, useReducer } from "react";
+import { useIntl, FormattedMessage } from "react-intl";
+import { Flex, Box, Popover, Typography, Button, LinkButton, Link as Link$1, Portal, Alert, Field, SubNav, Badge, TextInput, Pagination, PreviousLink, Dots, PageLink, NextLink, Modal, Main } from "@strapi/design-system";
+import { P as PLUGIN_ID } from "./index-Cgnv1DYN.mjs";
+import { WarningCircle, CaretDown, Trash } from "@strapi/icons";
+import "react-dom/client";
+import ReactDOM, { unstable_batchedUpdates as unstable_batchedUpdates$1 } from "react-dom";
+import "@strapi/icons/symbols";
+import { styled, createGlobalStyle } from "styled-components";
 var commonjsGlobal = typeof globalThis !== "undefined" ? globalThis : typeof window !== "undefined" ? window : typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : {};
 function getDefaultExportFromCjs(x2) {
   return x2 && x2.__esModule && Object.prototype.hasOwnProperty.call(x2, "default") ? x2["default"] : x2;
@@ -145,15 +124,15 @@ var assocIndexOf$3 = _assocIndexOf;
 var arrayProto = Array.prototype;
 var splice = arrayProto.splice;
 function listCacheDelete$1(key) {
-  var data = this.__data__, index2 = assocIndexOf$3(data, key);
-  if (index2 < 0) {
+  var data = this.__data__, index = assocIndexOf$3(data, key);
+  if (index < 0) {
     return false;
   }
   var lastIndex = data.length - 1;
-  if (index2 == lastIndex) {
+  if (index == lastIndex) {
     data.pop();
   } else {
-    splice.call(data, index2, 1);
+    splice.call(data, index, 1);
   }
   --this.size;
   return true;
@@ -161,8 +140,8 @@ function listCacheDelete$1(key) {
 var _listCacheDelete = listCacheDelete$1;
 var assocIndexOf$2 = _assocIndexOf;
 function listCacheGet$1(key) {
-  var data = this.__data__, index2 = assocIndexOf$2(data, key);
-  return index2 < 0 ? void 0 : data[index2][1];
+  var data = this.__data__, index = assocIndexOf$2(data, key);
+  return index < 0 ? void 0 : data[index][1];
 }
 var _listCacheGet = listCacheGet$1;
 var assocIndexOf$1 = _assocIndexOf;
@@ -172,22 +151,22 @@ function listCacheHas$1(key) {
 var _listCacheHas = listCacheHas$1;
 var assocIndexOf = _assocIndexOf;
 function listCacheSet$1(key, value) {
-  var data = this.__data__, index2 = assocIndexOf(data, key);
-  if (index2 < 0) {
+  var data = this.__data__, index = assocIndexOf(data, key);
+  if (index < 0) {
     ++this.size;
     data.push([key, value]);
   } else {
-    data[index2][1] = value;
+    data[index][1] = value;
   }
   return this;
 }
 var _listCacheSet = listCacheSet$1;
 var listCacheClear = _listCacheClear, listCacheDelete = _listCacheDelete, listCacheGet = _listCacheGet, listCacheHas = _listCacheHas, listCacheSet = _listCacheSet;
 function ListCache$4(entries) {
-  var index2 = -1, length = entries == null ? 0 : entries.length;
+  var index = -1, length = entries == null ? 0 : entries.length;
   this.clear();
-  while (++index2 < length) {
-    var entry = entries[index2];
+  while (++index < length) {
+    var entry = entries[index];
     this.set(entry[0], entry[1]);
   }
 }
@@ -322,10 +301,10 @@ function hashSet$1(key, value) {
 var _hashSet = hashSet$1;
 var hashClear = _hashClear, hashDelete = _hashDelete, hashGet = _hashGet, hashHas = _hashHas, hashSet = _hashSet;
 function Hash$1(entries) {
-  var index2 = -1, length = entries == null ? 0 : entries.length;
+  var index = -1, length = entries == null ? 0 : entries.length;
   this.clear();
-  while (++index2 < length) {
-    var entry = entries[index2];
+  while (++index < length) {
+    var entry = entries[index];
     this.set(entry[0], entry[1]);
   }
 }
@@ -383,10 +362,10 @@ function mapCacheSet$1(key, value) {
 var _mapCacheSet = mapCacheSet$1;
 var mapCacheClear = _mapCacheClear, mapCacheDelete = _mapCacheDelete, mapCacheGet = _mapCacheGet, mapCacheHas = _mapCacheHas, mapCacheSet = _mapCacheSet;
 function MapCache$3(entries) {
-  var index2 = -1, length = entries == null ? 0 : entries.length;
+  var index = -1, length = entries == null ? 0 : entries.length;
   this.clear();
-  while (++index2 < length) {
-    var entry = entries[index2];
+  while (++index < length) {
+    var entry = entries[index];
     this.set(entry[0], entry[1]);
   }
 }
@@ -458,9 +437,9 @@ function assignMergeValue$2(object2, key, value) {
 var _assignMergeValue = assignMergeValue$2;
 function createBaseFor$1(fromRight) {
   return function(object2, iteratee2, keysFunc) {
-    var index2 = -1, iterable = Object(object2), props = keysFunc(object2), length = props.length;
+    var index = -1, iterable = Object(object2), props = keysFunc(object2), length = props.length;
     while (length--) {
-      var key = props[fromRight ? length : ++index2];
+      var key = props[fromRight ? length : ++index];
       if (iteratee2(iterable[key], key, iterable) === false) {
         break;
       }
@@ -474,10 +453,10 @@ var baseFor$2 = createBaseFor();
 var _baseFor = baseFor$2;
 var _cloneBuffer = { exports: {} };
 _cloneBuffer.exports;
-(function(module2, exports$1) {
+(function(module, exports$1) {
   var root2 = _root;
   var freeExports = exports$1 && !exports$1.nodeType && exports$1;
-  var freeModule = freeExports && true && module2 && !module2.nodeType && module2;
+  var freeModule = freeExports && true && module && !module.nodeType && module;
   var moduleExports = freeModule && freeModule.exports === freeExports;
   var Buffer2 = moduleExports ? root2.Buffer : void 0, allocUnsafe = Buffer2 ? Buffer2.allocUnsafe : void 0;
   function cloneBuffer2(buffer, isDeep) {
@@ -488,7 +467,7 @@ _cloneBuffer.exports;
     buffer.copy(result);
     return result;
   }
-  module2.exports = cloneBuffer2;
+  module.exports = cloneBuffer2;
 })(_cloneBuffer, _cloneBuffer.exports);
 var _cloneBufferExports = _cloneBuffer.exports;
 var root$8 = _root;
@@ -508,10 +487,10 @@ function cloneTypedArray$2(typedArray, isDeep) {
 }
 var _cloneTypedArray = cloneTypedArray$2;
 function copyArray$4(source, array2) {
-  var index2 = -1, length = source.length;
+  var index = -1, length = source.length;
   array2 || (array2 = Array(length));
-  while (++index2 < length) {
-    array2[index2] = source[index2];
+  while (++index < length) {
+    array2[index] = source[index];
   }
   return array2;
 }
@@ -598,15 +577,15 @@ function stubFalse() {
 }
 var stubFalse_1 = stubFalse;
 isBuffer$6.exports;
-(function(module2, exports$1) {
+(function(module, exports$1) {
   var root2 = _root, stubFalse2 = stubFalse_1;
   var freeExports = exports$1 && !exports$1.nodeType && exports$1;
-  var freeModule = freeExports && true && module2 && !module2.nodeType && module2;
+  var freeModule = freeExports && true && module && !module.nodeType && module;
   var moduleExports = freeModule && freeModule.exports === freeExports;
   var Buffer2 = moduleExports ? root2.Buffer : void 0;
   var nativeIsBuffer = Buffer2 ? Buffer2.isBuffer : void 0;
   var isBuffer3 = nativeIsBuffer || stubFalse2;
-  module2.exports = isBuffer3;
+  module.exports = isBuffer3;
 })(isBuffer$6, isBuffer$6.exports);
 var isBufferExports = isBuffer$6.exports;
 var baseGetTag$4 = _baseGetTag, getPrototype$1 = _getPrototype, isObjectLike$7 = isObjectLike_1;
@@ -645,10 +624,10 @@ function baseUnary$3(func2) {
 var _baseUnary = baseUnary$3;
 var _nodeUtil = { exports: {} };
 _nodeUtil.exports;
-(function(module2, exports$1) {
+(function(module, exports$1) {
   var freeGlobal2 = _freeGlobal;
   var freeExports = exports$1 && !exports$1.nodeType && exports$1;
-  var freeModule = freeExports && true && module2 && !module2.nodeType && module2;
+  var freeModule = freeExports && true && module && !module.nodeType && module;
   var moduleExports = freeModule && freeModule.exports === freeExports;
   var freeProcess = moduleExports && freeGlobal2.process;
   var nodeUtil2 = function() {
@@ -661,7 +640,7 @@ _nodeUtil.exports;
     } catch (e2) {
     }
   }();
-  module2.exports = nodeUtil2;
+  module.exports = nodeUtil2;
 })(_nodeUtil, _nodeUtil.exports);
 var _nodeUtilExports = _nodeUtil.exports;
 var baseIsTypedArray = _baseIsTypedArray, baseUnary$2 = _baseUnary, nodeUtil$2 = _nodeUtilExports;
@@ -692,9 +671,9 @@ var assignValue$2 = _assignValue, baseAssignValue$2 = _baseAssignValue;
 function copyObject$6(source, props, object2, customizer) {
   var isNew = !object2;
   object2 || (object2 = {});
-  var index2 = -1, length = props.length;
-  while (++index2 < length) {
-    var key = props[index2];
+  var index = -1, length = props.length;
+  while (++index < length) {
+    var key = props[index];
     var newValue = customizer ? customizer(object2[key], source[key], key, object2, source) : void 0;
     if (newValue === void 0) {
       newValue = source[key];
@@ -709,9 +688,9 @@ function copyObject$6(source, props, object2, customizer) {
 }
 var _copyObject = copyObject$6;
 function baseTimes$1(n2, iteratee2) {
-  var index2 = -1, result = Array(n2);
-  while (++index2 < n2) {
-    result[index2] = iteratee2(index2);
+  var index = -1, result = Array(n2);
+  while (++index < n2) {
+    result[index] = iteratee2(index);
   }
   return result;
 }
@@ -864,14 +843,14 @@ var nativeMax$3 = Math.max;
 function overRest$2(func2, start, transform) {
   start = nativeMax$3(start === void 0 ? func2.length - 1 : start, 0);
   return function() {
-    var args = arguments, index2 = -1, length = nativeMax$3(args.length - start, 0), array2 = Array(length);
-    while (++index2 < length) {
-      array2[index2] = args[start + index2];
+    var args = arguments, index = -1, length = nativeMax$3(args.length - start, 0), array2 = Array(length);
+    while (++index < length) {
+      array2[index] = args[start + index];
     }
-    index2 = -1;
+    index = -1;
     var otherArgs = Array(start + 1);
-    while (++index2 < start) {
-      otherArgs[index2] = args[index2];
+    while (++index < start) {
+      otherArgs[index] = args[index];
     }
     otherArgs[start] = transform(array2);
     return apply$3(func2, this, otherArgs);
@@ -921,13 +900,13 @@ function baseRest$2(func2, start) {
 }
 var _baseRest = baseRest$2;
 var eq$1 = eq_1, isArrayLike$1 = isArrayLike_1, isIndex$3 = _isIndex, isObject$8 = isObject_1;
-function isIterateeCall$1(value, index2, object2) {
+function isIterateeCall$1(value, index, object2) {
   if (!isObject$8(object2)) {
     return false;
   }
-  var type2 = typeof index2;
-  if (type2 == "number" ? isArrayLike$1(object2) && isIndex$3(index2, object2.length) : type2 == "string" && index2 in object2) {
-    return eq$1(object2[index2], value);
+  var type2 = typeof index;
+  if (type2 == "number" ? isArrayLike$1(object2) && isIndex$3(index, object2.length) : type2 == "string" && index in object2) {
+    return eq$1(object2[index], value);
   }
   return false;
 }
@@ -935,17 +914,17 @@ var _isIterateeCall = isIterateeCall$1;
 var baseRest$1 = _baseRest, isIterateeCall = _isIterateeCall;
 function createAssigner$2(assigner) {
   return baseRest$1(function(object2, sources) {
-    var index2 = -1, length = sources.length, customizer = length > 1 ? sources[length - 1] : void 0, guard = length > 2 ? sources[2] : void 0;
+    var index = -1, length = sources.length, customizer = length > 1 ? sources[length - 1] : void 0, guard = length > 2 ? sources[2] : void 0;
     customizer = assigner.length > 3 && typeof customizer == "function" ? (length--, customizer) : void 0;
     if (guard && isIterateeCall(sources[0], sources[1], guard)) {
       customizer = length < 3 ? void 0 : customizer;
       length = 1;
     }
     object2 = Object(object2);
-    while (++index2 < length) {
-      var source = sources[index2];
+    while (++index < length) {
+      var source = sources[index];
       if (source) {
-        assigner(object2, source, index2, customizer);
+        assigner(object2, source, index, customizer);
       }
     }
     return object2;
@@ -1023,9 +1002,9 @@ var stringToPath$3 = memoizeCapped(function(string2) {
 });
 var _stringToPath = stringToPath$3;
 function arrayMap$3(array2, iteratee2) {
-  var index2 = -1, length = array2 == null ? 0 : array2.length, result = Array(length);
-  while (++index2 < length) {
-    result[index2] = iteratee2(array2[index2], index2, array2);
+  var index = -1, length = array2 == null ? 0 : array2.length, result = Array(length);
+  while (++index < length) {
+    result[index] = iteratee2(array2[index], index, array2);
   }
   return result;
 }
@@ -1071,11 +1050,11 @@ var _toKey = toKey$7;
 var castPath$5 = _castPath, toKey$6 = _toKey;
 function baseGet$4(object2, path) {
   path = castPath$5(path, object2);
-  var index2 = 0, length = path.length;
-  while (object2 != null && index2 < length) {
-    object2 = object2[toKey$6(path[index2++])];
+  var index = 0, length = path.length;
+  while (object2 != null && index < length) {
+    object2 = object2[toKey$6(path[index++])];
   }
-  return index2 && index2 == length ? object2 : void 0;
+  return index && index == length ? object2 : void 0;
 }
 var _baseGet = baseGet$4;
 var assignValue$1 = _assignValue, castPath$4 = _castPath, isIndex$2 = _isIndex, isObject$7 = isObject_1, toKey$5 = _toKey;
@@ -1084,17 +1063,17 @@ function baseSet$1(object2, path, value, customizer) {
     return object2;
   }
   path = castPath$4(path, object2);
-  var index2 = -1, length = path.length, lastIndex = length - 1, nested = object2;
-  while (nested != null && ++index2 < length) {
-    var key = toKey$5(path[index2]), newValue = value;
+  var index = -1, length = path.length, lastIndex = length - 1, nested = object2;
+  while (nested != null && ++index < length) {
+    var key = toKey$5(path[index]), newValue = value;
     if (key === "__proto__" || key === "constructor" || key === "prototype") {
       return object2;
     }
-    if (index2 != lastIndex) {
+    if (index != lastIndex) {
       var objValue = nested[key];
       newValue = customizer ? customizer(objValue, key, nested) : void 0;
       if (newValue === void 0) {
-        newValue = isObject$7(objValue) ? objValue : isIndex$2(path[index2 + 1]) ? [] : {};
+        newValue = isObject$7(objValue) ? objValue : isIndex$2(path[index + 1]) ? [] : {};
       }
     }
     assignValue$1(nested, key, newValue);
@@ -1105,9 +1084,9 @@ function baseSet$1(object2, path, value, customizer) {
 var _baseSet = baseSet$1;
 var baseGet$3 = _baseGet, baseSet = _baseSet, castPath$3 = _castPath;
 function basePickBy$1(object2, paths, predicate) {
-  var index2 = -1, length = paths.length, result = {};
-  while (++index2 < length) {
-    var path = paths[index2], value = baseGet$3(object2, path);
+  var index = -1, length = paths.length, result = {};
+  while (++index < length) {
+    var path = paths[index], value = baseGet$3(object2, path);
     if (predicate(value, path)) {
       baseSet(result, castPath$3(path, object2), value);
     }
@@ -1122,15 +1101,15 @@ var _baseHasIn = baseHasIn$1;
 var castPath$2 = _castPath, isArguments$1 = isArguments_1, isArray$b = isArray_1, isIndex$1 = _isIndex, isLength = isLength_1, toKey$4 = _toKey;
 function hasPath$2(object2, path, hasFunc) {
   path = castPath$2(path, object2);
-  var index2 = -1, length = path.length, result = false;
-  while (++index2 < length) {
-    var key = toKey$4(path[index2]);
+  var index = -1, length = path.length, result = false;
+  while (++index < length) {
+    var key = toKey$4(path[index]);
     if (!(result = object2 != null && hasFunc(object2, key))) {
       break;
     }
     object2 = object2[key];
   }
-  if (result || ++index2 != length) {
+  if (result || ++index != length) {
     return result;
   }
   length = object2 == null ? 0 : object2.length;
@@ -1150,9 +1129,9 @@ function basePick$1(object2, paths) {
 }
 var _basePick = basePick$1;
 function arrayPush$3(array2, values) {
-  var index2 = -1, length = values.length, offset = array2.length;
-  while (++index2 < length) {
-    array2[offset + index2] = values[index2];
+  var index = -1, length = values.length, offset = array2.length;
+  while (++index < length) {
+    array2[offset + index] = values[index];
   }
   return array2;
 }
@@ -1165,11 +1144,11 @@ function isFlattenable$1(value) {
 var _isFlattenable = isFlattenable$1;
 var arrayPush$2 = _arrayPush, isFlattenable = _isFlattenable;
 function baseFlatten$1(array2, depth, predicate, isStrict, result) {
-  var index2 = -1, length = array2.length;
+  var index = -1, length = array2.length;
   predicate || (predicate = isFlattenable);
   result || (result = []);
-  while (++index2 < length) {
-    var value = array2[index2];
+  while (++index < length) {
+    var value = array2[index];
     if (depth > 0 && predicate(value)) {
       if (depth > 1) {
         baseFlatten$1(value, depth - 1, predicate, isStrict, result);
@@ -1292,16 +1271,16 @@ function matchPath(pattern, pathname) {
   let matchedPathname = match[0];
   let pathnameBase = matchedPathname.replace(/(.)\/+$/, "$1");
   let captureGroups = match.slice(1);
-  let params = compiledParams.reduce((memo, _ref, index2) => {
+  let params = compiledParams.reduce((memo, _ref, index) => {
     let {
       paramName,
       isOptional
     } = _ref;
     if (paramName === "*") {
-      let splatValue = captureGroups[index2] || "";
+      let splatValue = captureGroups[index] || "";
       pathnameBase = matchedPathname.slice(0, matchedPathname.length - splatValue.length).replace(/(.)\/+$/, "$1");
     }
-    const value = captureGroups[index2];
+    const value = captureGroups[index];
     if (isOptional && !value) {
       memo[paramName] = void 0;
     } else {
@@ -1409,7 +1388,7 @@ function getInvalidPathError(char, field, dest, path) {
   return "Cannot include a '" + char + "' character in a manually specified " + ("`to." + field + "` field [" + JSON.stringify(path) + "].  Please separate it out to the ") + ("`to." + dest + "` field. Alternatively you may provide the full path as ") + 'a string in <Link to="..."> and the router will parse it for you.';
 }
 function getPathContributingMatches(matches2) {
-  return matches2.filter((match, index2) => index2 === 0 || match.route.path && match.route.path.length > 0);
+  return matches2.filter((match, index) => index === 0 || match.route.path && match.route.path.length > 0);
 }
 function getResolveToMatches(matches2, v7_relativeSplatPath) {
   let pathMatches = getPathContributingMatches(matches2);
@@ -1487,27 +1466,27 @@ function _extends$6() {
   };
   return _extends$6.apply(this, arguments);
 }
-const DataRouterContext = /* @__PURE__ */ React__namespace.createContext(null);
+const DataRouterContext = /* @__PURE__ */ React.createContext(null);
 if (process.env.NODE_ENV !== "production") {
   DataRouterContext.displayName = "DataRouter";
 }
-const DataRouterStateContext = /* @__PURE__ */ React__namespace.createContext(null);
+const DataRouterStateContext = /* @__PURE__ */ React.createContext(null);
 if (process.env.NODE_ENV !== "production") {
   DataRouterStateContext.displayName = "DataRouterState";
 }
-const AwaitContext = /* @__PURE__ */ React__namespace.createContext(null);
+const AwaitContext = /* @__PURE__ */ React.createContext(null);
 if (process.env.NODE_ENV !== "production") {
   AwaitContext.displayName = "Await";
 }
-const NavigationContext = /* @__PURE__ */ React__namespace.createContext(null);
+const NavigationContext = /* @__PURE__ */ React.createContext(null);
 if (process.env.NODE_ENV !== "production") {
   NavigationContext.displayName = "Navigation";
 }
-const LocationContext = /* @__PURE__ */ React__namespace.createContext(null);
+const LocationContext = /* @__PURE__ */ React.createContext(null);
 if (process.env.NODE_ENV !== "production") {
   LocationContext.displayName = "Location";
 }
-const RouteContext = /* @__PURE__ */ React__namespace.createContext({
+const RouteContext = /* @__PURE__ */ React.createContext({
   outlet: null,
   matches: [],
   isDataRoute: false
@@ -1515,7 +1494,7 @@ const RouteContext = /* @__PURE__ */ React__namespace.createContext({
 if (process.env.NODE_ENV !== "production") {
   RouteContext.displayName = "Route";
 }
-const RouteErrorContext = /* @__PURE__ */ React__namespace.createContext(null);
+const RouteErrorContext = /* @__PURE__ */ React.createContext(null);
 if (process.env.NODE_ENV !== "production") {
   RouteErrorContext.displayName = "RouteError";
 }
@@ -1532,7 +1511,7 @@ function useHref(to, _temp) {
   let {
     basename,
     navigator: navigator2
-  } = React__namespace.useContext(NavigationContext);
+  } = React.useContext(NavigationContext);
   let {
     hash,
     pathname,
@@ -1551,7 +1530,7 @@ function useHref(to, _temp) {
   });
 }
 function useInRouterContext() {
-  return React__namespace.useContext(LocationContext) != null;
+  return React.useContext(LocationContext) != null;
 }
 function useLocation() {
   !useInRouterContext() ? process.env.NODE_ENV !== "production" ? invariant(
@@ -1560,19 +1539,19 @@ function useLocation() {
     // router loaded. We can help them understand how to avoid that.
     "useLocation() may be used only in the context of a <Router> component."
   ) : invariant(false) : void 0;
-  return React__namespace.useContext(LocationContext).location;
+  return React.useContext(LocationContext).location;
 }
 const navigateEffectWarning = "You should call navigate() in a React.useEffect(), not when your component is first rendered.";
 function useIsomorphicLayoutEffect$1(cb) {
-  let isStatic = React__namespace.useContext(NavigationContext).static;
+  let isStatic = React.useContext(NavigationContext).static;
   if (!isStatic) {
-    React__namespace.useLayoutEffect(cb);
+    React.useLayoutEffect(cb);
   }
 }
 function useNavigate() {
   let {
     isDataRoute
-  } = React__namespace.useContext(RouteContext);
+  } = React.useContext(RouteContext);
   return isDataRoute ? useNavigateStable() : useNavigateUnstable();
 }
 function useNavigateUnstable() {
@@ -1582,24 +1561,24 @@ function useNavigateUnstable() {
     // router loaded. We can help them understand how to avoid that.
     "useNavigate() may be used only in the context of a <Router> component."
   ) : invariant(false) : void 0;
-  let dataRouterContext = React__namespace.useContext(DataRouterContext);
+  let dataRouterContext = React.useContext(DataRouterContext);
   let {
     basename,
     future,
     navigator: navigator2
-  } = React__namespace.useContext(NavigationContext);
+  } = React.useContext(NavigationContext);
   let {
     matches: matches2
-  } = React__namespace.useContext(RouteContext);
+  } = React.useContext(RouteContext);
   let {
     pathname: locationPathname
   } = useLocation();
   let routePathnamesJson = JSON.stringify(getResolveToMatches(matches2, future.v7_relativeSplatPath));
-  let activeRef = React__namespace.useRef(false);
+  let activeRef = React.useRef(false);
   useIsomorphicLayoutEffect$1(() => {
     activeRef.current = true;
   });
-  let navigate = React__namespace.useCallback(function(to, options) {
+  let navigate = React.useCallback(function(to, options) {
     if (options === void 0) {
       options = {};
     }
@@ -1620,7 +1599,7 @@ function useNavigateUnstable() {
 function useParams() {
   let {
     matches: matches2
-  } = React__namespace.useContext(RouteContext);
+  } = React.useContext(RouteContext);
   let routeMatch = matches2[matches2.length - 1];
   return routeMatch ? routeMatch.params : {};
 }
@@ -1630,15 +1609,15 @@ function useResolvedPath(to, _temp2) {
   } = _temp2 === void 0 ? {} : _temp2;
   let {
     future
-  } = React__namespace.useContext(NavigationContext);
+  } = React.useContext(NavigationContext);
   let {
     matches: matches2
-  } = React__namespace.useContext(RouteContext);
+  } = React.useContext(RouteContext);
   let {
     pathname: locationPathname
   } = useLocation();
   let routePathnamesJson = JSON.stringify(getResolveToMatches(matches2, future.v7_relativeSplatPath));
-  return React__namespace.useMemo(() => resolveTo(to, JSON.parse(routePathnamesJson), locationPathname, relative === "path"), [to, routePathnamesJson, locationPathname, relative]);
+  return React.useMemo(() => resolveTo(to, JSON.parse(routePathnamesJson), locationPathname, relative === "path"), [to, routePathnamesJson, locationPathname, relative]);
 }
 var DataRouterHook$1 = /* @__PURE__ */ function(DataRouterHook2) {
   DataRouterHook2["UseBlocker"] = "useBlocker";
@@ -1663,12 +1642,12 @@ function getDataRouterConsoleError$1(hookName) {
   return hookName + " must be used within a data router.  See https://reactrouter.com/v6/routers/picking-a-router.";
 }
 function useDataRouterContext$1(hookName) {
-  let ctx = React__namespace.useContext(DataRouterContext);
+  let ctx = React.useContext(DataRouterContext);
   !ctx ? process.env.NODE_ENV !== "production" ? invariant(false, getDataRouterConsoleError$1(hookName)) : invariant(false) : void 0;
   return ctx;
 }
 function useRouteContext(hookName) {
-  let route = React__namespace.useContext(RouteContext);
+  let route = React.useContext(RouteContext);
   !route ? process.env.NODE_ENV !== "production" ? invariant(false, getDataRouterConsoleError$1(hookName)) : invariant(false) : void 0;
   return route;
 }
@@ -1686,11 +1665,11 @@ function useNavigateStable() {
     router
   } = useDataRouterContext$1(DataRouterHook$1.UseNavigateStable);
   let id = useCurrentRouteId(DataRouterStateHook$1.UseNavigateStable);
-  let activeRef = React__namespace.useRef(false);
+  let activeRef = React.useRef(false);
   useIsomorphicLayoutEffect$1(() => {
     activeRef.current = true;
   });
-  let navigate = React__namespace.useCallback(function(to, options) {
+  let navigate = React.useCallback(function(to, options) {
     if (options === void 0) {
       options = {};
     }
@@ -1852,20 +1831,20 @@ try {
   window.__reactRouterVersion = REACT_ROUTER_VERSION;
 } catch (e2) {
 }
-const ViewTransitionContext = /* @__PURE__ */ React__namespace.createContext({
+const ViewTransitionContext = /* @__PURE__ */ React.createContext({
   isTransitioning: false
 });
 if (process.env.NODE_ENV !== "production") {
   ViewTransitionContext.displayName = "ViewTransition";
 }
-const FetchersContext = /* @__PURE__ */ React__namespace.createContext(/* @__PURE__ */ new Map());
+const FetchersContext = /* @__PURE__ */ React.createContext(/* @__PURE__ */ new Map());
 if (process.env.NODE_ENV !== "production") {
   FetchersContext.displayName = "Fetchers";
 }
 if (process.env.NODE_ENV !== "production") ;
 const isBrowser = typeof window !== "undefined" && typeof window.document !== "undefined" && typeof window.document.createElement !== "undefined";
 const ABSOLUTE_URL_REGEX = /^(?:[a-z][a-z0-9+.-]*:|\/\/)/i;
-const Link = /* @__PURE__ */ React__namespace.forwardRef(function LinkWithRef(_ref7, ref2) {
+const Link = /* @__PURE__ */ React.forwardRef(function LinkWithRef(_ref7, ref2) {
   let {
     onClick,
     relative,
@@ -1879,7 +1858,7 @@ const Link = /* @__PURE__ */ React__namespace.forwardRef(function LinkWithRef(_r
   } = _ref7, rest = _objectWithoutPropertiesLoose$1(_ref7, _excluded);
   let {
     basename
-  } = React__namespace.useContext(NavigationContext);
+  } = React.useContext(NavigationContext);
   let absoluteHref;
   let isExternal = false;
   if (typeof to === "string" && ABSOLUTE_URL_REGEX.test(to)) {
@@ -1918,7 +1897,7 @@ const Link = /* @__PURE__ */ React__namespace.forwardRef(function LinkWithRef(_r
   }
   return (
     // eslint-disable-next-line jsx-a11y/anchor-has-content
-    /* @__PURE__ */ React__namespace.createElement("a", _extends$5({}, rest, {
+    /* @__PURE__ */ React.createElement("a", _extends$5({}, rest, {
       href: absoluteHref || href,
       onClick: isExternal || reloadDocument ? onClick : handleClick,
       ref: ref2,
@@ -1929,7 +1908,7 @@ const Link = /* @__PURE__ */ React__namespace.forwardRef(function LinkWithRef(_r
 if (process.env.NODE_ENV !== "production") {
   Link.displayName = "Link";
 }
-const NavLink = /* @__PURE__ */ React__namespace.forwardRef(function NavLinkWithRef(_ref8, ref2) {
+const NavLink = /* @__PURE__ */ React.forwardRef(function NavLinkWithRef(_ref8, ref2) {
   let {
     "aria-current": ariaCurrentProp = "page",
     caseSensitive = false,
@@ -1944,11 +1923,11 @@ const NavLink = /* @__PURE__ */ React__namespace.forwardRef(function NavLinkWith
     relative: rest.relative
   });
   let location = useLocation();
-  let routerState = React__namespace.useContext(DataRouterStateContext);
+  let routerState = React.useContext(DataRouterStateContext);
   let {
     navigator: navigator2,
     basename
-  } = React__namespace.useContext(NavigationContext);
+  } = React.useContext(NavigationContext);
   let isTransitioning = routerState != null && // Conditional usage is OK here because the usage of a data router is static
   // eslint-disable-next-line react-hooks/rules-of-hooks
   useViewTransitionState(path) && viewTransition === true;
@@ -1979,7 +1958,7 @@ const NavLink = /* @__PURE__ */ React__namespace.forwardRef(function NavLinkWith
     className = [classNameProp, isActive ? "active" : null, isPending2 ? "pending" : null, isTransitioning ? "transitioning" : null].filter(Boolean).join(" ");
   }
   let style = typeof styleProp === "function" ? styleProp(renderProps) : styleProp;
-  return /* @__PURE__ */ React__namespace.createElement(Link, _extends$5({}, rest, {
+  return /* @__PURE__ */ React.createElement(Link, _extends$5({}, rest, {
     "aria-current": ariaCurrent,
     className,
     ref: ref2,
@@ -1991,7 +1970,7 @@ const NavLink = /* @__PURE__ */ React__namespace.forwardRef(function NavLinkWith
 if (process.env.NODE_ENV !== "production") {
   NavLink.displayName = "NavLink";
 }
-const Form = /* @__PURE__ */ React__namespace.forwardRef((_ref9, forwardedRef) => {
+const Form = /* @__PURE__ */ React.forwardRef((_ref9, forwardedRef) => {
   let {
     fetcherKey,
     navigate,
@@ -2027,7 +2006,7 @@ const Form = /* @__PURE__ */ React__namespace.forwardRef((_ref9, forwardedRef) =
       viewTransition
     });
   };
-  return /* @__PURE__ */ React__namespace.createElement("form", _extends$5({
+  return /* @__PURE__ */ React.createElement("form", _extends$5({
     ref: forwardedRef,
     method: formMethod,
     action: formAction,
@@ -2056,7 +2035,7 @@ function getDataRouterConsoleError(hookName) {
   return hookName + " must be used within a data router.  See https://reactrouter.com/v6/routers/picking-a-router.";
 }
 function useDataRouterContext(hookName) {
-  let ctx = React__namespace.useContext(DataRouterContext);
+  let ctx = React.useContext(DataRouterContext);
   !ctx ? process.env.NODE_ENV !== "production" ? invariant(false, getDataRouterConsoleError(hookName)) : invariant(false) : void 0;
   return ctx;
 }
@@ -2074,7 +2053,7 @@ function useLinkClickHandler(to, _temp) {
   let path = useResolvedPath(to, {
     relative
   });
-  return React__namespace.useCallback((event) => {
+  return React.useCallback((event) => {
     if (shouldProcessLinkClick(event, target)) {
       event.preventDefault();
       let replace2 = replaceProp !== void 0 ? replaceProp : createPath(location) === createPath(path);
@@ -2101,9 +2080,9 @@ function useSubmit() {
   } = useDataRouterContext(DataRouterHook.UseSubmit);
   let {
     basename
-  } = React__namespace.useContext(NavigationContext);
+  } = React.useContext(NavigationContext);
   let currentRouteId = useRouteId();
-  return React__namespace.useCallback(function(target, options) {
+  return React.useCallback(function(target, options) {
     if (options === void 0) {
       options = {};
     }
@@ -2147,8 +2126,8 @@ function useFormAction(action, _temp2) {
   } = _temp2 === void 0 ? {} : _temp2;
   let {
     basename
-  } = React__namespace.useContext(NavigationContext);
-  let routeContext = React__namespace.useContext(RouteContext);
+  } = React.useContext(NavigationContext);
+  let routeContext = React.useContext(RouteContext);
   !routeContext ? process.env.NODE_ENV !== "production" ? invariant(false, "useFormAction must be used inside a RouteContext") : invariant(false) : void 0;
   let [match] = routeContext.matches.slice(-1);
   let path = _extends$5({}, useResolvedPath(action ? action : ".", {
@@ -2179,7 +2158,7 @@ function useViewTransitionState(to, opts) {
   if (opts === void 0) {
     opts = {};
   }
-  let vtContext = React__namespace.useContext(ViewTransitionContext);
+  let vtContext = React.useContext(ViewTransitionContext);
   !(vtContext != null) ? process.env.NODE_ENV !== "production" ? invariant(false, "`useViewTransitionState` must be used within `react-router-dom`'s `RouterProvider`.  Did you accidentally import `RouterProvider` from `react-router`?") : invariant(false) : void 0;
   let {
     basename
@@ -2756,14 +2735,14 @@ var hasRequiredUseSyncExternalStoreShim_production;
 function requireUseSyncExternalStoreShim_production() {
   if (hasRequiredUseSyncExternalStoreShim_production) return useSyncExternalStoreShim_production;
   hasRequiredUseSyncExternalStoreShim_production = 1;
-  var React2 = React__namespace.default;
+  var React2 = React__default;
   function is2(x2, y2) {
     return x2 === y2 && (0 !== x2 || 1 / x2 === 1 / y2) || x2 !== x2 && y2 !== y2;
   }
-  var objectIs = "function" === typeof Object.is ? Object.is : is2, useState = React2.useState, useEffect = React2.useEffect, useLayoutEffect = React2.useLayoutEffect, useDebugValue = React2.useDebugValue;
+  var objectIs = "function" === typeof Object.is ? Object.is : is2, useState2 = React2.useState, useEffect2 = React2.useEffect, useLayoutEffect2 = React2.useLayoutEffect, useDebugValue2 = React2.useDebugValue;
   function useSyncExternalStore$2(subscribe, getSnapshot) {
-    var value = getSnapshot(), _useState = useState({ inst: { value, getSnapshot } }), inst = _useState[0].inst, forceUpdate = _useState[1];
-    useLayoutEffect(
+    var value = getSnapshot(), _useState = useState2({ inst: { value, getSnapshot } }), inst = _useState[0].inst, forceUpdate = _useState[1];
+    useLayoutEffect2(
       function() {
         inst.value = value;
         inst.getSnapshot = getSnapshot;
@@ -2771,7 +2750,7 @@ function requireUseSyncExternalStoreShim_production() {
       },
       [subscribe, value, getSnapshot]
     );
-    useEffect(
+    useEffect2(
       function() {
         checkIfSnapshotChanged(inst) && forceUpdate({ inst });
         return subscribe(function() {
@@ -2780,7 +2759,7 @@ function requireUseSyncExternalStoreShim_production() {
       },
       [subscribe]
     );
-    useDebugValue(value);
+    useDebugValue2(value);
     return value;
   }
   function checkIfSnapshotChanged(inst) {
@@ -2829,11 +2808,11 @@ function requireUseSyncExternalStoreShim_development() {
           "The result of getSnapshot should be cached to avoid an infinite loop"
         ), didWarnUncachedGetSnapshot = true);
       }
-      cachedValue = useState({
+      cachedValue = useState2({
         inst: { value, getSnapshot }
       });
       var inst = cachedValue[0].inst, forceUpdate = cachedValue[1];
-      useLayoutEffect(
+      useLayoutEffect2(
         function() {
           inst.value = value;
           inst.getSnapshot = getSnapshot;
@@ -2841,7 +2820,7 @@ function requireUseSyncExternalStoreShim_development() {
         },
         [subscribe, value, getSnapshot]
       );
-      useEffect(
+      useEffect2(
         function() {
           checkIfSnapshotChanged(inst) && forceUpdate({ inst });
           return subscribe(function() {
@@ -2850,7 +2829,7 @@ function requireUseSyncExternalStoreShim_development() {
         },
         [subscribe]
       );
-      useDebugValue(value);
+      useDebugValue2(value);
       return value;
     }
     function checkIfSnapshotChanged(inst) {
@@ -2867,7 +2846,7 @@ function requireUseSyncExternalStoreShim_development() {
       return getSnapshot();
     }
     "undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(Error());
-    var React2 = React__namespace.default, objectIs = "function" === typeof Object.is ? Object.is : is2, useState = React2.useState, useEffect = React2.useEffect, useLayoutEffect = React2.useLayoutEffect, useDebugValue = React2.useDebugValue, didWarnOld18Alpha = false, didWarnUncachedGetSnapshot = false, shim2 = "undefined" === typeof window || "undefined" === typeof window.document || "undefined" === typeof window.document.createElement ? useSyncExternalStore$1 : useSyncExternalStore$2;
+    var React2 = React__default, objectIs = "function" === typeof Object.is ? Object.is : is2, useState2 = React2.useState, useEffect2 = React2.useEffect, useLayoutEffect2 = React2.useLayoutEffect, useDebugValue2 = React2.useDebugValue, didWarnOld18Alpha = false, didWarnUncachedGetSnapshot = false, shim2 = "undefined" === typeof window || "undefined" === typeof window.document || "undefined" === typeof window.document.createElement ? useSyncExternalStore$1 : useSyncExternalStore$2;
     useSyncExternalStoreShim_development.useSyncExternalStore = void 0 !== React2.useSyncExternalStore ? React2.useSyncExternalStore : shim2;
     "undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop(Error());
   }();
@@ -2894,18 +2873,18 @@ var hasRequiredWithSelector_production;
 function requireWithSelector_production() {
   if (hasRequiredWithSelector_production) return withSelector_production;
   hasRequiredWithSelector_production = 1;
-  var React2 = React__namespace.default, shim2 = shimExports;
+  var React2 = React__default, shim2 = shimExports;
   function is2(x2, y2) {
     return x2 === y2 && (0 !== x2 || 1 / x2 === 1 / y2) || x2 !== x2 && y2 !== y2;
   }
-  var objectIs = "function" === typeof Object.is ? Object.is : is2, useSyncExternalStore = shim2.useSyncExternalStore, useRef = React2.useRef, useEffect = React2.useEffect, useMemo = React2.useMemo, useDebugValue = React2.useDebugValue;
+  var objectIs = "function" === typeof Object.is ? Object.is : is2, useSyncExternalStore = shim2.useSyncExternalStore, useRef2 = React2.useRef, useEffect2 = React2.useEffect, useMemo2 = React2.useMemo, useDebugValue2 = React2.useDebugValue;
   withSelector_production.useSyncExternalStoreWithSelector = function(subscribe, getSnapshot, getServerSnapshot, selector, isEqual) {
-    var instRef = useRef(null);
+    var instRef = useRef2(null);
     if (null === instRef.current) {
       var inst = { hasValue: false, value: null };
       instRef.current = inst;
     } else inst = instRef.current;
-    instRef = useMemo(
+    instRef = useMemo2(
       function() {
         function memoizedSelector(nextSnapshot) {
           if (!hasMemo) {
@@ -2940,14 +2919,14 @@ function requireWithSelector_production() {
       [getSnapshot, getServerSnapshot, selector, isEqual]
     );
     var value = useSyncExternalStore(subscribe, instRef[0], instRef[1]);
-    useEffect(
+    useEffect2(
       function() {
         inst.hasValue = true;
         inst.value = value;
       },
       [value]
     );
-    useDebugValue(value);
+    useDebugValue2(value);
     return value;
   };
   return withSelector_production;
@@ -2971,14 +2950,14 @@ function requireWithSelector_development() {
       return x2 === y2 && (0 !== x2 || 1 / x2 === 1 / y2) || x2 !== x2 && y2 !== y2;
     }
     "undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(Error());
-    var React2 = React__namespace.default, shim2 = shimExports, objectIs = "function" === typeof Object.is ? Object.is : is2, useSyncExternalStore = shim2.useSyncExternalStore, useRef = React2.useRef, useEffect = React2.useEffect, useMemo = React2.useMemo, useDebugValue = React2.useDebugValue;
+    var React2 = React__default, shim2 = shimExports, objectIs = "function" === typeof Object.is ? Object.is : is2, useSyncExternalStore = shim2.useSyncExternalStore, useRef2 = React2.useRef, useEffect2 = React2.useEffect, useMemo2 = React2.useMemo, useDebugValue2 = React2.useDebugValue;
     withSelector_development.useSyncExternalStoreWithSelector = function(subscribe, getSnapshot, getServerSnapshot, selector, isEqual) {
-      var instRef = useRef(null);
+      var instRef = useRef2(null);
       if (null === instRef.current) {
         var inst = { hasValue: false, value: null };
         instRef.current = inst;
       } else inst = instRef.current;
-      instRef = useMemo(
+      instRef = useMemo2(
         function() {
           function memoizedSelector(nextSnapshot) {
             if (!hasMemo) {
@@ -3014,14 +2993,14 @@ function requireWithSelector_development() {
         [getSnapshot, getServerSnapshot, selector, isEqual]
       );
       var value = useSyncExternalStore(subscribe, instRef[0], instRef[1]);
-      useEffect(
+      useEffect2(
         function() {
           inst.hasValue = true;
           inst.value = value;
         },
         [value]
       );
-      useDebugValue(value);
+      useDebugValue2(value);
       return value;
     };
     "undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop(Error());
@@ -3041,22 +3020,22 @@ const gT = typeof globalThis !== "undefined" ? globalThis : (
 );
 function getContext() {
   var _gT$ContextKey;
-  if (!React__namespace.createContext) return {};
+  if (!React.createContext) return {};
   const contextMap = (_gT$ContextKey = gT[ContextKey]) != null ? _gT$ContextKey : gT[ContextKey] = /* @__PURE__ */ new Map();
-  let realContext = contextMap.get(React__namespace.createContext);
+  let realContext = contextMap.get(React.createContext);
   if (!realContext) {
-    realContext = React__namespace.createContext(null);
+    realContext = React.createContext(null);
     if (process.env.NODE_ENV !== "production") {
       realContext.displayName = "ReactRedux";
     }
-    contextMap.set(React__namespace.createContext, realContext);
+    contextMap.set(React.createContext, realContext);
   }
   return realContext;
 }
 const ReactReduxContext = /* @__PURE__ */ getContext();
 function createReduxContextHook(context = ReactReduxContext) {
   return function useReduxContext2() {
-    const contextValue = React.useContext(context);
+    const contextValue = useContext(context);
     if (process.env.NODE_ENV !== "production" && !contextValue) {
       throw new Error("could not find react-redux context value; please ensure the component is wrapped in a <Provider>");
     }
@@ -3100,8 +3079,8 @@ function createSelectorHook(context = ReactReduxContext) {
       stabilityCheck: globalStabilityCheck,
       noopCheck: globalNoopCheck
     } = useReduxContext$1();
-    const firstRun = React.useRef(true);
-    const wrappedSelector = React.useCallback({
+    const firstRun = useRef(true);
+    const wrappedSelector = useCallback({
       [selector.name](state) {
         const selected = selector(state);
         if (process.env.NODE_ENV !== "production") {
@@ -3147,7 +3126,7 @@ function createSelectorHook(context = ReactReduxContext) {
       }
     }[selector.name], [selector, globalStabilityCheck, stabilityCheck]);
     const selectedState = useSyncExternalStoreWithSelector(subscription.addNestedSub, store.getState, getServerState || store.getState, wrappedSelector, equalityFn);
-    React.useDebugValue(selectedState);
+    useDebugValue(selectedState);
     return selectedState;
   };
 }
@@ -3342,10 +3321,10 @@ function requireReactIs_development$1() {
       var ContextProvider = REACT_PROVIDER_TYPE;
       var Element = REACT_ELEMENT_TYPE;
       var ForwardRef = REACT_FORWARD_REF_TYPE;
-      var Fragment = REACT_FRAGMENT_TYPE;
+      var Fragment2 = REACT_FRAGMENT_TYPE;
       var Lazy = REACT_LAZY_TYPE;
       var Memo = REACT_MEMO_TYPE;
-      var Portal = REACT_PORTAL_TYPE;
+      var Portal2 = REACT_PORTAL_TYPE;
       var Profiler = REACT_PROFILER_TYPE;
       var StrictMode = REACT_STRICT_MODE_TYPE;
       var Suspense = REACT_SUSPENSE_TYPE;
@@ -3401,10 +3380,10 @@ function requireReactIs_development$1() {
       reactIs_development$1.ContextProvider = ContextProvider;
       reactIs_development$1.Element = Element;
       reactIs_development$1.ForwardRef = ForwardRef;
-      reactIs_development$1.Fragment = Fragment;
+      reactIs_development$1.Fragment = Fragment2;
       reactIs_development$1.Lazy = Lazy;
       reactIs_development$1.Memo = Memo;
-      reactIs_development$1.Portal = Portal;
+      reactIs_development$1.Portal = Portal2;
       reactIs_development$1.Profiler = Profiler;
       reactIs_development$1.StrictMode = StrictMode;
       reactIs_development$1.Suspense = Suspense;
@@ -3652,10 +3631,10 @@ function requireReactIs_development() {
       var ContextProvider = REACT_PROVIDER_TYPE;
       var Element = REACT_ELEMENT_TYPE;
       var ForwardRef = REACT_FORWARD_REF_TYPE;
-      var Fragment = REACT_FRAGMENT_TYPE;
+      var Fragment2 = REACT_FRAGMENT_TYPE;
       var Lazy = REACT_LAZY_TYPE;
       var Memo = REACT_MEMO_TYPE;
-      var Portal = REACT_PORTAL_TYPE;
+      var Portal2 = REACT_PORTAL_TYPE;
       var Profiler = REACT_PROFILER_TYPE;
       var StrictMode = REACT_STRICT_MODE_TYPE;
       var Suspense = REACT_SUSPENSE_TYPE;
@@ -3720,10 +3699,10 @@ function requireReactIs_development() {
       reactIs_development.ContextProvider = ContextProvider;
       reactIs_development.Element = Element;
       reactIs_development.ForwardRef = ForwardRef;
-      reactIs_development.Fragment = Fragment;
+      reactIs_development.Fragment = Fragment2;
       reactIs_development.Lazy = Lazy;
       reactIs_development.Memo = Memo;
-      reactIs_development.Portal = Portal;
+      reactIs_development.Portal = Portal2;
       reactIs_development.Profiler = Profiler;
       reactIs_development.StrictMode = StrictMode;
       reactIs_development.Suspense = Suspense;
@@ -3818,8 +3797,8 @@ class Observer {
     this.subscribe = (subscriber) => {
       this.subscribers.push(subscriber);
       return () => {
-        const index2 = this.subscribers.indexOf(subscriber);
-        this.subscribers.splice(index2, 1);
+        const index = this.subscribers.indexOf(subscriber);
+        this.subscribers.splice(index, 1);
       };
     };
     this.publish = (data) => {
@@ -3952,7 +3931,7 @@ class Observer {
           "resolve",
           response
         ];
-        const isReactElementResponse = React__namespace.default.isValidElement(response);
+        const isReactElementResponse = React__default.isValidElement(response);
         if (isReactElementResponse) {
           shouldDismiss = false;
           this.create({
@@ -3964,7 +3943,7 @@ class Observer {
           shouldDismiss = false;
           const promiseData = typeof data.error === "function" ? await data.error(`HTTP error! status: ${response.status}`) : data.error;
           const description = typeof data.description === "function" ? await data.description(`HTTP error! status: ${response.status}`) : data.description;
-          const isExtendedResult = typeof promiseData === "object" && !React__namespace.default.isValidElement(promiseData);
+          const isExtendedResult = typeof promiseData === "object" && !React__default.isValidElement(promiseData);
           const toastSettings = isExtendedResult ? promiseData : {
             message: promiseData
           };
@@ -3978,7 +3957,7 @@ class Observer {
           shouldDismiss = false;
           const promiseData = typeof data.error === "function" ? await data.error(response) : data.error;
           const description = typeof data.description === "function" ? await data.description(response) : data.description;
-          const isExtendedResult = typeof promiseData === "object" && !React__namespace.default.isValidElement(promiseData);
+          const isExtendedResult = typeof promiseData === "object" && !React__default.isValidElement(promiseData);
           const toastSettings = isExtendedResult ? promiseData : {
             message: promiseData
           };
@@ -3992,7 +3971,7 @@ class Observer {
           shouldDismiss = false;
           const promiseData = typeof data.success === "function" ? await data.success(response) : data.success;
           const description = typeof data.description === "function" ? await data.description(response) : data.description;
-          const isExtendedResult = typeof promiseData === "object" && !React__namespace.default.isValidElement(promiseData);
+          const isExtendedResult = typeof promiseData === "object" && !React__default.isValidElement(promiseData);
           const toastSettings = isExtendedResult ? promiseData : {
             message: promiseData
           };
@@ -4012,7 +3991,7 @@ class Observer {
           shouldDismiss = false;
           const promiseData = typeof data.error === "function" ? await data.error(error) : data.error;
           const description = typeof data.description === "function" ? await data.description(error) : data.description;
-          const isExtendedResult = typeof promiseData === "object" && !React__namespace.default.isValidElement(promiseData);
+          const isExtendedResult = typeof promiseData === "object" && !React__default.isValidElement(promiseData);
           const toastSettings = isExtendedResult ? promiseData : {
             message: promiseData
           };
@@ -4041,10 +4020,10 @@ class Observer {
         });
       }
     };
-    this.custom = (jsx, data) => {
+    this.custom = (jsx2, data) => {
       const id = (data == null ? void 0 : data.id) || toastsCounter++;
       this.create({
-        jsx: jsx(id),
+        jsx: jsx2(id),
         id,
         ...data
       });
@@ -7265,14 +7244,14 @@ var __spreadProps = function(a2, b2) {
   return __defProps(a2, __getOwnPropDescs(b2));
 };
 function useStableQueryArgs(queryArgs, serialize, endpointDefinition, endpointName) {
-  var incoming = React.useMemo(function() {
+  var incoming = useMemo(function() {
     return {
       queryArgs,
       serialized: typeof queryArgs == "object" ? serialize({ queryArgs, endpointDefinition, endpointName }) : queryArgs
     };
   }, [queryArgs, serialize, endpointDefinition, endpointName]);
-  var cache2 = React.useRef(incoming);
-  React.useEffect(function() {
+  var cache2 = useRef(incoming);
+  useEffect(function() {
     if (cache2.current.serialized !== incoming.serialized) {
       cache2.current = incoming;
     }
@@ -7281,8 +7260,8 @@ function useStableQueryArgs(queryArgs, serialize, endpointDefinition, endpointNa
 }
 var UNINITIALIZED_VALUE = Symbol();
 function useShallowStableValue(value) {
-  var cache2 = React.useRef(value);
-  React.useEffect(function() {
+  var cache2 = useRef(value);
+  useEffect(function() {
     if (!shallowEqual(cache2.current, value)) {
       cache2.current = value;
     }
@@ -7310,7 +7289,7 @@ var defaultSerializeQueryArgs = function(_c) {
   }
   return endpointName + "(" + serialized + ")";
 };
-var useIsomorphicLayoutEffect = typeof window !== "undefined" && !!window.document && !!window.document.createElement ? React.useLayoutEffect : React.useEffect;
+var useIsomorphicLayoutEffect = typeof window !== "undefined" && !!window.document && !!window.document.createElement ? useLayoutEffect : useEffect;
 var defaultMutationStateSelector = function(x2) {
   return x2;
 };
@@ -7329,7 +7308,7 @@ function buildHooks(_c) {
   var api = _c.api, _d = _c.moduleOptions, batch = _d.batch, useDispatch2 = _d.useDispatch, useSelector2 = _d.useSelector, useStore2 = _d.useStore, unstable__sideEffectsInRender = _d.unstable__sideEffectsInRender, serializeQueryArgs = _c.serializeQueryArgs, context = _c.context;
   var usePossiblyImmediateEffect = unstable__sideEffectsInRender ? function(cb) {
     return cb();
-  } : React.useEffect;
+  } : useEffect;
   return { buildQueryHooks, buildMutationHook, usePrefetch };
   function queryStatePreSelector(currentState, lastResult, queryArgs) {
     if ((lastResult == null ? void 0 : lastResult.endpointName) && currentState.isUninitialized) {
@@ -7364,7 +7343,7 @@ function buildHooks(_c) {
   function usePrefetch(endpointName, defaultOptions) {
     var dispatch = useDispatch2();
     var stableDefaultOptions = useShallowStableValue(defaultOptions);
-    return React.useCallback(function(arg, options) {
+    return useCallback(function(arg, options) {
       return dispatch(api.util.prefetch(endpointName, arg, __spreadValues(__spreadValues({}, stableDefaultOptions), options)));
     }, [endpointName, dispatch, stableDefaultOptions]);
   }
@@ -7379,8 +7358,8 @@ function buildHooks(_c) {
         refetchOnFocus,
         pollingInterval
       });
-      var lastRenderHadSubscription = React.useRef(false);
-      var promiseRef = React.useRef();
+      var lastRenderHadSubscription = useRef(false);
+      var promiseRef = useRef();
       var _g = promiseRef.current || {}, queryCacheKey = _g.queryCacheKey, requestId = _g.requestId;
       var currentRenderHasSubscription = false;
       if (queryCacheKey && requestId) {
@@ -7434,14 +7413,14 @@ function buildHooks(_c) {
         stableSubscriptionOptions,
         subscriptionRemoved
       ]);
-      React.useEffect(function() {
+      useEffect(function() {
         return function() {
           var _a;
           (_a = promiseRef.current) == null ? void 0 : _a.unsubscribe();
           promiseRef.current = void 0;
         };
       }, []);
-      return React.useMemo(function() {
+      return useMemo(function() {
         return {
           refetch: function() {
             var _a;
@@ -7456,8 +7435,8 @@ function buildHooks(_c) {
       var _d2 = _c2 === void 0 ? {} : _c2, refetchOnReconnect = _d2.refetchOnReconnect, refetchOnFocus = _d2.refetchOnFocus, _e = _d2.pollingInterval, pollingInterval = _e === void 0 ? 0 : _e;
       var initiate = api.endpoints[name].initiate;
       var dispatch = useDispatch2();
-      var _f = React.useState(UNINITIALIZED_VALUE), arg = _f[0], setArg = _f[1];
-      var promiseRef = React.useRef();
+      var _f = useState(UNINITIALIZED_VALUE), arg = _f[0], setArg = _f[1];
+      var promiseRef = useRef();
       var stableSubscriptionOptions = useShallowStableValue({
         refetchOnReconnect,
         refetchOnFocus,
@@ -7470,11 +7449,11 @@ function buildHooks(_c) {
           (_b = promiseRef.current) == null ? void 0 : _b.updateSubscriptionOptions(stableSubscriptionOptions);
         }
       }, [stableSubscriptionOptions]);
-      var subscriptionOptionsRef = React.useRef(stableSubscriptionOptions);
+      var subscriptionOptionsRef = useRef(stableSubscriptionOptions);
       usePossiblyImmediateEffect(function() {
         subscriptionOptionsRef.current = stableSubscriptionOptions;
       }, [stableSubscriptionOptions]);
-      var trigger = React.useCallback(function(arg2, preferCacheValue) {
+      var trigger = useCallback(function(arg2, preferCacheValue) {
         if (preferCacheValue === void 0) {
           preferCacheValue = false;
         }
@@ -7490,18 +7469,18 @@ function buildHooks(_c) {
         });
         return promise2;
       }, [dispatch, initiate]);
-      React.useEffect(function() {
+      useEffect(function() {
         return function() {
           var _a;
           (_a = promiseRef == null ? void 0 : promiseRef.current) == null ? void 0 : _a.unsubscribe();
         };
       }, []);
-      React.useEffect(function() {
+      useEffect(function() {
         if (arg !== UNINITIALIZED_VALUE && !promiseRef.current) {
           trigger(arg, true);
         }
       }, [arg, trigger]);
-      return React.useMemo(function() {
+      return useMemo(function() {
         return [trigger, arg];
       }, [trigger, arg]);
     };
@@ -7509,8 +7488,8 @@ function buildHooks(_c) {
       var _d2 = _c2 === void 0 ? {} : _c2, _e = _d2.skip, skip = _e === void 0 ? false : _e, selectFromResult = _d2.selectFromResult;
       var select = api.endpoints[name].select;
       var stableArg = useStableQueryArgs(skip ? skipToken : arg, serializeQueryArgs, context.endpointDefinitions[name], name);
-      var lastValue = React.useRef();
-      var selectDefaultResult = React.useMemo(function() {
+      var lastValue = useRef();
+      var selectDefaultResult = useMemo(function() {
         return createSelector([
           select(stableArg),
           function(_2, lastResult) {
@@ -7521,7 +7500,7 @@ function buildHooks(_c) {
           }
         ], queryStatePreSelector);
       }, [select, stableArg]);
-      var querySelector = React.useMemo(function() {
+      var querySelector = useMemo(function() {
         return selectFromResult ? createSelector([selectDefaultResult], selectFromResult) : selectDefaultResult;
       }, [selectDefaultResult, selectFromResult]);
       var currentState = useSelector2(function(state) {
@@ -7543,10 +7522,10 @@ function buildHooks(_c) {
         var queryStateResults = useQueryState(arg, __spreadProps(__spreadValues({}, options), {
           skip: arg === UNINITIALIZED_VALUE
         }));
-        var info = React.useMemo(function() {
+        var info = useMemo(function() {
           return { lastArg: arg };
         }, [arg]);
-        return React.useMemo(function() {
+        return useMemo(function() {
           return [trigger, queryStateResults, info];
         }, [trigger, queryStateResults, info]);
       },
@@ -7556,8 +7535,8 @@ function buildHooks(_c) {
           selectFromResult: arg === skipToken || (options == null ? void 0 : options.skip) ? void 0 : noPendingQueryStateSelector
         }, options));
         var data = queryStateResults.data, status = queryStateResults.status, isLoading = queryStateResults.isLoading, isSuccess = queryStateResults.isSuccess, isError2 = queryStateResults.isError, error = queryStateResults.error;
-        React.useDebugValue({ data, status, isLoading, isSuccess, isError: isError2, error });
-        return React.useMemo(function() {
+        useDebugValue({ data, status, isLoading, isSuccess, isError: isError2, error });
+        return useMemo(function() {
           return __spreadValues(__spreadValues({}, queryStateResults), querySubscriptionResults);
         }, [queryStateResults, querySubscriptionResults]);
       }
@@ -7568,26 +7547,26 @@ function buildHooks(_c) {
       var _d2 = _c2 === void 0 ? {} : _c2, _e = _d2.selectFromResult, selectFromResult = _e === void 0 ? defaultMutationStateSelector : _e, fixedCacheKey = _d2.fixedCacheKey;
       var _f = api.endpoints[name], select = _f.select, initiate = _f.initiate;
       var dispatch = useDispatch2();
-      var _g = React.useState(), promise2 = _g[0], setPromise = _g[1];
-      React.useEffect(function() {
+      var _g = useState(), promise2 = _g[0], setPromise = _g[1];
+      useEffect(function() {
         return function() {
           if (!(promise2 == null ? void 0 : promise2.arg.fixedCacheKey)) {
             promise2 == null ? void 0 : promise2.reset();
           }
         };
       }, [promise2]);
-      var triggerMutation = React.useCallback(function(arg) {
+      var triggerMutation = useCallback(function(arg) {
         var promise22 = dispatch(initiate(arg, { fixedCacheKey }));
         setPromise(promise22);
         return promise22;
       }, [dispatch, initiate, fixedCacheKey]);
       var requestId = (promise2 || {}).requestId;
-      var mutationSelector = React.useMemo(function() {
+      var mutationSelector = useMemo(function() {
         return createSelector([select({ fixedCacheKey, requestId: promise2 == null ? void 0 : promise2.requestId })], selectFromResult);
       }, [select, promise2, selectFromResult, fixedCacheKey]);
       var currentState = useSelector2(mutationSelector, shallowEqual);
       var originalArgs = fixedCacheKey == null ? promise2 == null ? void 0 : promise2.arg.originalArgs : void 0;
-      var reset = React.useCallback(function() {
+      var reset = useCallback(function() {
         batch(function() {
           if (promise2) {
             setPromise(void 0);
@@ -7601,7 +7580,7 @@ function buildHooks(_c) {
         });
       }, [dispatch, fixedCacheKey, promise2, requestId]);
       var endpointName = currentState.endpointName, data = currentState.data, status = currentState.status, isLoading = currentState.isLoading, isSuccess = currentState.isSuccess, isError2 = currentState.isError, error = currentState.error;
-      React.useDebugValue({
+      useDebugValue({
         endpointName,
         data,
         status,
@@ -7610,10 +7589,10 @@ function buildHooks(_c) {
         isError: isError2,
         error
       });
-      var finalState = React.useMemo(function() {
+      var finalState = useMemo(function() {
         return __spreadProps(__spreadValues({}, currentState), { originalArgs, reset });
       }, [currentState, originalArgs, reset]);
-      return React.useMemo(function() {
+      return useMemo(function() {
         return [triggerMutation, finalState];
       }, [triggerMutation, finalState]);
     };
@@ -7642,7 +7621,7 @@ function safeAssign(target) {
 }
 var reactHooksModuleName = /* @__PURE__ */ Symbol();
 var reactHooksModule = function(_c) {
-  var _d = {}, _e = _d.batch, batch = _e === void 0 ? ReactDOM.unstable_batchedUpdates : _e, _f = _d.useDispatch, useDispatch$1 = _f === void 0 ? useDispatch : _f, _g = _d.useSelector, useSelector$1 = _g === void 0 ? useSelector : _g, _h = _d.useStore, useStore$1 = _h === void 0 ? useStore : _h, _j = _d.unstable__sideEffectsInRender, unstable__sideEffectsInRender = _j === void 0 ? false : _j;
+  var _d = {}, _e = _d.batch, batch = _e === void 0 ? unstable_batchedUpdates$1 : _e, _f = _d.useDispatch, useDispatch$1 = _f === void 0 ? useDispatch : _f, _g = _d.useSelector, useSelector$1 = _g === void 0 ? useSelector : _g, _h = _d.useStore, useStore$1 = _h === void 0 ? useStore : _h, _j = _d.unstable__sideEffectsInRender, unstable__sideEffectsInRender = _j === void 0 ? false : _j;
   return {
     name: reactHooksModuleName,
     init: function(api, _c2, context) {
@@ -8475,11 +8454,11 @@ function baseConvert$1(util2, name, func2, options) {
   }
   function cloneByPath(object2, path) {
     path = toPath2(path);
-    var index2 = -1, length = path.length, lastIndex = length - 1, result = clone2(Object(object2)), nested = result;
-    while (nested != null && ++index2 < length) {
-      var key = path[index2], value = nested[key];
+    var index = -1, length = path.length, lastIndex = length - 1, result = clone2(Object(object2)), nested = result;
+    while (nested != null && ++index < length) {
+      var key = path[index], value = nested[key];
       if (value != null && !(isFunction2(value) || isError2(value) || isWeakMap2(value))) {
-        nested[key] = clone2(index2 == lastIndex ? value : Object(value));
+        nested[key] = clone2(index == lastIndex ? value : Object(value));
       }
       nested = nested[key];
     }
@@ -8516,8 +8495,8 @@ function baseConvert$1(util2, name, func2, options) {
       while (length--) {
         args[length] = arguments[length];
       }
-      var index2 = config.rearg ? 0 : length - 1;
-      args[index2] = transform(args[index2]);
+      var index = config.rearg ? 0 : length - 1;
+      args[index] = transform(args[index]);
       return func3.apply(void 0, args);
     };
   }
@@ -8883,9 +8862,9 @@ function insertWrapDetails$1(source, details) {
 }
 var _insertWrapDetails = insertWrapDetails$1;
 function arrayEach$2(array2, iteratee2) {
-  var index2 = -1, length = array2 == null ? 0 : array2.length;
-  while (++index2 < length) {
-    if (iteratee2(array2[index2], index2, array2) === false) {
+  var index = -1, length = array2 == null ? 0 : array2.length;
+  while (++index < length) {
+    if (iteratee2(array2[index], index, array2) === false) {
       break;
     }
   }
@@ -8893,10 +8872,10 @@ function arrayEach$2(array2, iteratee2) {
 }
 var _arrayEach = arrayEach$2;
 function baseFindIndex$1(array2, predicate, fromIndex, fromRight) {
-  var length = array2.length, index2 = fromIndex + (fromRight ? 1 : -1);
-  while (fromRight ? index2-- : ++index2 < length) {
-    if (predicate(array2[index2], index2, array2)) {
-      return index2;
+  var length = array2.length, index = fromIndex + (fromRight ? 1 : -1);
+  while (fromRight ? index-- : ++index < length) {
+    if (predicate(array2[index], index, array2)) {
+      return index;
     }
   }
   return -1;
@@ -8907,10 +8886,10 @@ function baseIsNaN$1(value) {
 }
 var _baseIsNaN = baseIsNaN$1;
 function strictIndexOf$1(array2, value, fromIndex) {
-  var index2 = fromIndex - 1, length = array2.length;
-  while (++index2 < length) {
-    if (array2[index2] === value) {
-      return index2;
+  var index = fromIndex - 1, length = array2.length;
+  while (++index < length) {
+    if (array2[index] === value) {
+      return index;
     }
   }
   return -1;
@@ -8995,20 +8974,20 @@ var nativeMin$1 = Math.min;
 function reorder$1(array2, indexes) {
   var arrLength = array2.length, length = nativeMin$1(indexes.length, arrLength), oldArray = copyArray$2(array2);
   while (length--) {
-    var index2 = indexes[length];
-    array2[length] = isIndex(index2, arrLength) ? oldArray[index2] : void 0;
+    var index = indexes[length];
+    array2[length] = isIndex(index, arrLength) ? oldArray[index] : void 0;
   }
   return array2;
 }
 var _reorder = reorder$1;
 var PLACEHOLDER$1 = "__lodash_placeholder__";
 function replaceHolders$3(array2, placeholder2) {
-  var index2 = -1, length = array2.length, resIndex = 0, result = [];
-  while (++index2 < length) {
-    var value = array2[index2];
+  var index = -1, length = array2.length, resIndex = 0, result = [];
+  while (++index < length) {
+    var value = array2[index];
     if (value === placeholder2 || value === PLACEHOLDER$1) {
-      array2[index2] = PLACEHOLDER$1;
-      result[resIndex++] = index2;
+      array2[index] = PLACEHOLDER$1;
+      result[resIndex++] = index;
     }
   }
   return result;
@@ -9019,9 +8998,9 @@ var WRAP_BIND_FLAG$3 = 1, WRAP_BIND_KEY_FLAG$2 = 2, WRAP_CURRY_FLAG$3 = 8, WRAP_
 function createHybrid$2(func2, bitmask, thisArg, partials, holders, partialsRight, holdersRight, argPos, ary2, arity) {
   var isAry = bitmask & WRAP_ARY_FLAG$2, isBind = bitmask & WRAP_BIND_FLAG$3, isBindKey = bitmask & WRAP_BIND_KEY_FLAG$2, isCurried = bitmask & (WRAP_CURRY_FLAG$3 | WRAP_CURRY_RIGHT_FLAG$1), isFlip = bitmask & WRAP_FLIP_FLAG, Ctor = isBindKey ? void 0 : createCtor$2(func2);
   function wrapper() {
-    var length = arguments.length, args = Array(length), index2 = length;
-    while (index2--) {
-      args[index2] = arguments[index2];
+    var length = arguments.length, args = Array(length), index = length;
+    while (index--) {
+      args[index] = arguments[index];
     }
     if (isCurried) {
       var placeholder2 = getHolder$1(wrapper), holdersCount = countHolders(args, placeholder2);
@@ -9070,9 +9049,9 @@ var apply$2 = _apply, createCtor$1 = _createCtor, createHybrid$1 = _createHybrid
 function createCurry$1(func2, bitmask, arity) {
   var Ctor = createCtor$1(func2);
   function wrapper() {
-    var length = arguments.length, args = Array(length), index2 = length, placeholder2 = getHolder(wrapper);
-    while (index2--) {
-      args[index2] = arguments[index2];
+    var length = arguments.length, args = Array(length), index = length, placeholder2 = getHolder(wrapper);
+    while (index--) {
+      args[index] = arguments[index];
     }
     var holders = length < 3 && args[0] !== placeholder2 && args[length - 1] !== placeholder2 ? [] : replaceHolders$1(args, placeholder2);
     length -= holders.length;
@@ -9156,10 +9135,10 @@ function mergeData$1(data, source) {
 var _mergeData = mergeData$1;
 var reWhitespace = /\s/;
 function trimmedEndIndex$1(string2) {
-  var index2 = string2.length;
-  while (index2-- && reWhitespace.test(string2.charAt(index2))) {
+  var index = string2.length;
+  while (index-- && reWhitespace.test(string2.charAt(index))) {
   }
-  return index2;
+  return index;
 }
 var _trimmedEndIndex = trimmedEndIndex$1;
 var trimmedEndIndex = _trimmedEndIndex;
@@ -9315,10 +9294,10 @@ function baseAssignIn$1(object2, source) {
 }
 var _baseAssignIn = baseAssignIn$1;
 function arrayFilter$1(array2, predicate) {
-  var index2 = -1, length = array2 == null ? 0 : array2.length, resIndex = 0, result = [];
-  while (++index2 < length) {
-    var value = array2[index2];
-    if (predicate(value, index2, array2)) {
+  var index = -1, length = array2 == null ? 0 : array2.length, resIndex = 0, result = [];
+  while (++index < length) {
+    var value = array2[index];
+    if (predicate(value, index, array2)) {
       result[resIndex++] = value;
     }
   }
@@ -9614,19 +9593,19 @@ function setCacheHas$1(value) {
 var _setCacheHas = setCacheHas$1;
 var MapCache = _MapCache, setCacheAdd = _setCacheAdd, setCacheHas = _setCacheHas;
 function SetCache$1(values) {
-  var index2 = -1, length = values == null ? 0 : values.length;
+  var index = -1, length = values == null ? 0 : values.length;
   this.__data__ = new MapCache();
-  while (++index2 < length) {
-    this.add(values[index2]);
+  while (++index < length) {
+    this.add(values[index]);
   }
 }
 SetCache$1.prototype.add = SetCache$1.prototype.push = setCacheAdd;
 SetCache$1.prototype.has = setCacheHas;
 var _SetCache = SetCache$1;
 function arraySome$1(array2, predicate) {
-  var index2 = -1, length = array2 == null ? 0 : array2.length;
-  while (++index2 < length) {
-    if (predicate(array2[index2], index2, array2)) {
+  var index = -1, length = array2 == null ? 0 : array2.length;
+  while (++index < length) {
+    if (predicate(array2[index], index, array2)) {
       return true;
     }
   }
@@ -9649,13 +9628,13 @@ function equalArrays$2(array2, other, bitmask, customizer, equalFunc, stack) {
   if (arrStacked && othStacked) {
     return arrStacked == other && othStacked == array2;
   }
-  var index2 = -1, result = true, seen = bitmask & COMPARE_UNORDERED_FLAG$3 ? new SetCache() : void 0;
+  var index = -1, result = true, seen = bitmask & COMPARE_UNORDERED_FLAG$3 ? new SetCache() : void 0;
   stack.set(array2, other);
   stack.set(other, array2);
-  while (++index2 < arrLength) {
-    var arrValue = array2[index2], othValue = other[index2];
+  while (++index < arrLength) {
+    var arrValue = array2[index], othValue = other[index];
     if (customizer) {
-      var compared = isPartial ? customizer(othValue, arrValue, index2, other, array2, stack) : customizer(arrValue, othValue, index2, array2, other, stack);
+      var compared = isPartial ? customizer(othValue, arrValue, index, other, array2, stack) : customizer(arrValue, othValue, index, array2, other, stack);
     }
     if (compared !== void 0) {
       if (compared) {
@@ -9684,17 +9663,17 @@ function equalArrays$2(array2, other, bitmask, customizer, equalFunc, stack) {
 }
 var _equalArrays = equalArrays$2;
 function mapToArray$1(map2) {
-  var index2 = -1, result = Array(map2.size);
+  var index = -1, result = Array(map2.size);
   map2.forEach(function(value, key) {
-    result[++index2] = [key, value];
+    result[++index] = [key, value];
   });
   return result;
 }
 var _mapToArray = mapToArray$1;
 function setToArray$1(set2) {
-  var index2 = -1, result = Array(set2.size);
+  var index = -1, result = Array(set2.size);
   set2.forEach(function(value) {
-    result[++index2] = value;
+    result[++index] = value;
   });
   return result;
 }
@@ -9760,9 +9739,9 @@ function equalObjects$1(object2, other, bitmask, customizer, equalFunc, stack) {
   if (objLength != othLength && !isPartial) {
     return false;
   }
-  var index2 = objLength;
-  while (index2--) {
-    var key = objProps[index2];
+  var index = objLength;
+  while (index--) {
+    var key = objProps[index];
     if (!(isPartial ? key in other : hasOwnProperty$3.call(other, key))) {
       return false;
     }
@@ -9776,8 +9755,8 @@ function equalObjects$1(object2, other, bitmask, customizer, equalFunc, stack) {
   stack.set(object2, other);
   stack.set(other, object2);
   var skipCtor = isPartial;
-  while (++index2 < objLength) {
-    key = objProps[index2];
+  while (++index < objLength) {
+    key = objProps[index];
     var objValue = object2[key], othValue = other[key];
     if (customizer) {
       var compared = isPartial ? customizer(othValue, objValue, key, other, object2, stack) : customizer(objValue, othValue, key, object2, other, stack);
@@ -9849,19 +9828,19 @@ var _baseIsEqual = baseIsEqual$2;
 var Stack = _Stack, baseIsEqual$1 = _baseIsEqual;
 var COMPARE_PARTIAL_FLAG$1 = 1, COMPARE_UNORDERED_FLAG$1 = 2;
 function baseIsMatch$1(object2, source, matchData, customizer) {
-  var index2 = matchData.length, length = index2, noCustomizer = !customizer;
+  var index = matchData.length, length = index, noCustomizer = !customizer;
   if (object2 == null) {
     return !length;
   }
   object2 = Object(object2);
-  while (index2--) {
-    var data = matchData[index2];
+  while (index--) {
+    var data = matchData[index];
     if (noCustomizer && data[2] ? data[1] !== object2[data[0]] : !(data[0] in object2)) {
       return false;
     }
   }
-  while (++index2 < length) {
-    data = matchData[index2];
+  while (++index < length) {
+    data = matchData[index];
     var key = data[0], objValue = object2[key], srcValue = data[1];
     if (noCustomizer && data[2]) {
       if (objValue === void 0 && !(key in object2)) {
@@ -10016,12 +9995,12 @@ function require_createFlow() {
   var WRAP_CURRY_FLAG2 = 8, WRAP_PARTIAL_FLAG2 = 32, WRAP_ARY_FLAG2 = 128, WRAP_REARG_FLAG2 = 256;
   function createFlow(fromRight) {
     return flatRest2(function(funcs) {
-      var length = funcs.length, index2 = length, prereq = LodashWrapper.prototype.thru;
+      var length = funcs.length, index = length, prereq = LodashWrapper.prototype.thru;
       if (fromRight) {
         funcs.reverse();
       }
-      while (index2--) {
-        var func2 = funcs[index2];
+      while (index--) {
+        var func2 = funcs[index];
         if (typeof func2 != "function") {
           throw new TypeError(FUNC_ERROR_TEXT2);
         }
@@ -10029,9 +10008,9 @@ function require_createFlow() {
           var wrapper = new LodashWrapper([], true);
         }
       }
-      index2 = wrapper ? index2 : length;
-      while (++index2 < length) {
-        func2 = funcs[index2];
+      index = wrapper ? index : length;
+      while (++index < length) {
+        func2 = funcs[index];
         var funcName = getFuncName(func2), data = funcName == "wrapper" ? getData2(func2) : void 0;
         if (data && isLaziable2(data[0]) && data[1] == (WRAP_ARY_FLAG2 | WRAP_CURRY_FLAG2 | WRAP_PARTIAL_FLAG2 | WRAP_REARG_FLAG2) && !data[4].length && data[9] == 1) {
           wrapper = wrapper[getFuncName(data[0])].apply(wrapper, data[3]);
@@ -10044,9 +10023,9 @@ function require_createFlow() {
         if (wrapper && args.length == 1 && isArray2(value)) {
           return wrapper.plant(value).value();
         }
-        var index3 = 0, result = length ? funcs[index3].apply(this, args) : value;
-        while (++index3 < length) {
-          result = funcs[index3].call(this, result);
+        var index2 = 0, result = length ? funcs[index2].apply(this, args) : value;
+        while (++index2 < length) {
+          result = funcs[index2].call(this, result);
         }
         return result;
       };
@@ -10310,7 +10289,7 @@ var objectInspect = function inspect_(obj, options, depth, seen) {
     var ys = arrObjKeys(obj, inspect2);
     var isPlainObject2 = gPO ? gPO(obj) === Object.prototype : obj instanceof Object || obj.constructor === Object;
     var protoTag = obj instanceof Object ? "" : "null prototype";
-    var stringTag2 = !isPlainObject2 && toStringTag$1 && Object(obj) === obj && toStringTag$1 in obj ? $slice.call(toStr(obj), 8, -1) : protoTag ? "Object" : "";
+    var stringTag2 = !isPlainObject2 && toStringTag$1 && Object(obj) === obj && toStringTag$1 in obj ? $slice.call(toStr$1(obj), 8, -1) : protoTag ? "Object" : "";
     var constructorTag = isPlainObject2 || typeof obj.constructor !== "function" ? "" : obj.constructor.name ? obj.constructor.name + " " : "";
     var tag = constructorTag + (stringTag2 || protoTag ? "[" + $join.call($concat$1.call([], stringTag2 || [], protoTag || []), ": ") + "] " : "");
     if (ys.length === 0) {
@@ -10335,25 +10314,25 @@ function canTrustToString(obj) {
   return !toStringTag$1 || !(typeof obj === "object" && (toStringTag$1 in obj || typeof obj[toStringTag$1] !== "undefined"));
 }
 function isArray$4(obj) {
-  return toStr(obj) === "[object Array]" && canTrustToString(obj);
+  return toStr$1(obj) === "[object Array]" && canTrustToString(obj);
 }
 function isDate$2(obj) {
-  return toStr(obj) === "[object Date]" && canTrustToString(obj);
+  return toStr$1(obj) === "[object Date]" && canTrustToString(obj);
 }
 function isRegExp$2(obj) {
-  return toStr(obj) === "[object RegExp]" && canTrustToString(obj);
+  return toStr$1(obj) === "[object RegExp]" && canTrustToString(obj);
 }
 function isError(obj) {
-  return toStr(obj) === "[object Error]" && canTrustToString(obj);
+  return toStr$1(obj) === "[object Error]" && canTrustToString(obj);
 }
 function isString$1(obj) {
-  return toStr(obj) === "[object String]" && canTrustToString(obj);
+  return toStr$1(obj) === "[object String]" && canTrustToString(obj);
 }
 function isNumber$1(obj) {
-  return toStr(obj) === "[object Number]" && canTrustToString(obj);
+  return toStr$1(obj) === "[object Number]" && canTrustToString(obj);
 }
 function isBoolean$1(obj) {
-  return toStr(obj) === "[object Boolean]" && canTrustToString(obj);
+  return toStr$1(obj) === "[object Boolean]" && canTrustToString(obj);
 }
 function isSymbol(obj) {
   if (hasShammedSymbols) {
@@ -10389,7 +10368,7 @@ var hasOwn$1 = Object.prototype.hasOwnProperty || function(key) {
 function has$5(obj, key) {
   return hasOwn$1.call(obj, key);
 }
-function toStr(obj) {
+function toStr$1(obj) {
   return objectToString.call(obj);
 }
 function nameOf(f2) {
@@ -10698,7 +10677,7 @@ var syntax = SyntaxError;
 var uri = URIError;
 var abs$1 = Math.abs;
 var floor$1 = Math.floor;
-var max$1 = Math.max;
+var max$2 = Math.max;
 var min$1 = Math.min;
 var pow$1 = Math.pow;
 var round$1 = Math.round;
@@ -10827,99 +10806,78 @@ function requireObject_getPrototypeOf() {
   Object_getPrototypeOf = $Object2.getPrototypeOf || null;
   return Object_getPrototypeOf;
 }
-var implementation;
-var hasRequiredImplementation;
-function requireImplementation() {
-  if (hasRequiredImplementation) return implementation;
-  hasRequiredImplementation = 1;
-  var ERROR_MESSAGE = "Function.prototype.bind called on incompatible ";
-  var toStr2 = Object.prototype.toString;
-  var max2 = Math.max;
-  var funcType = "[object Function]";
-  var concatty = function concatty2(a2, b2) {
-    var arr = [];
-    for (var i2 = 0; i2 < a2.length; i2 += 1) {
-      arr[i2] = a2[i2];
+var ERROR_MESSAGE = "Function.prototype.bind called on incompatible ";
+var toStr = Object.prototype.toString;
+var max$1 = Math.max;
+var funcType = "[object Function]";
+var concatty = function concatty2(a2, b2) {
+  var arr = [];
+  for (var i2 = 0; i2 < a2.length; i2 += 1) {
+    arr[i2] = a2[i2];
+  }
+  for (var j2 = 0; j2 < b2.length; j2 += 1) {
+    arr[j2 + a2.length] = b2[j2];
+  }
+  return arr;
+};
+var slicy = function slicy2(arrLike, offset) {
+  var arr = [];
+  for (var i2 = offset, j2 = 0; i2 < arrLike.length; i2 += 1, j2 += 1) {
+    arr[j2] = arrLike[i2];
+  }
+  return arr;
+};
+var joiny = function(arr, joiner) {
+  var str = "";
+  for (var i2 = 0; i2 < arr.length; i2 += 1) {
+    str += arr[i2];
+    if (i2 + 1 < arr.length) {
+      str += joiner;
     }
-    for (var j2 = 0; j2 < b2.length; j2 += 1) {
-      arr[j2 + a2.length] = b2[j2];
-    }
-    return arr;
-  };
-  var slicy = function slicy2(arrLike, offset) {
-    var arr = [];
-    for (var i2 = offset, j2 = 0; i2 < arrLike.length; i2 += 1, j2 += 1) {
-      arr[j2] = arrLike[i2];
-    }
-    return arr;
-  };
-  var joiny = function(arr, joiner) {
-    var str = "";
-    for (var i2 = 0; i2 < arr.length; i2 += 1) {
-      str += arr[i2];
-      if (i2 + 1 < arr.length) {
-        str += joiner;
-      }
-    }
-    return str;
-  };
-  implementation = function bind2(that) {
-    var target = this;
-    if (typeof target !== "function" || toStr2.apply(target) !== funcType) {
-      throw new TypeError(ERROR_MESSAGE + target);
-    }
-    var args = slicy(arguments, 1);
-    var bound;
-    var binder = function() {
-      if (this instanceof bound) {
-        var result = target.apply(
-          this,
-          concatty(args, arguments)
-        );
-        if (Object(result) === result) {
-          return result;
-        }
-        return this;
-      }
-      return target.apply(
-        that,
+  }
+  return str;
+};
+var implementation$1 = function bind(that) {
+  var target = this;
+  if (typeof target !== "function" || toStr.apply(target) !== funcType) {
+    throw new TypeError(ERROR_MESSAGE + target);
+  }
+  var args = slicy(arguments, 1);
+  var bound;
+  var binder = function() {
+    if (this instanceof bound) {
+      var result = target.apply(
+        this,
         concatty(args, arguments)
       );
-    };
-    var boundLength = max2(0, target.length - args.length);
-    var boundArgs = [];
-    for (var i2 = 0; i2 < boundLength; i2++) {
-      boundArgs[i2] = "$" + i2;
+      if (Object(result) === result) {
+        return result;
+      }
+      return this;
     }
-    bound = Function("binder", "return function (" + joiny(boundArgs, ",") + "){ return binder.apply(this,arguments); }")(binder);
-    if (target.prototype) {
-      var Empty = function Empty2() {
-      };
-      Empty.prototype = target.prototype;
-      bound.prototype = new Empty();
-      Empty.prototype = null;
-    }
-    return bound;
+    return target.apply(
+      that,
+      concatty(args, arguments)
+    );
   };
-  return implementation;
-}
-var functionBind;
-var hasRequiredFunctionBind;
-function requireFunctionBind() {
-  if (hasRequiredFunctionBind) return functionBind;
-  hasRequiredFunctionBind = 1;
-  var implementation2 = requireImplementation();
-  functionBind = Function.prototype.bind || implementation2;
-  return functionBind;
-}
-var functionCall;
-var hasRequiredFunctionCall;
-function requireFunctionCall() {
-  if (hasRequiredFunctionCall) return functionCall;
-  hasRequiredFunctionCall = 1;
-  functionCall = Function.prototype.call;
-  return functionCall;
-}
+  var boundLength = max$1(0, target.length - args.length);
+  var boundArgs = [];
+  for (var i2 = 0; i2 < boundLength; i2++) {
+    boundArgs[i2] = "$" + i2;
+  }
+  bound = Function("binder", "return function (" + joiny(boundArgs, ",") + "){ return binder.apply(this,arguments); }")(binder);
+  if (target.prototype) {
+    var Empty = function Empty2() {
+    };
+    Empty.prototype = target.prototype;
+    bound.prototype = new Empty();
+    Empty.prototype = null;
+  }
+  return bound;
+};
+var implementation = implementation$1;
+var functionBind = Function.prototype.bind || implementation;
+var functionCall = Function.prototype.call;
 var functionApply;
 var hasRequiredFunctionApply;
 function requireFunctionApply() {
@@ -10929,14 +10887,14 @@ function requireFunctionApply() {
   return functionApply;
 }
 var reflectApply = typeof Reflect !== "undefined" && Reflect && Reflect.apply;
-var bind$3 = requireFunctionBind();
+var bind$3 = functionBind;
 var $apply$1 = requireFunctionApply();
-var $call$2 = requireFunctionCall();
+var $call$2 = functionCall;
 var $reflectApply = reflectApply;
 var actualApply = $reflectApply || bind$3.call($call$2, $apply$1);
-var bind$2 = requireFunctionBind();
+var bind$2 = functionBind;
 var $TypeError$4 = type;
-var $call$1 = requireFunctionCall();
+var $call$1 = functionCall;
 var $actualApply = actualApply;
 var callBindApplyHelpers = function callBindBasic(args) {
   if (args.length < 1 || typeof args[0] !== "function") {
@@ -11002,8 +10960,8 @@ function requireHasown() {
   hasRequiredHasown = 1;
   var call = Function.prototype.call;
   var $hasOwn = Object.prototype.hasOwnProperty;
-  var bind2 = requireFunctionBind();
-  hasown = bind2.call(call, $hasOwn);
+  var bind3 = functionBind;
+  hasown = bind3.call(call, $hasOwn);
   return hasown;
 }
 var undefined$1;
@@ -11017,7 +10975,7 @@ var $TypeError$3 = type;
 var $URIError = uri;
 var abs = abs$1;
 var floor = floor$1;
-var max = max$1;
+var max = max$2;
 var min = min$1;
 var pow = pow$1;
 var round = round$1;
@@ -11051,7 +11009,7 @@ var getProto = requireGetProto();
 var $ObjectGPO = requireObject_getPrototypeOf();
 var $ReflectGPO = requireReflect_getPrototypeOf();
 var $apply = requireFunctionApply();
-var $call = requireFunctionCall();
+var $call = functionCall;
 var needsEval = {};
 var TypedArray = typeof Uint8Array === "undefined" || !getProto ? undefined$1 : getProto(Uint8Array);
 var INTRINSICS = {
@@ -11222,7 +11180,7 @@ var LEGACY_ALIASES = {
   "%WeakMapPrototype%": ["WeakMap", "prototype"],
   "%WeakSetPrototype%": ["WeakSet", "prototype"]
 };
-var bind$1 = requireFunctionBind();
+var bind$1 = functionBind;
 var hasOwn = requireHasown();
 var $concat = bind$1.call($call, Array.prototype.concat);
 var $spliceApply = bind$1.call($apply, Array.prototype.splice);
@@ -12168,12 +12126,12 @@ var parseObject = function(chain, val, options, valuesParsed) {
       obj = options.plainObjects ? { __proto__: null } : {};
       var cleanRoot = root2.charAt(0) === "[" && root2.charAt(root2.length - 1) === "]" ? root2.slice(1, -1) : root2;
       var decodedRoot = options.decodeDotInKeys ? cleanRoot.replace(/%2E/g, ".") : cleanRoot;
-      var index2 = parseInt(decodedRoot, 10);
+      var index = parseInt(decodedRoot, 10);
       if (!options.parseArrays && decodedRoot === "") {
         obj = { 0: leaf };
-      } else if (!isNaN(index2) && root2 !== decodedRoot && String(index2) === decodedRoot && index2 >= 0 && (options.parseArrays && index2 <= options.arrayLimit)) {
+      } else if (!isNaN(index) && root2 !== decodedRoot && String(index) === decodedRoot && index >= 0 && (options.parseArrays && index <= options.arrayLimit)) {
         obj = [];
-        obj[index2] = leaf;
+        obj[index] = leaf;
       } else if (decodedRoot !== "__proto__") {
         obj[decodedRoot] = leaf;
       }
@@ -12941,9 +12899,9 @@ function requireScheduler_development() {
         var enableProfiling = false;
         var frameYieldMs = 5;
         function push2(heap, node) {
-          var index2 = heap.length;
+          var index = heap.length;
           heap.push(node);
-          siftUp(heap, node, index2);
+          siftUp(heap, node, index);
         }
         function peek(heap) {
           return heap.length === 0 ? null : heap[0];
@@ -12961,42 +12919,42 @@ function requireScheduler_development() {
           return first;
         }
         function siftUp(heap, node, i2) {
-          var index2 = i2;
-          while (index2 > 0) {
-            var parentIndex = index2 - 1 >>> 1;
+          var index = i2;
+          while (index > 0) {
+            var parentIndex = index - 1 >>> 1;
             var parent2 = heap[parentIndex];
             if (compare(parent2, node) > 0) {
               heap[parentIndex] = node;
-              heap[index2] = parent2;
-              index2 = parentIndex;
+              heap[index] = parent2;
+              index = parentIndex;
             } else {
               return;
             }
           }
         }
         function siftDown(heap, node, i2) {
-          var index2 = i2;
+          var index = i2;
           var length = heap.length;
           var halfLength = length >>> 1;
-          while (index2 < halfLength) {
-            var leftIndex = (index2 + 1) * 2 - 1;
+          while (index < halfLength) {
+            var leftIndex = (index + 1) * 2 - 1;
             var left = heap[leftIndex];
             var rightIndex = leftIndex + 1;
             var right = heap[rightIndex];
             if (compare(left, node) < 0) {
               if (rightIndex < length && compare(right, left) < 0) {
-                heap[index2] = right;
+                heap[index] = right;
                 heap[rightIndex] = node;
-                index2 = rightIndex;
+                index = rightIndex;
               } else {
-                heap[index2] = left;
+                heap[index] = left;
                 heap[leftIndex] = node;
-                index2 = leftIndex;
+                index = leftIndex;
               }
             } else if (rightIndex < length && compare(right, node) < 0) {
-              heap[index2] = right;
+              heap[index] = right;
               heap[rightIndex] = node;
-              index2 = rightIndex;
+              index = rightIndex;
             } else {
               return;
             }
@@ -13374,17 +13332,17 @@ if (process.env.NODE_ENV === "production") {
   scheduler.exports = requireScheduler_development();
 }
 var schedulerExports = scheduler.exports;
-const d = Symbol(), f = Symbol(), v = "undefined" == typeof window || /ServerSideRendering/.test(window.navigator && window.navigator.userAgent) ? React.useEffect : React.useLayoutEffect, a = schedulerExports.unstable_runWithPriority ? (e2) => schedulerExports.unstable_runWithPriority(schedulerExports.unstable_NormalPriority, e2) : (e2) => e2();
+const d = Symbol(), f = Symbol(), v = "undefined" == typeof window || /ServerSideRendering/.test(window.navigator && window.navigator.userAgent) ? useEffect : useLayoutEffect, a = schedulerExports.unstable_runWithPriority ? (e2) => schedulerExports.unstable_runWithPriority(schedulerExports.unstable_NormalPriority, e2) : (e2) => e2();
 function E(r2) {
-  const t2 = React.createContext({ [d]: { v: { current: r2 }, n: { current: -1 }, l: /* @__PURE__ */ new Set(), u: (e2) => e2() } });
+  const t2 = createContext$1({ [d]: { v: { current: r2 }, n: { current: -1 }, l: /* @__PURE__ */ new Set(), u: (e2) => e2() } });
   var o2;
   return t2[f] = t2.Provider, t2.Provider = (o2 = t2.Provider, ({ value: e2, children: r3 }) => {
-    const t3 = React.useRef(e2), c2 = React.useRef(0), [i2, p2] = React.useState(null);
+    const t3 = useRef(e2), c2 = useRef(0), [i2, p2] = useState(null);
     i2 && (i2(e2), p2(null));
-    const f2 = React.useRef();
+    const f2 = useRef();
     if (!f2.current) {
       const e3 = /* @__PURE__ */ new Set(), r4 = (r5, t4) => {
-        ReactDOM.unstable_batchedUpdates(() => {
+        unstable_batchedUpdates$1(() => {
           c2.current += 1;
           const n2 = { n: c2.current };
           null != t4 && t4.suspense && (n2.n *= -1, n2.p = new Promise((e4) => {
@@ -13402,13 +13360,13 @@ function E(r2) {
           r4({ n: c2.current, v: e2 });
         });
       });
-    }, [e2]), React.createElement(o2, { value: f2.current }, r3);
+    }, [e2]), createElement(o2, { value: f2.current }, r3);
   }), delete t2.Consumer, t2;
 }
 function h(e2, n2) {
-  const o2 = React.useContext(e2)[d];
+  const o2 = useContext(e2)[d];
   if ("object" == typeof process && "production" !== process.env.NODE_ENV && !o2) throw new Error("useContextSelector requires special context");
-  const { v: { current: c2 }, n: { current: u2 }, l: s2 } = o2, i2 = n2(c2), [p2, l2] = React.useReducer((e3, r2) => {
+  const { v: { current: c2 }, n: { current: u2 }, l: s2 } = o2, i2 = n2(c2), [p2, l2] = useReducer((e3, r2) => {
     if (!r2) return [c2, i2];
     if ("p" in r2) throw r2.p;
     if (r2.n === u2) return Object.is(e3[1], i2) ? e3 : [c2, i2];
@@ -13430,13 +13388,13 @@ function createContext(rootComponentName, defaultContext) {
   const Context = E(defaultContext);
   const Provider = (props) => {
     const { children, ...context } = props;
-    const value = React__namespace.useMemo(() => context, Object.values(context));
-    return /* @__PURE__ */ jsxRuntime.jsx(Context.Provider, {
+    const value = React.useMemo(() => context, Object.values(context));
+    return /* @__PURE__ */ jsx(Context.Provider, {
       value,
       children
     });
   };
-  function useContext(consumerName, selector, shouldThrowOnMissingContext) {
+  function useContext2(consumerName, selector, shouldThrowOnMissingContext) {
     return h(Context, (ctx) => {
       if (ctx) return selector(ctx);
       if (shouldThrowOnMissingContext) {
@@ -13448,7 +13406,7 @@ function createContext(rootComponentName, defaultContext) {
   Provider.displayName = rootComponentName + "Provider";
   return [
     Provider,
-    useContext
+    useContext2
   ];
 }
 createContext("StrapiApp");
@@ -15345,7 +15303,7 @@ var QueryClient = /* @__PURE__ */ function() {
   };
   return QueryClient2;
 }();
-var unstable_batchedUpdates = ReactDOM__default.default.unstable_batchedUpdates;
+var unstable_batchedUpdates = ReactDOM.unstable_batchedUpdates;
 notifyManager.setBatchNotifyFunction(unstable_batchedUpdates);
 var logger = console;
 setLogger(logger);
@@ -15362,33 +15320,33 @@ createContext("History", {
   }
 });
 function $c512c27ab02ef895$export$fd42f52fd3ae1109(rootComponentName, defaultContext) {
-  const Context = /* @__PURE__ */ React.createContext(defaultContext);
+  const Context = /* @__PURE__ */ createContext$1(defaultContext);
   function Provider(props) {
     const { children, ...context } = props;
-    const value = React.useMemo(
+    const value = useMemo(
       () => context,
       Object.values(context)
     );
-    return /* @__PURE__ */ React.createElement(Context.Provider, {
+    return /* @__PURE__ */ createElement(Context.Provider, {
       value
     }, children);
   }
-  function useContext(consumerName) {
-    const context = React.useContext(Context);
+  function useContext$1(consumerName) {
+    const context = useContext(Context);
     if (context) return context;
     throw new Error(`\`${consumerName}\` must be used within \`${rootComponentName}\``);
   }
   Provider.displayName = rootComponentName + "Provider";
   return [
     Provider,
-    useContext
+    useContext$1
   ];
 }
 function getByteSize(value) {
   return new TextEncoder().encode(value).length;
 }
 function baseSlice$2(array2, start, end) {
-  var index2 = -1, length = array2.length;
+  var index = -1, length = array2.length;
   if (start < 0) {
     start = -start > length ? 0 : length + start;
   }
@@ -15399,8 +15357,8 @@ function baseSlice$2(array2, start, end) {
   length = start > end ? 0 : end - start >>> 0;
   start >>>= 0;
   var result = Array(length);
-  while (++index2 < length) {
-    result[index2] = array2[index2 + start];
+  while (++index < length) {
+    result[index] = array2[index + start];
   }
   return result;
 }
@@ -15553,7 +15511,7 @@ const admin = adminApi.enhanceEndpoints({
   overrideExisting: false
 });
 const { useInitQuery, useTelemetryPropertiesQuery, useInformationQuery, useProjectSettingsQuery, useUpdateProjectSettingsMutation, useGetPluginsQuery, useGetLicenseLimitsQuery, useGetLicenseTrialTimeLeftQuery, useGetGuidedTourMetaQuery } = admin;
-function bind(fn2, thisArg) {
+function bind2(fn2, thisArg) {
   return function wrap() {
     return fn2.apply(thisArg, arguments);
   };
@@ -15690,7 +15648,7 @@ function merge2() {
 const extend = (a2, b2, thisArg, { allOwnKeys } = {}) => {
   forEach$1(b2, (val, key) => {
     if (thisArg && isFunction$1(val)) {
-      a2[key] = bind(val, thisArg);
+      a2[key] = bind2(val, thisArg);
     } else {
       a2[key] = val;
     }
@@ -16082,10 +16040,10 @@ function toFormData$1(obj, formData, options) {
         value = JSON.stringify(value);
       } else if (utils$1.isArray(value) && isFlatArray(value) || (utils$1.isFileList(value) || utils$1.endsWith(key, "[]")) && (arr = utils$1.toArray(value))) {
         key = removeBrackets(key);
-        arr.forEach(function each(el, index2) {
+        arr.forEach(function each(el, index) {
           !(utils$1.isUndefined(el) || el === null) && formData.append(
             // eslint-disable-next-line no-nested-ternary
-            indexes === true ? renderKey([key], index2, dots) : indexes === null ? key : key + "[]",
+            indexes === true ? renderKey([key], index, dots) : indexes === null ? key : key + "[]",
             convertValue(el)
           );
         });
@@ -16317,11 +16275,11 @@ function arrayToObject2(arr) {
   return obj;
 }
 function formDataToJSON(formData) {
-  function buildPath(path, value, target, index2) {
-    let name = path[index2++];
+  function buildPath(path, value, target, index) {
+    let name = path[index++];
     if (name === "__proto__") return true;
     const isNumericKey = Number.isFinite(+name);
-    const isLast = index2 >= path.length;
+    const isLast = index >= path.length;
     name = !name && utils$1.isArray(target) ? target.length : name;
     if (isLast) {
       if (utils$1.hasOwnProp(target, name)) {
@@ -16334,7 +16292,7 @@ function formDataToJSON(formData) {
     if (!target[name] || !utils$1.isObject(target[name])) {
       target[name] = [];
     }
-    const result = buildPath(path, value, target[name], index2);
+    const result = buildPath(path, value, target[name], index);
     if (result && utils$1.isArray(target[name])) {
       target[name] = arrayToObject2(target[name]);
     }
@@ -17863,9 +17821,9 @@ let CancelToken$1 = class CancelToken {
     if (!this._listeners) {
       return;
     }
-    const index2 = this._listeners.indexOf(listener);
-    if (index2 !== -1) {
-      this._listeners.splice(index2, 1);
+    const index = this._listeners.indexOf(listener);
+    if (index !== -1) {
+      this._listeners.splice(index, 1);
     }
   }
   toAbortSignal() {
@@ -17970,7 +17928,7 @@ Object.entries(HttpStatusCode$1).forEach(([key, value]) => {
 });
 function createInstance(defaultConfig) {
   const context = new Axios$1(defaultConfig);
-  const instance = bind(Axios$1.prototype.request, context);
+  const instance = bind2(Axios$1.prototype.request, context);
   utils$1.extend(instance, Axios$1.prototype, context, { allOwnKeys: true });
   utils$1.extend(instance, context, null, { allOwnKeys: true });
   instance.create = function create2(instanceConfig) {
@@ -18017,8 +17975,8 @@ const {
   mergeConfig
 } = axios;
 function useDeviceType() {
-  const [deviceType, setDeviceType] = React__namespace.useState("desktop");
-  React__namespace.useEffect(() => {
+  const [deviceType, setDeviceType] = React.useState("desktop");
+  React.useEffect(() => {
     const userAgent = navigator.userAgent.toLowerCase();
     if (/mobile|iphone|ipod|android.*mobile|windows phone/.test(userAgent)) {
       setDeviceType("mobile");
@@ -18031,14 +17989,14 @@ function useDeviceType() {
   return deviceType;
 }
 const [AppInfoProvider, useAppInfo] = createContext("AppInfo", {});
-const TrackingContext = /* @__PURE__ */ React__namespace.createContext({
+const TrackingContext = /* @__PURE__ */ React.createContext({
   uuid: false
 });
 const useTracking = () => {
   const deviceType = useDeviceType();
-  const { uuid, telemetryProperties } = React__namespace.useContext(TrackingContext);
+  const { uuid, telemetryProperties } = React.useContext(TrackingContext);
   const userId = useAppInfo("useTracking", (state) => state.userId);
-  const trackUsage = React__namespace.useCallback(async (event, properties) => {
+  const trackUsage = React.useCallback(async (event, properties) => {
     try {
       if (uuid && !window.strapi.telemetryDisabled) {
         const res = await axios.post(`${process.env.STRAPI_ANALYTICS_URL || "https://analytics.strapi.io"}/api/v2/track`, {
@@ -18092,10 +18050,10 @@ const StepCount = ({ tourName, displayedCurrentStep, displayedTourLength }) => {
   const state = useGuidedTour("GuidedTourPopover", (s2) => s2.state);
   const currentStep = displayedCurrentStep ?? state.tours[tourName].currentStep + 1;
   const displayedStepCount = displayedTourLength ?? tours[tourName]._meta.displayedStepCount;
-  return /* @__PURE__ */ jsxRuntime.jsx(designSystem.Typography, {
+  return /* @__PURE__ */ jsx(Typography, {
     variant: "omega",
     fontSize: "12px",
-    children: /* @__PURE__ */ jsxRuntime.jsx(reactIntl.FormattedMessage, {
+    children: /* @__PURE__ */ jsx(FormattedMessage, {
       id: "tours.stepCount",
       defaultMessage: "Step {currentStep} of {tourLength}",
       values: {
@@ -18106,9 +18064,9 @@ const StepCount = ({ tourName, displayedCurrentStep, displayedTourLength }) => {
   });
 };
 const GotItAction = ({ onClick }) => {
-  return /* @__PURE__ */ jsxRuntime.jsx(designSystem.Button, {
+  return /* @__PURE__ */ jsx(Button, {
     onClick,
-    children: /* @__PURE__ */ jsxRuntime.jsx(reactIntl.FormattedMessage, {
+    children: /* @__PURE__ */ jsx(FormattedMessage, {
       id: "tours.gotIt",
       defaultMessage: "Got it"
     })
@@ -18154,36 +18112,36 @@ const DefaultActions = ({ showSkip, showPrevious, to, tourName, onNextStep, onPr
       });
     }
   };
-  return /* @__PURE__ */ jsxRuntime.jsxs(designSystem.Flex, {
+  return /* @__PURE__ */ jsxs(Flex, {
     gap: 2,
     children: [
-      showSkip && /* @__PURE__ */ jsxRuntime.jsx(designSystem.Button, {
+      showSkip && /* @__PURE__ */ jsx(Button, {
         variant: "tertiary",
         onClick: handleSkip,
-        children: /* @__PURE__ */ jsxRuntime.jsx(reactIntl.FormattedMessage, {
+        children: /* @__PURE__ */ jsx(FormattedMessage, {
           id: "tours.skip",
           defaultMessage: "Skip"
         })
       }),
-      !showSkip && showPrevious && /* @__PURE__ */ jsxRuntime.jsx(designSystem.Button, {
+      !showSkip && showPrevious && /* @__PURE__ */ jsx(Button, {
         variant: "tertiary",
         onClick: handlePreviousStep,
-        children: /* @__PURE__ */ jsxRuntime.jsx(reactIntl.FormattedMessage, {
+        children: /* @__PURE__ */ jsx(FormattedMessage, {
           id: "tours.previous",
           defaultMessage: "Previous"
         })
       }),
-      to ? /* @__PURE__ */ jsxRuntime.jsx(designSystem.LinkButton, {
+      to ? /* @__PURE__ */ jsx(LinkButton, {
         tag: NavLink,
         to,
         onClick: handleNextStep,
-        children: /* @__PURE__ */ jsxRuntime.jsx(reactIntl.FormattedMessage, {
+        children: /* @__PURE__ */ jsx(FormattedMessage, {
           id: "tours.next",
           defaultMessage: "Next"
         })
-      }) : /* @__PURE__ */ jsxRuntime.jsx(designSystem.Button, {
+      }) : /* @__PURE__ */ jsx(Button, {
         onClick: handleNextStep,
-        children: /* @__PURE__ */ jsxRuntime.jsx(reactIntl.FormattedMessage, {
+        children: /* @__PURE__ */ jsx(FormattedMessage, {
           id: "tours.next",
           defaultMessage: "Next"
         })
@@ -18191,10 +18149,10 @@ const DefaultActions = ({ showSkip, showPrevious, to, tourName, onNextStep, onPr
     ]
   });
 };
-const ActionsContainer = styled.styled(designSystem.Flex)`
+const ActionsContainer = styled(Flex)`
   border-top: ${({ theme }) => `1px solid ${theme.colors.neutral150}`};
 `;
-const ContentContainer = styled.styled(designSystem.Box)`
+const ContentContainer = styled(Box)`
   p {
     margin-top: ${({ theme }) => theme.spaces[5]};
   }
@@ -18203,13 +18161,13 @@ const ContentContainer = styled.styled(designSystem.Box)`
     padding-left: ${({ theme }) => theme.spaces[4]};
   }
 `;
-const PopoverArrow = styled.styled(designSystem.Popover.Arrow)`
+const PopoverArrow = styled(Popover.Arrow)`
   fill: ${({ theme }) => theme.colors.neutral0};
   transform: translateY(-16px) rotate(-90deg);
 `;
 const createStepComponents = (tourName) => ({
-  Root: /* @__PURE__ */ React__namespace.forwardRef(({ withArrow = true, ...props }, ref2) => {
-    return /* @__PURE__ */ jsxRuntime.jsxs(designSystem.Popover.Content, {
+  Root: /* @__PURE__ */ React.forwardRef(({ withArrow = true, ...props }, ref2) => {
+    return /* @__PURE__ */ jsxs(Popover.Content, {
       ref: ref2,
       "aria-labelledby": "guided-tour-title",
       side: "top",
@@ -18220,20 +18178,20 @@ const createStepComponents = (tourName) => ({
       onClick: (e2) => e2.stopPropagation(),
       ...props,
       children: [
-        withArrow && /* @__PURE__ */ jsxRuntime.jsx(PopoverArrow, {
+        withArrow && /* @__PURE__ */ jsx(PopoverArrow, {
           asChild: true,
-          children: /* @__PURE__ */ jsxRuntime.jsx("svg", {
+          children: /* @__PURE__ */ jsx("svg", {
             xmlns: "http://www.w3.org/2000/svg",
             width: "23",
             height: "25",
             viewBox: "0 0 23 25",
             fill: "none",
-            children: /* @__PURE__ */ jsxRuntime.jsx("path", {
+            children: /* @__PURE__ */ jsx("path", {
               d: "M11 24.5L1.82843 15.3284C0.266332 13.7663 0.26633 11.2337 1.82843 9.67157L11 0.5L23 12.5L11 24.5Z"
             })
           })
         }),
-        /* @__PURE__ */ jsxRuntime.jsx(designSystem.Flex, {
+        /* @__PURE__ */ jsx(Flex, {
           width: "360px",
           direction: "column",
           alignItems: "start",
@@ -18243,18 +18201,18 @@ const createStepComponents = (tourName) => ({
     });
   }),
   Title: (props) => {
-    return /* @__PURE__ */ jsxRuntime.jsx(designSystem.Box, {
+    return /* @__PURE__ */ jsx(Box, {
       paddingTop: 5,
       paddingLeft: 5,
       paddingRight: 5,
       paddingBottom: 1,
       width: "100%",
-      children: "children" in props ? props.children : /* @__PURE__ */ jsxRuntime.jsx(designSystem.Typography, {
+      children: "children" in props ? props.children : /* @__PURE__ */ jsx(Typography, {
         tag: "h1",
         id: "guided-tour-title",
         variant: "omega",
         fontWeight: "bold",
-        children: /* @__PURE__ */ jsxRuntime.jsx(reactIntl.FormattedMessage, {
+        children: /* @__PURE__ */ jsx(FormattedMessage, {
           id: props.id,
           defaultMessage: props.defaultMessage
         })
@@ -18262,7 +18220,7 @@ const createStepComponents = (tourName) => ({
     });
   },
   Content: (props) => {
-    const { formatMessage } = reactIntl.useIntl();
+    const { formatMessage } = useIntl();
     let content = "";
     if (!("children" in props)) {
       content = formatMessage({
@@ -18270,13 +18228,13 @@ const createStepComponents = (tourName) => ({
         defaultMessage: props.defaultMessage
       });
     }
-    return /* @__PURE__ */ jsxRuntime.jsx(designSystem.Box, {
+    return /* @__PURE__ */ jsx(Box, {
       paddingBottom: 5,
       paddingLeft: 5,
       paddingRight: 5,
       width: "100%",
-      children: "children" in props ? props.children : /* @__PURE__ */ jsxRuntime.jsx(ContentContainer, {
-        children: /* @__PURE__ */ jsxRuntime.jsx(designSystem.Typography, {
+      children: "children" in props ? props.children : /* @__PURE__ */ jsx(ContentContainer, {
+        children: /* @__PURE__ */ jsx(Typography, {
           tag: "div",
           variant: "omega",
           dangerouslySetInnerHTML: {
@@ -18287,18 +18245,18 @@ const createStepComponents = (tourName) => ({
     });
   },
   Actions: ({ showStepCount = true, showPrevious = true, showSkip = false, to, children, ...flexProps }) => {
-    return /* @__PURE__ */ jsxRuntime.jsx(ActionsContainer, {
+    return /* @__PURE__ */ jsx(ActionsContainer, {
       width: "100%",
       padding: 3,
       paddingLeft: 5,
       justifyContent: showStepCount ? "space-between" : "flex-end",
       ...flexProps,
-      children: children ? children : /* @__PURE__ */ jsxRuntime.jsxs(jsxRuntime.Fragment, {
+      children: children ? children : /* @__PURE__ */ jsxs(Fragment, {
         children: [
-          showStepCount && /* @__PURE__ */ jsxRuntime.jsx(StepCount, {
+          showStepCount && /* @__PURE__ */ jsx(StepCount, {
             tourName
           }),
-          /* @__PURE__ */ jsxRuntime.jsx(DefaultActions, {
+          /* @__PURE__ */ jsx(DefaultActions, {
             tourName,
             showSkip,
             showPrevious: !showSkip && showPrevious,
@@ -18309,57 +18267,57 @@ const createStepComponents = (tourName) => ({
     });
   }
 });
-const Introduction$2 = ({ Step }) => /* @__PURE__ */ jsxRuntime.jsxs(Step.Root, {
+const Introduction$2 = ({ Step }) => /* @__PURE__ */ jsxs(Step.Root, {
   side: "top",
   sideOffset: 32,
   withArrow: false,
   children: [
-    /* @__PURE__ */ jsxRuntime.jsx(Step.Title, {
+    /* @__PURE__ */ jsx(Step.Title, {
       id: "tours.apiTokens.Introduction.title",
       defaultMessage: "Last but not least, API tokens"
     }),
-    /* @__PURE__ */ jsxRuntime.jsx(Step.Content, {
+    /* @__PURE__ */ jsx(Step.Content, {
       id: "tours.apiTokens.Introduction.content",
       defaultMessage: "Control API access with highly customizable permissions."
     }),
-    /* @__PURE__ */ jsxRuntime.jsx(Step.Actions, {
+    /* @__PURE__ */ jsx(Step.Actions, {
       showSkip: true
     })
   ]
 });
-const ManageAPIToken = ({ Step }) => /* @__PURE__ */ jsxRuntime.jsxs(Step.Root, {
+const ManageAPIToken = ({ Step }) => /* @__PURE__ */ jsxs(Step.Root, {
   side: "bottom",
   align: "end",
   children: [
-    /* @__PURE__ */ jsxRuntime.jsx(Step.Title, {
+    /* @__PURE__ */ jsx(Step.Title, {
       id: "tours.apiTokens.ManageAPIToken.title",
       defaultMessage: "Manage an API token"
     }),
-    /* @__PURE__ */ jsxRuntime.jsx(Step.Content, {
+    /* @__PURE__ */ jsx(Step.Content, {
       id: "tours.apiTokens.ManageAPIToken.content",
       defaultMessage: 'Click the "Pencil" icon to view and update an existing API token.'
     }),
-    /* @__PURE__ */ jsxRuntime.jsx(Step.Actions, {})
+    /* @__PURE__ */ jsx(Step.Actions, {})
   ]
 });
-const ViewAPIToken = ({ Step, dispatch }) => /* @__PURE__ */ jsxRuntime.jsxs(Step.Root, {
+const ViewAPIToken = ({ Step, dispatch }) => /* @__PURE__ */ jsxs(Step.Root, {
   side: "bottom",
   align: "end",
   children: [
-    /* @__PURE__ */ jsxRuntime.jsx(Step.Title, {
+    /* @__PURE__ */ jsx(Step.Title, {
       id: "tours.apiTokens.ViewAPIToken.title",
       defaultMessage: "View API token"
     }),
-    /* @__PURE__ */ jsxRuntime.jsx(Step.Content, {
+    /* @__PURE__ */ jsx(Step.Content, {
       id: "tours.apiTokens.ViewAPIToken.content",
       defaultMessage: 'Click the "View token" button to see your API token.'
     }),
-    /* @__PURE__ */ jsxRuntime.jsxs(Step.Actions, {
+    /* @__PURE__ */ jsxs(Step.Actions, {
       children: [
-        /* @__PURE__ */ jsxRuntime.jsx(StepCount, {
+        /* @__PURE__ */ jsx(StepCount, {
           tourName: "apiTokens"
         }),
-        /* @__PURE__ */ jsxRuntime.jsx(GotItAction, {
+        /* @__PURE__ */ jsx(GotItAction, {
           onClick: () => dispatch({
             type: "next_step",
             payload: "apiTokens"
@@ -18369,35 +18327,35 @@ const ViewAPIToken = ({ Step, dispatch }) => /* @__PURE__ */ jsxRuntime.jsxs(Ste
     })
   ]
 });
-const CopyAPIToken = ({ Step, dispatch }) => /* @__PURE__ */ jsxRuntime.jsxs(Step.Root, {
+const CopyAPIToken = ({ Step, dispatch }) => /* @__PURE__ */ jsxs(Step.Root, {
   side: "bottom",
   align: "start",
   sideOffset: -5,
   children: [
-    /* @__PURE__ */ jsxRuntime.jsx(Step.Title, {
+    /* @__PURE__ */ jsx(Step.Title, {
       id: "tours.apiTokens.CopyAPIToken.title",
       defaultMessage: "Copy your new API token"
     }),
-    /* @__PURE__ */ jsxRuntime.jsx(Step.Content, {
+    /* @__PURE__ */ jsx(Step.Content, {
       id: "tours.apiTokens.CopyAPIToken.content",
       defaultMessage: "Copy your API token",
       values: {
-        spacer: /* @__PURE__ */ jsxRuntime.jsx(designSystem.Box, {
+        spacer: /* @__PURE__ */ jsx(Box, {
           paddingTop: 2
         }),
-        a: (msg) => /* @__PURE__ */ jsxRuntime.jsx(designSystem.Link, {
+        a: (msg) => /* @__PURE__ */ jsx(Link$1, {
           isExternal: true,
           href: "https://docs.strapi.io/cms/features/api-tokens#usage",
           children: msg
         })
       }
     }),
-    /* @__PURE__ */ jsxRuntime.jsxs(Step.Actions, {
+    /* @__PURE__ */ jsxs(Step.Actions, {
       children: [
-        /* @__PURE__ */ jsxRuntime.jsx(StepCount, {
+        /* @__PURE__ */ jsx(StepCount, {
           tourName: "apiTokens"
         }),
-        /* @__PURE__ */ jsxRuntime.jsx(GotItAction, {
+        /* @__PURE__ */ jsx(GotItAction, {
           onClick: () => dispatch({
             type: "next_step",
             payload: "apiTokens"
@@ -18407,19 +18365,19 @@ const CopyAPIToken = ({ Step, dispatch }) => /* @__PURE__ */ jsxRuntime.jsxs(Ste
     })
   ]
 });
-const Finish$2 = ({ Step }) => /* @__PURE__ */ jsxRuntime.jsxs(Step.Root, {
+const Finish$2 = ({ Step }) => /* @__PURE__ */ jsxs(Step.Root, {
   side: "right",
   align: "start",
   children: [
-    /* @__PURE__ */ jsxRuntime.jsx(Step.Title, {
+    /* @__PURE__ */ jsx(Step.Title, {
       id: "tours.apiTokens.FinalStep.title",
       defaultMessage: "Congratulations, it's time to deploy your application!"
     }),
-    /* @__PURE__ */ jsxRuntime.jsx(Step.Content, {
+    /* @__PURE__ */ jsx(Step.Content, {
       id: "tours.apiTokens.FinalStep.content",
       defaultMessage: "Your application is ready to be deployed and its content to be shared with the world!"
     }),
-    /* @__PURE__ */ jsxRuntime.jsx(Step.Actions, {
+    /* @__PURE__ */ jsx(Step.Actions, {
       showPrevious: false,
       showStepCount: false,
       to: "/"
@@ -18498,27 +18456,27 @@ const ContentManagerActions = ({ isActionRequired = false, ...props }) => {
     }
   };
   if (isActionRequired) {
-    return /* @__PURE__ */ jsxRuntime.jsxs(jsxRuntime.Fragment, {
+    return /* @__PURE__ */ jsxs(Fragment, {
       children: [
-        /* @__PURE__ */ jsxRuntime.jsx(StepCount, {
+        /* @__PURE__ */ jsx(StepCount, {
           tourName: "contentManager",
           displayedCurrentStep,
           displayedTourLength
         }),
-        /* @__PURE__ */ jsxRuntime.jsx(GotItAction, {
+        /* @__PURE__ */ jsx(GotItAction, {
           onClick: handleNextStep
         })
       ]
     });
   }
-  return /* @__PURE__ */ jsxRuntime.jsxs(jsxRuntime.Fragment, {
+  return /* @__PURE__ */ jsxs(Fragment, {
     children: [
-      /* @__PURE__ */ jsxRuntime.jsx(StepCount, {
+      /* @__PURE__ */ jsx(StepCount, {
         tourName: "contentManager",
         displayedCurrentStep,
         displayedTourLength
       }),
-      /* @__PURE__ */ jsxRuntime.jsx(DefaultActions, {
+      /* @__PURE__ */ jsx(DefaultActions, {
         tourName: "contentManager",
         onNextStep: handleNextStep,
         onPreviousStep: handlePreviousStep,
@@ -18528,21 +18486,21 @@ const ContentManagerActions = ({ isActionRequired = false, ...props }) => {
   });
 };
 const Introduction$1 = ({ Step }) => {
-  return /* @__PURE__ */ jsxRuntime.jsxs(Step.Root, {
+  return /* @__PURE__ */ jsxs(Step.Root, {
     side: "top",
     sideOffset: 33,
     withArrow: false,
     children: [
-      /* @__PURE__ */ jsxRuntime.jsx(Step.Title, {
+      /* @__PURE__ */ jsx(Step.Title, {
         id: "tours.contentManager.Introduction.title",
         defaultMessage: "Content manager"
       }),
-      /* @__PURE__ */ jsxRuntime.jsx(Step.Content, {
+      /* @__PURE__ */ jsx(Step.Content, {
         id: "tours.contentManager.Introduction.content",
         defaultMessage: "Create and manage content from your collection types and single types."
       }),
-      /* @__PURE__ */ jsxRuntime.jsx(Step.Actions, {
-        children: /* @__PURE__ */ jsxRuntime.jsx(ContentManagerActions, {
+      /* @__PURE__ */ jsx(Step.Actions, {
+        children: /* @__PURE__ */ jsx(ContentManagerActions, {
           showSkip: true
         })
       })
@@ -18550,75 +18508,75 @@ const Introduction$1 = ({ Step }) => {
   });
 };
 const CreateNewEntry = ({ Step }) => {
-  return /* @__PURE__ */ jsxRuntime.jsxs(Step.Root, {
+  return /* @__PURE__ */ jsxs(Step.Root, {
     side: "bottom",
     align: "end",
     children: [
-      /* @__PURE__ */ jsxRuntime.jsx(Step.Title, {
+      /* @__PURE__ */ jsx(Step.Title, {
         id: "tours.contentManager.CreateNewEntry.title",
         defaultMessage: "Create new entry"
       }),
-      /* @__PURE__ */ jsxRuntime.jsx(Step.Content, {
+      /* @__PURE__ */ jsx(Step.Content, {
         id: "tours.contentManager.CreateNewEntry.content",
         defaultMessage: 'Click the "Create new entry" button to create and publish a new entry for this collection type.'
       }),
-      /* @__PURE__ */ jsxRuntime.jsx(Step.Actions, {
-        children: /* @__PURE__ */ jsxRuntime.jsx(ContentManagerActions, {
+      /* @__PURE__ */ jsx(Step.Actions, {
+        children: /* @__PURE__ */ jsx(ContentManagerActions, {
           showPrevious: true
         })
       })
     ]
   });
 };
-const Fields = ({ Step }) => /* @__PURE__ */ jsxRuntime.jsxs(Step.Root, {
+const Fields = ({ Step }) => /* @__PURE__ */ jsxs(Step.Root, {
   sideOffset: -12,
   children: [
-    /* @__PURE__ */ jsxRuntime.jsx(Step.Title, {
+    /* @__PURE__ */ jsx(Step.Title, {
       id: "tours.contentManager.Fields.title",
       defaultMessage: "Fields"
     }),
-    /* @__PURE__ */ jsxRuntime.jsx(Step.Content, {
+    /* @__PURE__ */ jsx(Step.Content, {
       id: "tours.contentManager.Fields.content",
       defaultMessage: "First, fill in the fields you created in the Content-Type Builder."
     }),
-    /* @__PURE__ */ jsxRuntime.jsx(Step.Actions, {
-      children: /* @__PURE__ */ jsxRuntime.jsx(ContentManagerActions, {
+    /* @__PURE__ */ jsx(Step.Actions, {
+      children: /* @__PURE__ */ jsx(ContentManagerActions, {
         showPrevious: true
       })
     })
   ]
 });
-const Publish = ({ Step }) => /* @__PURE__ */ jsxRuntime.jsxs(Step.Root, {
+const Publish = ({ Step }) => /* @__PURE__ */ jsxs(Step.Root, {
   side: "left",
   align: "center",
   children: [
-    /* @__PURE__ */ jsxRuntime.jsx(Step.Title, {
+    /* @__PURE__ */ jsx(Step.Title, {
       id: "tours.contentManager.Publish.title",
       defaultMessage: "Publish"
     }),
-    /* @__PURE__ */ jsxRuntime.jsx(Step.Content, {
+    /* @__PURE__ */ jsx(Step.Content, {
       id: "tours.contentManager.Publish.content",
       defaultMessage: 'Then click the "Publish" button to make your content available through the content API.'
     }),
-    /* @__PURE__ */ jsxRuntime.jsx(Step.Actions, {
-      children: /* @__PURE__ */ jsxRuntime.jsx(ContentManagerActions, {
+    /* @__PURE__ */ jsx(Step.Actions, {
+      children: /* @__PURE__ */ jsx(ContentManagerActions, {
         isActionRequired: true
       })
     })
   ]
 });
-const Finish$1 = ({ Step }) => /* @__PURE__ */ jsxRuntime.jsxs(Step.Root, {
+const Finish$1 = ({ Step }) => /* @__PURE__ */ jsxs(Step.Root, {
   side: "right",
   children: [
-    /* @__PURE__ */ jsxRuntime.jsx(Step.Title, {
+    /* @__PURE__ */ jsx(Step.Title, {
       id: "tours.contentManager.FinalStep.title",
       defaultMessage: "Time to setup API tokens!"
     }),
-    /* @__PURE__ */ jsxRuntime.jsx(Step.Content, {
+    /* @__PURE__ */ jsx(Step.Content, {
       id: "tours.contentManager.FinalStep.content",
       defaultMessage: "Now that you've created and published an entry, let's setup an API token to manage access to your content."
     }),
-    /* @__PURE__ */ jsxRuntime.jsx(Step.Actions, {
+    /* @__PURE__ */ jsx(Step.Actions, {
       showStepCount: false,
       showPrevious: false,
       to: "/settings/api-tokens"
@@ -18719,14 +18677,14 @@ const ContentTypeBuilderActions = ({ ...props }) => {
       });
     }
   };
-  return /* @__PURE__ */ jsxRuntime.jsxs(jsxRuntime.Fragment, {
+  return /* @__PURE__ */ jsxs(Fragment, {
     children: [
-      /* @__PURE__ */ jsxRuntime.jsx(StepCount, {
+      /* @__PURE__ */ jsx(StepCount, {
         tourName: "contentTypeBuilder",
         displayedCurrentStep,
         displayedTourLength
       }),
-      props.children || /* @__PURE__ */ jsxRuntime.jsx(DefaultActions, {
+      props.children || /* @__PURE__ */ jsx(DefaultActions, {
         tourName: "contentTypeBuilder",
         onNextStep: handleNextStep,
         onPreviousStep: handlePreviousStep,
@@ -18735,134 +18693,134 @@ const ContentTypeBuilderActions = ({ ...props }) => {
     ]
   });
 };
-const Introduction = ({ Step }) => /* @__PURE__ */ jsxRuntime.jsxs(Step.Root, {
+const Introduction = ({ Step }) => /* @__PURE__ */ jsxs(Step.Root, {
   sideOffset: 33,
   withArrow: false,
   children: [
-    /* @__PURE__ */ jsxRuntime.jsx(Step.Title, {
+    /* @__PURE__ */ jsx(Step.Title, {
       id: "tours.contentTypeBuilder.Introduction.title",
       defaultMessage: "Content-Type Builder"
     }),
-    /* @__PURE__ */ jsxRuntime.jsx(Step.Content, {
+    /* @__PURE__ */ jsx(Step.Content, {
       id: "tours.contentTypeBuilder.Introduction.content",
       defaultMessage: "Create and manage your content structure with collection types, single types and components."
     }),
-    /* @__PURE__ */ jsxRuntime.jsx(Step.Actions, {
-      children: /* @__PURE__ */ jsxRuntime.jsx(ContentTypeBuilderActions, {
+    /* @__PURE__ */ jsx(Step.Actions, {
+      children: /* @__PURE__ */ jsx(ContentTypeBuilderActions, {
         showSkip: true
       })
     })
   ]
 });
-const AIChat = ({ Step }) => /* @__PURE__ */ jsxRuntime.jsxs(Step.Root, {
+const AIChat = ({ Step }) => /* @__PURE__ */ jsxs(Step.Root, {
   side: "left",
   children: [
-    /* @__PURE__ */ jsxRuntime.jsx(Step.Title, {
+    /* @__PURE__ */ jsx(Step.Title, {
       id: "tours.contentTypeBuilder.AIChat.title",
       defaultMessage: "Time to get started!"
     }),
-    /* @__PURE__ */ jsxRuntime.jsx(Step.Content, {
+    /* @__PURE__ */ jsx(Step.Content, {
       id: "tours.contentTypeBuilder.AIChat.content",
       defaultMessage: "<p>If you have any questions about the Content-Type Builder or Strapi ask them here.</p><p>Strapi AI can generate schemas tailored to your needs. Ask for exactly what you want, for example:<ul><li>Date picker</li><li>Email and password fields</li><li>Media of any type</li><li>UIDs</li></ul></p><p>Don’t be shy, try it out !</p>"
     }),
-    /* @__PURE__ */ jsxRuntime.jsx(Step.Actions, {
-      children: /* @__PURE__ */ jsxRuntime.jsx(ContentTypeBuilderActions, {
+    /* @__PURE__ */ jsx(Step.Actions, {
+      children: /* @__PURE__ */ jsx(ContentTypeBuilderActions, {
         showPrevious: true
       })
     })
   ]
 });
-const CollectionTypes = ({ Step }) => /* @__PURE__ */ jsxRuntime.jsxs(Step.Root, {
+const CollectionTypes = ({ Step }) => /* @__PURE__ */ jsxs(Step.Root, {
   side: "right",
   sideOffset: 16,
   children: [
-    /* @__PURE__ */ jsxRuntime.jsx(Step.Title, {
+    /* @__PURE__ */ jsx(Step.Title, {
       id: "tours.contentTypeBuilder.CollectionTypes.title",
       defaultMessage: "Collection Types"
     }),
-    /* @__PURE__ */ jsxRuntime.jsx(Step.Content, {
+    /* @__PURE__ */ jsx(Step.Content, {
       id: "tours.contentTypeBuilder.CollectionTypes.content",
       defaultMessage: "A content structure that can manage multiple entries, such as articles or products."
     }),
-    /* @__PURE__ */ jsxRuntime.jsx(Step.Actions, {
-      children: /* @__PURE__ */ jsxRuntime.jsx(ContentTypeBuilderActions, {
+    /* @__PURE__ */ jsx(Step.Actions, {
+      children: /* @__PURE__ */ jsx(ContentTypeBuilderActions, {
         showPrevious: true
       })
     })
   ]
 });
-const SingleTypes = ({ Step }) => /* @__PURE__ */ jsxRuntime.jsxs(Step.Root, {
+const SingleTypes = ({ Step }) => /* @__PURE__ */ jsxs(Step.Root, {
   side: "right",
   sideOffset: 16,
   children: [
-    /* @__PURE__ */ jsxRuntime.jsx(Step.Title, {
+    /* @__PURE__ */ jsx(Step.Title, {
       id: "tours.contentTypeBuilder.SingleTypes.title",
       defaultMessage: "Single Types"
     }),
-    /* @__PURE__ */ jsxRuntime.jsx(Step.Content, {
+    /* @__PURE__ */ jsx(Step.Content, {
       id: "tours.contentTypeBuilder.SingleTypes.content",
       defaultMessage: "A content structure that can manage a single entry, such as a homepage or a header."
     }),
-    /* @__PURE__ */ jsxRuntime.jsx(Step.Actions, {
-      children: /* @__PURE__ */ jsxRuntime.jsx(ContentTypeBuilderActions, {
+    /* @__PURE__ */ jsx(Step.Actions, {
+      children: /* @__PURE__ */ jsx(ContentTypeBuilderActions, {
         showPrevious: true
       })
     })
   ]
 });
-const Components = ({ Step }) => /* @__PURE__ */ jsxRuntime.jsxs(Step.Root, {
+const Components = ({ Step }) => /* @__PURE__ */ jsxs(Step.Root, {
   side: "right",
   sideOffset: 16,
   children: [
-    /* @__PURE__ */ jsxRuntime.jsx(Step.Title, {
+    /* @__PURE__ */ jsx(Step.Title, {
       id: "tours.contentTypeBuilder.Components.title",
       defaultMessage: "Components"
     }),
-    /* @__PURE__ */ jsxRuntime.jsx(Step.Content, {
+    /* @__PURE__ */ jsx(Step.Content, {
       id: "tours.contentTypeBuilder.Components.content",
       defaultMessage: "A reusable content structure that can be used across multiple content types, such as buttons, sliders or cards."
     }),
-    /* @__PURE__ */ jsxRuntime.jsx(Step.Actions, {
-      children: /* @__PURE__ */ jsxRuntime.jsx(ContentTypeBuilderActions, {
+    /* @__PURE__ */ jsx(Step.Actions, {
+      children: /* @__PURE__ */ jsx(ContentTypeBuilderActions, {
         showPrevious: true
       })
     })
   ]
 });
-const YourTurn = ({ Step }) => /* @__PURE__ */ jsxRuntime.jsxs(Step.Root, {
+const YourTurn = ({ Step }) => /* @__PURE__ */ jsxs(Step.Root, {
   side: "right",
   sideOffset: 16,
   children: [
-    /* @__PURE__ */ jsxRuntime.jsx(Step.Title, {
+    /* @__PURE__ */ jsx(Step.Title, {
       id: "tours.contentTypeBuilder.YourTurn.title",
       defaultMessage: "Your turn"
     }),
-    /* @__PURE__ */ jsxRuntime.jsx(Step.Content, {
+    /* @__PURE__ */ jsx(Step.Content, {
       id: "tours.contentTypeBuilder.YourTurn.content",
       defaultMessage: "Create a collection type or single type and configure it."
     }),
-    /* @__PURE__ */ jsxRuntime.jsx(Step.Actions, {
-      children: /* @__PURE__ */ jsxRuntime.jsx(ContentTypeBuilderActions, {
+    /* @__PURE__ */ jsx(Step.Actions, {
+      children: /* @__PURE__ */ jsx(ContentTypeBuilderActions, {
         showPrevious: true
       })
     })
   ]
 });
-const AddFields = ({ Step, dispatch }) => /* @__PURE__ */ jsxRuntime.jsxs(Step.Root, {
+const AddFields = ({ Step, dispatch }) => /* @__PURE__ */ jsxs(Step.Root, {
   side: "bottom",
   children: [
-    /* @__PURE__ */ jsxRuntime.jsx(Step.Title, {
+    /* @__PURE__ */ jsx(Step.Title, {
       id: "tours.contentTypeBuilder.AddFields.title",
       defaultMessage: "Don't forget to add a field to your content type"
     }),
-    /* @__PURE__ */ jsxRuntime.jsx(Step.Content, {
+    /* @__PURE__ */ jsx(Step.Content, {
       id: "tours.contentTypeBuilder.AddFields.content",
       defaultMessage: "Add the fields your content needs such as text, media and relations."
     }),
-    /* @__PURE__ */ jsxRuntime.jsx(Step.Actions, {
-      children: /* @__PURE__ */ jsxRuntime.jsx(ContentTypeBuilderActions, {
+    /* @__PURE__ */ jsx(Step.Actions, {
+      children: /* @__PURE__ */ jsx(ContentTypeBuilderActions, {
         showPrevious: true,
-        children: /* @__PURE__ */ jsxRuntime.jsx(GotItAction, {
+        children: /* @__PURE__ */ jsx(GotItAction, {
           onClick: () => dispatch({
             type: "next_step",
             payload: "contentTypeBuilder"
@@ -18872,21 +18830,21 @@ const AddFields = ({ Step, dispatch }) => /* @__PURE__ */ jsxRuntime.jsxs(Step.R
     })
   ]
 });
-const Save = ({ Step, dispatch }) => /* @__PURE__ */ jsxRuntime.jsxs(Step.Root, {
+const Save = ({ Step, dispatch }) => /* @__PURE__ */ jsxs(Step.Root, {
   side: "right",
   children: [
-    /* @__PURE__ */ jsxRuntime.jsx(Step.Title, {
+    /* @__PURE__ */ jsx(Step.Title, {
       id: "tours.contentTypeBuilder.Save.title",
       defaultMessage: "Save before you leave!"
     }),
-    /* @__PURE__ */ jsxRuntime.jsx(Step.Content, {
+    /* @__PURE__ */ jsx(Step.Content, {
       id: "tours.contentTypeBuilder.Save.content",
       defaultMessage: "Save the changes you made here before leaving this page."
     }),
-    /* @__PURE__ */ jsxRuntime.jsx(Step.Actions, {
-      children: /* @__PURE__ */ jsxRuntime.jsx(ContentTypeBuilderActions, {
+    /* @__PURE__ */ jsx(Step.Actions, {
+      children: /* @__PURE__ */ jsx(ContentTypeBuilderActions, {
         showPrevious: true,
-        children: /* @__PURE__ */ jsxRuntime.jsx(GotItAction, {
+        children: /* @__PURE__ */ jsx(GotItAction, {
           onClick: () => {
             dispatch({
               type: "remove_completed_action",
@@ -18912,18 +18870,18 @@ const Finish = ({ Step }) => {
     singleType: "single-types"
   };
   const to = contentType ? `/content-manager/${contentTypeKindDictionary[contentType.kind]}/${contentType.uid}` : "/content-manager";
-  return /* @__PURE__ */ jsxRuntime.jsxs(Step.Root, {
+  return /* @__PURE__ */ jsxs(Step.Root, {
     side: "right",
     children: [
-      /* @__PURE__ */ jsxRuntime.jsx(Step.Title, {
+      /* @__PURE__ */ jsx(Step.Title, {
         id: "tours.contentTypeBuilder.Finish.title",
         defaultMessage: "First Step: Done! 🎉"
       }),
-      /* @__PURE__ */ jsxRuntime.jsx(Step.Content, {
+      /* @__PURE__ */ jsx(Step.Content, {
         id: "tours.contentTypeBuilder.Finish.content",
         defaultMessage: "You've built your first content type! Now head over to the Content Manager to start adding entries!"
       }),
-      /* @__PURE__ */ jsxRuntime.jsx(Step.Actions, {
+      /* @__PURE__ */ jsx(Step.Actions, {
         showStepCount: false,
         showPrevious: false,
         to
@@ -18989,12 +18947,12 @@ const GuidedTourTooltip = ({ children, ...props }) => {
   if (!state.enabled || state.hidden || process.env.NODE_ENV !== "development") {
     return children;
   }
-  return /* @__PURE__ */ jsxRuntime.jsx(GuidedTourTooltipImpl, {
+  return /* @__PURE__ */ jsx(GuidedTourTooltipImpl, {
     ...props,
     children
   });
 };
-const GuidedTourOverlay = styled.styled(designSystem.Box)`
+const GuidedTourOverlay = styled(Box)`
   position: fixed;
   top: 0;
   left: 0;
@@ -19010,7 +18968,7 @@ const GuidedTourTooltipImpl = ({ children, content, tourName, step, when }) => {
   const isCurrentStep = state.tours[tourName].currentStep === step;
   const isStepConditionMet = when ? when(state.completedActions) : true;
   const isPopoverOpen = guidedTourMeta?.data?.isFirstSuperAdminUser && !state.tours[tourName].isCompleted && isCurrentStep && isStepConditionMet;
-  React__namespace.useEffect(() => {
+  React.useEffect(() => {
     if (!isPopoverOpen) return;
     const originalStyle = window.getComputedStyle(document.body).overflow;
     document.body.style.overflow = "hidden";
@@ -19020,11 +18978,11 @@ const GuidedTourTooltipImpl = ({ children, content, tourName, step, when }) => {
   }, [
     isPopoverOpen
   ]);
-  const Step = React__namespace.useMemo(() => createStepComponents(tourName), [
+  const Step = React.useMemo(() => createStepComponents(tourName), [
     tourName
   ]);
   const hasApiSchema = Object.keys(guidedTourMeta?.data?.schemas ?? {}).filter((key) => key.startsWith("api::")).length > 0;
-  React__namespace.useEffect(() => {
+  React.useEffect(() => {
     if (hasApiSchema) {
       dispatch({
         type: "set_completed_actions",
@@ -19039,15 +18997,15 @@ const GuidedTourTooltipImpl = ({ children, content, tourName, step, when }) => {
     step,
     tourName
   ]);
-  return /* @__PURE__ */ jsxRuntime.jsxs(jsxRuntime.Fragment, {
+  return /* @__PURE__ */ jsxs(Fragment, {
     children: [
-      isPopoverOpen && /* @__PURE__ */ jsxRuntime.jsx(designSystem.Portal, {
-        children: /* @__PURE__ */ jsxRuntime.jsx(GuidedTourOverlay, {})
+      isPopoverOpen && /* @__PURE__ */ jsx(Portal, {
+        children: /* @__PURE__ */ jsx(GuidedTourOverlay, {})
       }),
-      /* @__PURE__ */ jsxRuntime.jsxs(designSystem.Popover.Root, {
+      /* @__PURE__ */ jsxs(Popover.Root, {
         open: isPopoverOpen,
         children: [
-          /* @__PURE__ */ jsxRuntime.jsx(designSystem.Popover.Anchor, {
+          /* @__PURE__ */ jsx(Popover.Anchor, {
             children
           }),
           content({
@@ -19061,15 +19019,15 @@ const GuidedTourTooltipImpl = ({ children, content, tourName, step, when }) => {
   });
 };
 function createTour(tourName, steps) {
-  const tour = steps.reduce((acc, step, index2) => {
+  const tour = steps.reduce((acc, step, index) => {
     const name = step.name;
     if (name in acc) {
       throw Error(`The tour: ${tourName} with step: ${step.name} has already been registered`);
     }
     acc[name] = ({ children }) => {
-      return /* @__PURE__ */ jsxRuntime.jsx(GuidedTourTooltip, {
+      return /* @__PURE__ */ jsx(GuidedTourTooltip, {
         tourName,
-        step: index2,
+        step: index,
         content: step.content,
         when: step.when,
         children
@@ -19108,7 +19066,7 @@ baseRest(function(args) {
   args.push(void 0, customDefaultsMerge);
   return apply(mergeWith, void 0, args);
 });
-styled.createGlobalStyle`
+createGlobalStyle`
   body {
     background: ${({ theme }) => theme.colors.neutral100};
   }
@@ -19145,7 +19103,8 @@ new QueryClient({
 });
 const HEIGHT_TOP_NAVIGATION = "6.4rem";
 const HEIGHT_TOP_NAVIGATION_MEDIUM = "5.6rem";
-styled.styled(designSystem.Alert)`
+const WIDTH_SIDE_NAVIGATION = "23.2rem";
+styled(Alert)`
   & > div:first-child {
     display: none;
   }
@@ -19154,7 +19113,7 @@ styled.styled(designSystem.Alert)`
     display: none;
   }
 `;
-styled.styled(designSystem.Typography)`
+styled(Typography)`
   word-break: break-all;
   color: ${({ theme }) => theme.colors.danger600};
 `;
@@ -19162,7 +19121,7 @@ const GridColSize = {
   S: 180,
   M: 250
 };
-styled.styled(designSystem.Box)`
+styled(Box)`
   display: grid;
   grid-template-columns: repeat(
     auto-fit,
@@ -19170,7 +19129,7 @@ styled.styled(designSystem.Box)`
   );
   grid-gap: ${({ theme }) => theme.spaces[4]};
 `;
-styled.styled(designSystem.Box)`
+styled(Box)`
   max-width: 100%;
   display: grid;
   grid-template-columns: 1fr;
@@ -19180,7 +19139,7 @@ styled.styled(designSystem.Box)`
     grid-template-columns: ${({ $hasSideNav }) => $hasSideNav ? `auto 1fr` : "1fr"};
   }
 `;
-styled.styled(designSystem.Flex)`
+styled(Flex)`
   display: none;
   background: ${({ theme }) => theme.colors.neutral0};
 
@@ -19190,7 +19149,7 @@ styled.styled(designSystem.Flex)`
     transform: none;
   }
 `;
-styled.styled(designSystem.Box)`
+styled(Box)`
   overflow-x: hidden;
 
   ${({ theme }) => theme.breakpoints.medium} {
@@ -19218,12 +19177,12 @@ function capitalize$1(string2) {
 }
 var capitalize_1 = capitalize$1;
 function arrayReduce$1(array2, iteratee2, accumulator, initAccum) {
-  var index2 = -1, length = array2 == null ? 0 : array2.length;
+  var index = -1, length = array2 == null ? 0 : array2.length;
   if (initAccum && length) {
-    accumulator = array2[++index2];
+    accumulator = array2[++index];
   }
-  while (++index2 < length) {
-    accumulator = iteratee2(accumulator, array2[index2], index2, array2);
+  while (++index < length) {
+    accumulator = iteratee2(accumulator, array2[index], index, array2);
   }
   return accumulator;
 }
@@ -19488,9 +19447,9 @@ function createCompounder$2(callback) {
 }
 var _createCompounder = createCompounder$2;
 var capitalize = capitalize_1, createCompounder$1 = _createCompounder;
-var camelCase = createCompounder$1(function(result, word, index2) {
+var camelCase = createCompounder$1(function(result, word, index) {
   word = word.toLowerCase();
-  return result + (index2 ? capitalize(word) : word);
+  return result + (index ? capitalize(word) : word);
 });
 var camelCase_1 = camelCase;
 const camelCase$1 = /* @__PURE__ */ getDefaultExportFromCjs(camelCase_1);
@@ -19830,9 +19789,9 @@ var propertyExpr = {
   getter: function(path, safe) {
     var parts = normalizePath(path);
     return getCache.get(path) || getCache.set(path, function getter(data) {
-      var index2 = 0, len = parts.length;
-      while (index2 < len) {
-        if (data != null || !safe) data = data[parts[index2++]];
+      var index = 0, len = parts.length;
+      while (index < len) {
+        if (data != null || !safe) data = data[parts[index++]];
         else return;
       }
       return data;
@@ -20857,8 +20816,8 @@ class DateSchema extends BaseSchema {
 }
 DateSchema.INVALID_DATE = invalidDate;
 var createCompounder = _createCompounder;
-var snakeCase = createCompounder(function(result, word, index2) {
-  return result + (index2 ? "_" : "") + word.toLowerCase();
+var snakeCase = createCompounder(function(result, word, index) {
+  return result + (index ? "_" : "") + word.toLowerCase();
 });
 var snakeCase_1 = snakeCase;
 const snakeCase$1 = /* @__PURE__ */ getDefaultExportFromCjs(snakeCase_1);
@@ -21297,15 +21256,15 @@ createContext("Form", {
   },
   values: {}
 });
-styled.styled.img`
+styled.img`
   height: 7.2rem;
 `;
-styled.styled(designSystem.Box)`
+styled(Box)`
   margin: 0 auto;
   width: 100%;
   max-width: 55.2rem;
 `;
-styled.styled(designSystem.Flex)`
+styled(Flex)`
   flex-direction: column;
 `;
 const errorsTrads = {
@@ -21376,9 +21335,11 @@ flatRest(function(object2, paths) {
   }
   return result;
 });
-styled.styled(designSystem.Field.Root)`
+styled(Field.Root)`
   height: 3.2rem;
   width: 3.2rem;
+  align-items: center;
+  justify-content: center;
 
   > label,
   ~ input {
@@ -21429,21 +21390,30 @@ create().shape({
     if (!value || typeof value !== "string") return true;
     const byteSize = getByteSize(value);
     return byteSize <= 72;
-  }).matches(/[a-z]/, {
+  }).test("lowercase", {
     message: {
       id: "components.Input.error.contain.lowercase",
       defaultMessage: "Password must contain at least 1 lowercase letter"
     }
-  }).matches(/[A-Z]/, {
+  }, (value) => {
+    if (!value) return true;
+    return /[a-z]/.test(value);
+  }).test("uppercase", {
     message: {
       id: "components.Input.error.contain.uppercase",
       defaultMessage: "Password must contain at least 1 uppercase letter"
     }
-  }).matches(/\d/, {
+  }, (value) => {
+    if (!value) return true;
+    return /[A-Z]/.test(value);
+  }).test("number", {
     message: {
       id: "components.Input.error.contain.number",
       defaultMessage: "Password must contain at least 1 number"
     }
+  }, (value) => {
+    if (!value) return true;
+    return /\d/.test(value);
   }).required({
     id: errorsTrads.required.id,
     defaultMessage: "Password is required"
@@ -21481,21 +21451,30 @@ create().shape({
   }, function(value) {
     if (!value) return true;
     return new TextEncoder().encode(value).length <= 72;
-  }).matches(/[a-z]/, {
+  }).test("lowercase", {
     message: {
       id: "components.Input.error.contain.lowercase",
       defaultMessage: "Password must contain at least 1 lowercase letter"
     }
-  }).matches(/[A-Z]/, {
+  }, (value) => {
+    if (!value) return true;
+    return /[a-z]/.test(value);
+  }).test("uppercase", {
     message: {
       id: "components.Input.error.contain.uppercase",
       defaultMessage: "Password must contain at least 1 uppercase letter"
     }
-  }).matches(/\d/, {
+  }, (value) => {
+    if (!value) return true;
+    return /[A-Z]/.test(value);
+  }).test("number", {
     message: {
       id: "components.Input.error.contain.number",
       defaultMessage: "Password must contain at least 1 number"
     }
+  }, (value) => {
+    if (!value) return true;
+    return /\d/.test(value);
   }).required({
     id: errorsTrads.required.id,
     defaultMessage: "Password is required"
@@ -21521,7 +21500,7 @@ create().shape({
     defaultMessage: "Email is required"
   }).nullable()
 });
-styled.styled.a`
+styled.a`
   color: ${({ theme }) => theme.colors.primary600};
 `;
 create().shape({
@@ -21538,21 +21517,30 @@ create().shape({
     if (!value || typeof value !== "string") return true;
     const byteSize = getByteSize(value);
     return byteSize <= 72;
-  }).matches(/[a-z]/, {
+  }).test("lowercase", {
     message: {
       id: "components.Input.error.contain.lowercase",
       defaultMessage: "Password must contain at least 1 lowercase letter"
     }
-  }).matches(/[A-Z]/, {
+  }, (value) => {
+    if (!value) return true;
+    return /[a-z]/.test(value);
+  }).test("uppercase", {
     message: {
       id: "components.Input.error.contain.uppercase",
       defaultMessage: "Password must contain at least 1 uppercase letter"
     }
-  }).matches(/\d/, {
+  }, (value) => {
+    if (!value) return true;
+    return /[A-Z]/.test(value);
+  }).test("number", {
     message: {
       id: "components.Input.error.contain.number",
       defaultMessage: "Password must contain at least 1 number"
     }
+  }, (value) => {
+    if (!value) return true;
+    return /\d/.test(value);
   }).required({
     id: errorsTrads.required.id,
     defaultMessage: "Password is required"
@@ -21571,7 +21559,7 @@ create().shape({
 ({
   [adminApi.reducerPath]: adminApi.reducer
 });
-styled.styled(icons.WarningCircle)`
+styled(WarningCircle)`
   width: 24px;
   height: 24px;
 
@@ -21582,10 +21570,10 @@ styled.styled(icons.WarningCircle)`
 createContext("Filters");
 createContext("Pagination");
 createContext("Table");
-styled.styled(icons.CaretDown)`
+styled(CaretDown)`
   transform: ${({ $isUp }) => `rotate(${$isUp ? "180" : "0"}deg)`};
 `;
-styled.styled(designSystem.Flex)`
+styled(Flex)`
   margin-right: ${({ theme }) => theme.spaces[6]};
 
   svg {
@@ -21593,11 +21581,11 @@ styled.styled(designSystem.Flex)`
     height: 3.2rem;
   }
 `;
-styled.styled(designSystem.Typography)`
+styled(Typography)`
   color: ${({ theme }) => theme.colors.neutral800};
   word-break: break-all;
 `;
-const MainSubNav = styled.styled(designSystem.SubNav)`
+const MainSubNav = styled(SubNav)`
   width: 100%;
   height: calc(100dvh - ${HEIGHT_TOP_NAVIGATION} - 1px);
   overflow: hidden;
@@ -21612,7 +21600,7 @@ const MainSubNav = styled.styled(designSystem.SubNav)`
   z-index: 2;
 
   ${({ theme }) => theme.breakpoints.medium} {
-    width: 23.2rem;
+    width: ${WIDTH_SIDE_NAVIGATION};
     position: sticky;
     top: 0;
     border-right: 1px solid ${({ theme }) => theme.colors.neutral150};
@@ -21621,7 +21609,7 @@ const MainSubNav = styled.styled(designSystem.SubNav)`
     height: 100dvh;
   }
 `;
-const StyledLink = styled.styled(NavLink)`
+const StyledLink = styled(NavLink)`
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -21660,7 +21648,7 @@ const StyledLink = styled.styled(NavLink)`
     outline-offset: -2px;
   }
 `;
-styled.styled(designSystem.Flex)`
+styled(Flex)`
   flex: 0 0 ${HEIGHT_TOP_NAVIGATION};
   height: ${HEIGHT_TOP_NAVIGATION};
 
@@ -21669,7 +21657,7 @@ styled.styled(designSystem.Flex)`
     height: ${HEIGHT_TOP_NAVIGATION_MEDIUM};
   }
 `;
-styled.styled.button`
+styled.button`
   cursor: pointer;
   width: 100%;
   border: none;
@@ -21687,12 +21675,12 @@ styled.styled.button`
     background-color: ${({ theme }) => theme.colors.neutral100};
   }
 `;
-styled.styled.li`
+styled.li`
   ${StyledLink} > div {
     padding-left: 36px;
   }
 `;
-styled.styled(designSystem.Box)`
+styled(Box)`
   ${MainSubNav} {
     background-color: transparent;
     border-right: none;
@@ -21704,25 +21692,41 @@ styled.styled(designSystem.Box)`
     }
   }
 `;
-styled.styled(designSystem.Badge)`
+styled(Badge)`
+  width: 100%;
   background: linear-gradient(
     90deg,
     ${({ theme }) => theme.colors.primary600} 0%,
     ${({ theme }) => theme.colors.alternative600} 121.48%
   );
-  padding: 0.4rem 1rem;
+  padding: 1.1rem 1rem;
+
+  ${({ theme }) => theme.breakpoints.small} {
+    padding: 1.2rem 1rem;
+  }
+  ${({ theme }) => theme.breakpoints.medium} {
+    padding: 0.4rem 1rem;
+  }
+`;
+styled(Typography)`
+  font-size: 1.2rem;
+
+  ${({ theme }) => theme.breakpoints.small} {
+    font-size: 1.4rem;
+    line-height: 1.6rem;
+  }
 `;
 const useFetchClient = () => {
-  const controller = React__namespace.useRef(null);
+  const controller = React.useRef(null);
   if (controller.current === null) {
     controller.current = new AbortController();
   }
-  React__namespace.useEffect(() => {
+  React.useEffect(() => {
     return () => {
       controller.current.abort();
     };
   }, []);
-  return React__namespace.useMemo(() => getFetchClient({
+  return React.useMemo(() => getFetchClient({
     signal: controller.current.signal
   }), []);
 };
@@ -21999,10 +22003,10 @@ const homepageService = adminApi.enhanceEndpoints({
 });
 const { useGetKeyStatisticsQuery, useGetCountDocumentsQuery, useGetHomepageLayoutQuery, useUpdateHomepageLayoutMutation } = homepageService;
 var logic = { exports: {} };
-(function(module2, exports$1) {
+(function(module, exports$1) {
   (function(root2, factory2) {
     {
-      module2.exports = factory2();
+      module.exports = factory2();
     }
   })(commonjsGlobal, function() {
     if (!Array.isArray) {
@@ -24833,10 +24837,10 @@ class ZodObject extends ZodType {
   //   }) as any;
   //   return merged;
   // }
-  catchall(index2) {
+  catchall(index) {
     return new ZodObject({
       ...this._def,
-      catchall: index2
+      catchall: index
     });
   }
   pick(mask) {
@@ -25047,9 +25051,9 @@ function mergeValues(a2, b2) {
       return { valid: false };
     }
     const newArray = [];
-    for (let index2 = 0; index2 < a2.length; index2++) {
-      const itemA = a2[index2];
-      const itemB = b2[index2];
+    for (let index = 0; index < a2.length; index++) {
+      const itemA = a2[index];
+      const itemB = b2[index];
       const sharedValue = mergeValues(itemA, itemB);
       if (!sharedValue.valid) {
         return { valid: false };
@@ -25202,10 +25206,10 @@ class ZodMap extends ZodType {
     }
     const keyType = this._def.keyType;
     const valueType = this._def.valueType;
-    const pairs = [...ctx.data.entries()].map(([key, value], index2) => {
+    const pairs = [...ctx.data.entries()].map(([key, value], index) => {
       return {
-        key: keyType._parse(new ParseInputLazyPath(ctx, key, ctx.path, [index2, "key"])),
-        value: valueType._parse(new ParseInputLazyPath(ctx, value, ctx.path, [index2, "value"]))
+        key: keyType._parse(new ParseInputLazyPath(ctx, key, ctx.path, [index, "key"])),
+        value: valueType._parse(new ParseInputLazyPath(ctx, value, ctx.path, [index, "value"]))
       };
     });
     if (ctx.common.async) {
@@ -25951,23 +25955,23 @@ const emptyOriginRow = () => ({
   value: ""
 });
 const ConfigureContent = () => {
-  const { formatMessage } = reactIntl.useIntl();
+  const { formatMessage } = useIntl();
   const fetchClient = useFetchClient();
-  const [rows, setRows] = React.useState([emptyOriginRow()]);
-  const [routePrefix, setRoutePrefix] = React.useState("webbycommerce");
-  const [isLoading, setIsLoading] = React.useState(false);
-  const [isSaving, setIsSaving] = React.useState(false);
-  const [isSeeding, setIsSeeding] = React.useState(false);
-  const [feedback, setFeedback] = React.useState(null);
+  const [rows, setRows] = useState([emptyOriginRow()]);
+  const [routePrefix, setRoutePrefix] = useState("webbycommerce");
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isSeeding, setIsSeeding] = useState(false);
+  const [feedback, setFeedback] = useState(null);
   const title = formatMessage({
-    id: `${index.PLUGIN_ID}.settings.configure.title`,
+    id: `${PLUGIN_ID}.settings.configure.title`,
     defaultMessage: "Configure"
   });
   const description = formatMessage({
-    id: `${index.PLUGIN_ID}.settings.configure.description`,
+    id: `${PLUGIN_ID}.settings.configure.description`,
     defaultMessage: "Global settings for the Strapi Advanced Ecommerce plugin. Use this page to control ecommerce-wide behavior."
   });
-  React.useEffect(() => {
+  useEffect(() => {
     let isMounted = true;
     const loadSettings = async () => {
       try {
@@ -25992,7 +25996,7 @@ const ConfigureContent = () => {
           setFeedback({
             type: "error",
             message: formatMessage({
-              id: `${index.PLUGIN_ID}.settings.configure.load.error`,
+              id: `${PLUGIN_ID}.settings.configure.load.error`,
               defaultMessage: "Failed to load settings."
             })
           });
@@ -26042,7 +26046,7 @@ const ConfigureContent = () => {
       setFeedback({
         type: "success",
         message: formatMessage({
-          id: `${index.PLUGIN_ID}.settings.configure.save.success`,
+          id: `${PLUGIN_ID}.settings.configure.save.success`,
           defaultMessage: "Settings updated successfully."
         })
       });
@@ -26050,7 +26054,7 @@ const ConfigureContent = () => {
       setFeedback({
         type: "error",
         message: formatMessage({
-          id: `${index.PLUGIN_ID}.settings.configure.save.error`,
+          id: `${PLUGIN_ID}.settings.configure.save.error`,
           defaultMessage: "Failed to save settings."
         })
       });
@@ -26060,7 +26064,7 @@ const ConfigureContent = () => {
   };
   const handleSeedDemo = async () => {
     if (!window.confirm(formatMessage({
-      id: `${index.PLUGIN_ID}.settings.configure.demo.confirm`,
+      id: `${PLUGIN_ID}.settings.configure.demo.confirm`,
       defaultMessage: "Are you sure you want to seed demo data? This will overwrite existing data with the same slugs."
     }))) {
       return;
@@ -26073,7 +26077,7 @@ const ConfigureContent = () => {
         setFeedback({
           type: "success",
           message: formatMessage({
-            id: `${index.PLUGIN_ID}.settings.configure.demo.success`,
+            id: `${PLUGIN_ID}.settings.configure.demo.success`,
             defaultMessage: "Demo data seeded successfully!"
           })
         });
@@ -26084,7 +26088,7 @@ const ConfigureContent = () => {
       setFeedback({
         type: "error",
         message: formatMessage({
-          id: `${index.PLUGIN_ID}.settings.configure.demo.error`,
+          id: `${PLUGIN_ID}.settings.configure.demo.error`,
           defaultMessage: "Failed to seed demo data."
         }) + (error.message ? `: ${error.message}` : "")
       });
@@ -26092,12 +26096,12 @@ const ConfigureContent = () => {
       setIsSeeding(false);
     }
   };
-  return /* @__PURE__ */ jsxRuntime.jsxs(designSystem.Box, { paddingTop: 6, children: [
-    /* @__PURE__ */ jsxRuntime.jsx(designSystem.Typography, { variant: "beta", textColor: "neutral800", children: title }),
-    /* @__PURE__ */ jsxRuntime.jsx(designSystem.Box, { marginTop: 2, children: /* @__PURE__ */ jsxRuntime.jsx(designSystem.Typography, { variant: "pi", textColor: "neutral600", children: description }) }),
-    /* @__PURE__ */ jsxRuntime.jsxs(designSystem.Box, { marginTop: 6, children: [
-      /* @__PURE__ */ jsxRuntime.jsxs(
-        designSystem.Box,
+  return /* @__PURE__ */ jsxs(Box, { paddingTop: 6, children: [
+    /* @__PURE__ */ jsx(Typography, { variant: "beta", textColor: "neutral800", children: title }),
+    /* @__PURE__ */ jsx(Box, { marginTop: 2, children: /* @__PURE__ */ jsx(Typography, { variant: "pi", textColor: "neutral600", children: description }) }),
+    /* @__PURE__ */ jsxs(Box, { marginTop: 6, children: [
+      /* @__PURE__ */ jsxs(
+        Box,
         {
           background: "neutral0",
           hasRadius: true,
@@ -26105,31 +26109,31 @@ const ConfigureContent = () => {
           padding: 4,
           style: { maxWidth: "640px" },
           children: [
-            /* @__PURE__ */ jsxRuntime.jsx(designSystem.Typography, { variant: "delta", textColor: "neutral800", children: formatMessage({
-              id: `${index.PLUGIN_ID}.settings.configure.routePrefix.title`,
+            /* @__PURE__ */ jsx(Typography, { variant: "delta", textColor: "neutral800", children: formatMessage({
+              id: `${PLUGIN_ID}.settings.configure.routePrefix.title`,
               defaultMessage: "API Route Prefix"
             }) }),
-            /* @__PURE__ */ jsxRuntime.jsx(designSystem.Box, { marginTop: 1, children: /* @__PURE__ */ jsxRuntime.jsx(designSystem.Typography, { variant: "pi", textColor: "neutral600", children: formatMessage({
-              id: `${index.PLUGIN_ID}.settings.configure.routePrefix.description`,
+            /* @__PURE__ */ jsx(Box, { marginTop: 1, children: /* @__PURE__ */ jsx(Typography, { variant: "pi", textColor: "neutral600", children: formatMessage({
+              id: `${PLUGIN_ID}.settings.configure.routePrefix.description`,
               defaultMessage: "Customize the API route prefix. All ecommerce API endpoints will use this prefix. Default: webbycommerce"
             }) }) }),
-            /* @__PURE__ */ jsxRuntime.jsx(designSystem.Box, { marginTop: 4, children: /* @__PURE__ */ jsxRuntime.jsx(
-              designSystem.TextInput,
+            /* @__PURE__ */ jsx(Box, { marginTop: 4, children: /* @__PURE__ */ jsx(
+              TextInput,
               {
                 name: "routePrefix",
                 label: formatMessage({
-                  id: `${index.PLUGIN_ID}.settings.configure.routePrefix.label`,
+                  id: `${PLUGIN_ID}.settings.configure.routePrefix.label`,
                   defaultMessage: "Route prefix"
                 }),
                 placeholder: formatMessage({
-                  id: `${index.PLUGIN_ID}.settings.configure.routePrefix.placeholder`,
+                  id: `${PLUGIN_ID}.settings.configure.routePrefix.placeholder`,
                   defaultMessage: "e.g. ecommerce, v1, api/ecommerce"
                 }),
                 value: routePrefix,
                 onChange: (event) => setRoutePrefix(event.target.value),
                 disabled: isLoading || isSaving,
                 hint: formatMessage({
-                  id: `${index.PLUGIN_ID}.settings.configure.routePrefix.hint`,
+                  id: `${PLUGIN_ID}.settings.configure.routePrefix.hint`,
                   defaultMessage: "API endpoints will be available at /api/{prefix}/..."
                 })
               }
@@ -26137,8 +26141,8 @@ const ConfigureContent = () => {
           ]
         }
       ),
-      /* @__PURE__ */ jsxRuntime.jsx(designSystem.Box, { marginTop: 6, children: /* @__PURE__ */ jsxRuntime.jsxs(
-        designSystem.Box,
+      /* @__PURE__ */ jsx(Box, { marginTop: 6, children: /* @__PURE__ */ jsxs(
+        Box,
         {
           background: "neutral0",
           hasRadius: true,
@@ -26146,49 +26150,49 @@ const ConfigureContent = () => {
           padding: 4,
           style: { maxWidth: "640px" },
           children: [
-            /* @__PURE__ */ jsxRuntime.jsx(designSystem.Typography, { variant: "delta", textColor: "neutral800", children: formatMessage({
-              id: `${index.PLUGIN_ID}.settings.configure.origins.title`,
+            /* @__PURE__ */ jsx(Typography, { variant: "delta", textColor: "neutral800", children: formatMessage({
+              id: `${PLUGIN_ID}.settings.configure.origins.title`,
               defaultMessage: "Allowed frontend domains"
             }) }),
-            /* @__PURE__ */ jsxRuntime.jsx(designSystem.Box, { marginTop: 1, children: /* @__PURE__ */ jsxRuntime.jsx(designSystem.Typography, { variant: "pi", textColor: "neutral600", children: formatMessage({
-              id: `${index.PLUGIN_ID}.settings.configure.origins.description`,
+            /* @__PURE__ */ jsx(Box, { marginTop: 1, children: /* @__PURE__ */ jsx(Typography, { variant: "pi", textColor: "neutral600", children: formatMessage({
+              id: `${PLUGIN_ID}.settings.configure.origins.description`,
               defaultMessage: "Only requests coming from these domains will be allowed to use the ecommerce facility. Leave empty to allow all domains."
             }) }) }),
-            /* @__PURE__ */ jsxRuntime.jsxs(designSystem.Box, { marginTop: 4, children: [
-              rows.map((row, index$1) => /* @__PURE__ */ jsxRuntime.jsx(
-                designSystem.Box,
+            /* @__PURE__ */ jsxs(Box, { marginTop: 4, children: [
+              rows.map((row, index) => /* @__PURE__ */ jsx(
+                Box,
                 {
-                  marginTop: index$1 === 0 ? 2 : 4,
+                  marginTop: index === 0 ? 2 : 4,
                   padding: 4,
                   hasRadius: true,
                   background: "neutral100",
                   style: { border: "1px solid #dcdce4" },
-                  children: /* @__PURE__ */ jsxRuntime.jsxs(
-                    designSystem.Flex,
+                  children: /* @__PURE__ */ jsxs(
+                    Flex,
                     {
                       justifyContent: "space-between",
                       alignItems: "flex-start",
                       gap: 4,
                       wrap: "wrap",
                       children: [
-                        /* @__PURE__ */ jsxRuntime.jsxs(designSystem.Box, { style: { flex: 1, minWidth: 0 }, children: [
-                          /* @__PURE__ */ jsxRuntime.jsx(designSystem.Typography, { variant: "epsilon", textColor: "neutral800", children: formatMessage(
+                        /* @__PURE__ */ jsxs(Box, { style: { flex: 1, minWidth: 0 }, children: [
+                          /* @__PURE__ */ jsx(Typography, { variant: "epsilon", textColor: "neutral800", children: formatMessage(
                             {
-                              id: `${index.PLUGIN_ID}.settings.configure.origins.entryTitle`,
+                              id: `${PLUGIN_ID}.settings.configure.origins.entryTitle`,
                               defaultMessage: "Domain #{index}"
                             },
-                            { index: index$1 + 1 }
+                            { index: index + 1 }
                           ) }),
-                          /* @__PURE__ */ jsxRuntime.jsx(designSystem.Box, { marginTop: 2, children: /* @__PURE__ */ jsxRuntime.jsx(
-                            designSystem.TextInput,
+                          /* @__PURE__ */ jsx(Box, { marginTop: 2, children: /* @__PURE__ */ jsx(
+                            TextInput,
                             {
                               name: `origin-${row.id}`,
                               label: formatMessage({
-                                id: `${index.PLUGIN_ID}.settings.configure.origins.label`,
+                                id: `${PLUGIN_ID}.settings.configure.origins.label`,
                                 defaultMessage: "Frontend domain"
                               }),
                               placeholder: formatMessage({
-                                id: `${index.PLUGIN_ID}.settings.configure.origins.placeholder`,
+                                id: `${PLUGIN_ID}.settings.configure.origins.placeholder`,
                                 defaultMessage: "e.g. https://shop.example.com"
                               }),
                               value: row.value,
@@ -26197,15 +26201,15 @@ const ConfigureContent = () => {
                             }
                           ) })
                         ] }),
-                        /* @__PURE__ */ jsxRuntime.jsx(
-                          designSystem.Button,
+                        /* @__PURE__ */ jsx(
+                          Button,
                           {
                             variant: "tertiary",
-                            startIcon: /* @__PURE__ */ jsxRuntime.jsx(icons.Trash, {}),
+                            startIcon: /* @__PURE__ */ jsx(Trash, {}),
                             onClick: () => removeRow(row.id),
                             disabled: isLoading || isSaving,
                             children: formatMessage({
-                              id: `${index.PLUGIN_ID}.settings.configure.origins.remove`,
+                              id: `${PLUGIN_ID}.settings.configure.origins.remove`,
                               defaultMessage: "Remove domain"
                             })
                           }
@@ -26216,15 +26220,15 @@ const ConfigureContent = () => {
                 },
                 row.id
               )),
-              /* @__PURE__ */ jsxRuntime.jsx(designSystem.Box, { children: /* @__PURE__ */ jsxRuntime.jsx(
-                designSystem.Button,
+              /* @__PURE__ */ jsx(Box, { children: /* @__PURE__ */ jsx(
+                Button,
                 {
                   marginTop: 2,
                   variant: "tertiary",
                   onClick: addRow,
                   disabled: isLoading || isSaving,
                   children: formatMessage({
-                    id: `${index.PLUGIN_ID}.settings.configure.origins.add`,
+                    id: `${PLUGIN_ID}.settings.configure.origins.add`,
                     defaultMessage: "Add domain"
                   })
                 }
@@ -26233,8 +26237,8 @@ const ConfigureContent = () => {
           ]
         }
       ) }),
-      /* @__PURE__ */ jsxRuntime.jsx(designSystem.Box, { marginTop: 6, children: /* @__PURE__ */ jsxRuntime.jsxs(
-        designSystem.Box,
+      /* @__PURE__ */ jsx(Box, { marginTop: 6, children: /* @__PURE__ */ jsxs(
+        Box,
         {
           background: "neutral0",
           hasRadius: true,
@@ -26242,23 +26246,23 @@ const ConfigureContent = () => {
           padding: 4,
           style: { maxWidth: "640px" },
           children: [
-            /* @__PURE__ */ jsxRuntime.jsx(designSystem.Typography, { variant: "delta", textColor: "neutral800", children: formatMessage({
-              id: `${index.PLUGIN_ID}.settings.configure.demo.title`,
+            /* @__PURE__ */ jsx(Typography, { variant: "delta", textColor: "neutral800", children: formatMessage({
+              id: `${PLUGIN_ID}.settings.configure.demo.title`,
               defaultMessage: "Demo Data"
             }) }),
-            /* @__PURE__ */ jsxRuntime.jsx(designSystem.Box, { marginTop: 1, children: /* @__PURE__ */ jsxRuntime.jsx(designSystem.Typography, { variant: "pi", textColor: "neutral600", children: formatMessage({
-              id: `${index.PLUGIN_ID}.settings.configure.demo.description`,
+            /* @__PURE__ */ jsx(Box, { marginTop: 1, children: /* @__PURE__ */ jsx(Typography, { variant: "pi", textColor: "neutral600", children: formatMessage({
+              id: `${PLUGIN_ID}.settings.configure.demo.description`,
               defaultMessage: "Import sample products, categories, tags, and shipping settings to test the plugin. This will not overwrite existing data with the same slugs."
             }) }) }),
-            /* @__PURE__ */ jsxRuntime.jsx(designSystem.Box, { marginTop: 4, children: /* @__PURE__ */ jsxRuntime.jsx(
-              designSystem.Button,
+            /* @__PURE__ */ jsx(Box, { marginTop: 4, children: /* @__PURE__ */ jsx(
+              Button,
               {
                 variant: "secondary",
                 onClick: handleSeedDemo,
                 loading: isSeeding,
                 disabled: isLoading || isSaving || isSeeding,
                 children: formatMessage({
-                  id: `${index.PLUGIN_ID}.settings.configure.demo.button`,
+                  id: `${PLUGIN_ID}.settings.configure.demo.button`,
                   defaultMessage: "Seed Demo Data"
                 })
               }
@@ -26266,13 +26270,13 @@ const ConfigureContent = () => {
           ]
         }
       ) }),
-      /* @__PURE__ */ jsxRuntime.jsx(designSystem.Box, { marginTop: 6, children: /* @__PURE__ */ jsxRuntime.jsxs(designSystem.Flex, { gap: 3, alignItems: "center", children: [
-        /* @__PURE__ */ jsxRuntime.jsx(designSystem.Button, { onClick: handleSave, loading: isSaving, disabled: isLoading || isSaving, children: formatMessage({
-          id: `${index.PLUGIN_ID}.settings.configure.save`,
+      /* @__PURE__ */ jsx(Box, { marginTop: 6, children: /* @__PURE__ */ jsxs(Flex, { gap: 3, alignItems: "center", children: [
+        /* @__PURE__ */ jsx(Button, { onClick: handleSave, loading: isSaving, disabled: isLoading || isSaving, children: formatMessage({
+          id: `${PLUGIN_ID}.settings.configure.save`,
           defaultMessage: "Save settings"
         }) }),
-        feedback && /* @__PURE__ */ jsxRuntime.jsx(
-          designSystem.Typography,
+        feedback && /* @__PURE__ */ jsx(
+          Typography,
           {
             variant: "pi",
             textColor: feedback.type === "error" ? "danger600" : "success600",
@@ -26284,13 +26288,13 @@ const ConfigureContent = () => {
   ] });
 };
 const ApiCollectionsContent = () => {
-  const { formatMessage } = reactIntl.useIntl();
+  const { formatMessage } = useIntl();
   const fetchClient = useFetchClient();
-  const [openModalId, setOpenModalId] = React.useState(null);
-  const [routePrefix, setRoutePrefix] = React.useState("webbycommerce");
-  const [page, setPage] = React.useState(1);
+  const [openModalId, setOpenModalId] = useState(null);
+  const [routePrefix, setRoutePrefix] = useState("webbycommerce");
+  const [page, setPage] = useState(1);
   const pageSize = 10;
-  React.useEffect(() => {
+  useEffect(() => {
     const loadRoutePrefix = async () => {
       try {
         const { data } = await fetchClient.get(`/webbycommerce/settings`);
@@ -26304,27 +26308,27 @@ const ApiCollectionsContent = () => {
     loadRoutePrefix();
   }, [fetchClient]);
   const description = formatMessage({
-    id: `${index.PLUGIN_ID}.settings.apiCollections.description`,
+    id: `${PLUGIN_ID}.settings.apiCollections.description`,
     defaultMessage: "Reference for the public endpoints exposed by the Strapi Advanced Ecommerce plugin."
   });
   const getApiPath = (endpointPath) => {
     return endpointPath.replace("/api/webbycommerce", `/api/${routePrefix}`);
   };
-  const endpoints = React.useMemo(() => [
+  const endpoints = useMemo(() => [
     {
       id: "health",
       method: "GET",
       path: getApiPath("/api/webbycommerce/health"),
       title: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.health.title`,
+        id: `${PLUGIN_ID}.settings.apiCollections.health.title`,
         defaultMessage: "Health Check"
       }),
       summary: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.health.summary`,
+        id: `${PLUGIN_ID}.settings.apiCollections.health.summary`,
         defaultMessage: "Simple endpoint to verify that the ecommerce plugin is installed and running."
       }),
       auth: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.health.auth`,
+        id: `${PLUGIN_ID}.settings.apiCollections.health.auth`,
         defaultMessage: "Auth: public (no authentication required by default, but respects plugin permissions)."
       }),
       response: `{
@@ -26335,15 +26339,15 @@ const ApiCollectionsContent = () => {
 }`,
       usage: [
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.health.usage.monitoring`,
+          id: `${PLUGIN_ID}.settings.apiCollections.health.usage.monitoring`,
           defaultMessage: "Use in uptime monitors to check ecommerce availability."
         }),
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.health.usage.deploy`,
+          id: `${PLUGIN_ID}.settings.apiCollections.health.usage.deploy`,
           defaultMessage: "Use in deployment or CI pipelines to validate the plugin is bootstrapped."
         }),
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.health.usage.manual`,
+          id: `${PLUGIN_ID}.settings.apiCollections.health.usage.manual`,
           defaultMessage: "Quick manual verification from a browser or API client (Postman, Insomnia, curl)."
         })
       ],
@@ -26354,15 +26358,15 @@ const ApiCollectionsContent = () => {
       method: "POST",
       path: getApiPath("/api/webbycommerce/auth/login-register"),
       title: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.loginRegister.title`,
+        id: `${PLUGIN_ID}.settings.apiCollections.loginRegister.title`,
         defaultMessage: "Login/Register (OTP)"
       }),
       summary: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.loginRegister.summary`,
+        id: `${PLUGIN_ID}.settings.apiCollections.loginRegister.summary`,
         defaultMessage: "Initiate login or registration via email or mobile and send a one-time password (OTP) to the user."
       }),
       auth: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.loginRegister.auth`,
+        id: `${PLUGIN_ID}.settings.apiCollections.loginRegister.auth`,
         defaultMessage: "Auth: public (OTP method must be enabled in plugin settings)."
       }),
       response: `{
@@ -26372,15 +26376,15 @@ const ApiCollectionsContent = () => {
 }`,
       usage: [
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.loginRegister.usage.request`,
+          id: `${PLUGIN_ID}.settings.apiCollections.loginRegister.usage.request`,
           defaultMessage: "Send email or mobile number to receive an OTP code."
         }),
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.loginRegister.usage.verify`,
+          id: `${PLUGIN_ID}.settings.apiCollections.loginRegister.usage.verify`,
           defaultMessage: "User enters the OTP code in your frontend application."
         }),
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.loginRegister.usage.next`,
+          id: `${PLUGIN_ID}.settings.apiCollections.loginRegister.usage.next`,
           defaultMessage: "Call the verify-otp endpoint to complete authentication."
         })
       ],
@@ -26397,15 +26401,15 @@ const ApiCollectionsContent = () => {
       method: "POST",
       path: getApiPath("/api/webbycommerce/auth/verify-otp"),
       title: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.verifyOtp.title`,
+        id: `${PLUGIN_ID}.settings.apiCollections.verifyOtp.title`,
         defaultMessage: "Verify OTP"
       }),
       summary: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.verifyOtp.summary`,
+        id: `${PLUGIN_ID}.settings.apiCollections.verifyOtp.summary`,
         defaultMessage: "Verify the OTP for a given email or mobile number and return a JWT token for authenticated access."
       }),
       auth: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.verifyOtp.auth`,
+        id: `${PLUGIN_ID}.settings.apiCollections.verifyOtp.auth`,
         defaultMessage: "Auth: public (OTP method must be enabled in plugin settings)."
       }),
       response: `{
@@ -26420,15 +26424,15 @@ const ApiCollectionsContent = () => {
 }`,
       usage: [
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.verifyOtp.usage.verify`,
+          id: `${PLUGIN_ID}.settings.apiCollections.verifyOtp.usage.verify`,
           defaultMessage: "Submit the OTP code received via email or SMS."
         }),
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.verifyOtp.usage.token`,
+          id: `${PLUGIN_ID}.settings.apiCollections.verifyOtp.usage.token`,
           defaultMessage: "Receive a JWT token for authenticated API requests."
         }),
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.verifyOtp.usage.store`,
+          id: `${PLUGIN_ID}.settings.apiCollections.verifyOtp.usage.store`,
           defaultMessage: "Store the JWT token securely and include it in subsequent requests."
         })
       ],
@@ -26446,15 +26450,15 @@ const ApiCollectionsContent = () => {
       method: "POST",
       path: "/api/auth/local",
       title: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.defaultLogin.title`,
+        id: `${PLUGIN_ID}.settings.apiCollections.defaultLogin.title`,
         defaultMessage: "Default Login (Email/Password)"
       }),
       summary: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.defaultLogin.summary`,
+        id: `${PLUGIN_ID}.settings.apiCollections.defaultLogin.summary`,
         defaultMessage: "Use Strapi's built-in /auth/local endpoint for email/password login when the authentication method is set to Default."
       }),
       auth: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.defaultLogin.auth`,
+        id: `${PLUGIN_ID}.settings.apiCollections.defaultLogin.auth`,
         defaultMessage: "Auth: public (uses Strapi's core Users & Permissions authentication)."
       }),
       response: `{
@@ -26467,11 +26471,11 @@ const ApiCollectionsContent = () => {
 }`,
       usage: [
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.defaultLogin.usage.request`,
+          id: `${PLUGIN_ID}.settings.apiCollections.defaultLogin.usage.request`,
           defaultMessage: "Send identifier (email or username) and password to authenticate the user."
         }),
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.defaultLogin.usage.next`,
+          id: `${PLUGIN_ID}.settings.apiCollections.defaultLogin.usage.next`,
           defaultMessage: "Store the returned JWT token and use it for authenticated requests."
         })
       ],
@@ -26486,15 +26490,15 @@ const ApiCollectionsContent = () => {
       method: "POST",
       path: "/api/auth/local/register",
       title: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.defaultRegister.title`,
+        id: `${PLUGIN_ID}.settings.apiCollections.defaultRegister.title`,
         defaultMessage: "Default Register (Email/Password)"
       }),
       summary: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.defaultRegister.summary`,
+        id: `${PLUGIN_ID}.settings.apiCollections.defaultRegister.summary`,
         defaultMessage: "Use Strapi's built-in /auth/local/register endpoint for email/password registration when the authentication method is set to Default."
       }),
       auth: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.defaultRegister.auth`,
+        id: `${PLUGIN_ID}.settings.apiCollections.defaultRegister.auth`,
         defaultMessage: "Auth: public (uses Strapi's core Users & Permissions registration)."
       }),
       response: `{
@@ -26507,11 +26511,11 @@ const ApiCollectionsContent = () => {
 }`,
       usage: [
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.defaultRegister.usage.request`,
+          id: `${PLUGIN_ID}.settings.apiCollections.defaultRegister.usage.request`,
           defaultMessage: "Send username, email and password to create a new user."
         }),
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.defaultRegister.usage.next`,
+          id: `${PLUGIN_ID}.settings.apiCollections.defaultRegister.usage.next`,
           defaultMessage: "Use the returned JWT token or confirmation flow according to your Users & Permissions settings."
         })
       ],
@@ -26527,15 +26531,15 @@ const ApiCollectionsContent = () => {
       method: "GET",
       path: getApiPath("/api/webbycommerce/auth/profile"),
       title: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.profile.title`,
+        id: `${PLUGIN_ID}.settings.apiCollections.profile.title`,
         defaultMessage: "Get User Profile"
       }),
       summary: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.profile.summary`,
+        id: `${PLUGIN_ID}.settings.apiCollections.profile.summary`,
         defaultMessage: "Get complete user profile details for the authenticated user. Requires a valid JWT token."
       }),
       auth: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.profile.auth`,
+        id: `${PLUGIN_ID}.settings.apiCollections.profile.auth`,
         defaultMessage: "Auth: requires JWT token (Authorization: Bearer <token>) and ecommerce permission enabled."
       }),
       response: `{
@@ -26557,11 +26561,11 @@ const ApiCollectionsContent = () => {
 }`,
       usage: [
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.profile.usage.token`,
+          id: `${PLUGIN_ID}.settings.apiCollections.profile.usage.token`,
           defaultMessage: "Include the JWT token in the Authorization header."
         }),
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.profile.usage.details`,
+          id: `${PLUGIN_ID}.settings.apiCollections.profile.usage.details`,
           defaultMessage: "Returns all user details including custom fields from the user schema."
         })
       ],
@@ -26573,15 +26577,15 @@ const ApiCollectionsContent = () => {
       method: "PUT",
       path: getApiPath("/api/webbycommerce/auth/profile"),
       title: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.updateProfile.title`,
+        id: `${PLUGIN_ID}.settings.apiCollections.updateProfile.title`,
         defaultMessage: "Update User Profile"
       }),
       summary: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.updateProfile.summary`,
+        id: `${PLUGIN_ID}.settings.apiCollections.updateProfile.summary`,
         defaultMessage: "Update user profile details including name, email, phone number, and optionally change password (if default login method is enabled)."
       }),
       auth: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.updateProfile.auth`,
+        id: `${PLUGIN_ID}.settings.apiCollections.updateProfile.auth`,
         defaultMessage: "Auth: requires JWT token (Authorization: Bearer <token>) and ecommerce permission enabled."
       }),
       response: `{
@@ -26602,15 +26606,15 @@ const ApiCollectionsContent = () => {
 }`,
       usage: [
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.updateProfile.usage.required`,
+          id: `${PLUGIN_ID}.settings.apiCollections.updateProfile.usage.required`,
           defaultMessage: "First name, last name, email, and phone number are required fields."
         }),
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.updateProfile.usage.unique`,
+          id: `${PLUGIN_ID}.settings.apiCollections.updateProfile.usage.unique`,
           defaultMessage: "Email and phone number must be unique (not used by other users)."
         }),
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.updateProfile.usage.password`,
+          id: `${PLUGIN_ID}.settings.apiCollections.updateProfile.usage.password`,
           defaultMessage: "Password update is only available when default login method is enabled."
         })
       ],
@@ -26634,15 +26638,15 @@ const ApiCollectionsContent = () => {
       method: "GET",
       path: getApiPath("/api/webbycommerce/addresses"),
       title: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.addresses.getList.title`,
+        id: `${PLUGIN_ID}.settings.apiCollections.addresses.getList.title`,
         defaultMessage: "Get All Addresses"
       }),
       summary: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.addresses.getList.summary`,
+        id: `${PLUGIN_ID}.settings.apiCollections.addresses.getList.summary`,
         defaultMessage: "Retrieve all addresses for the authenticated user. Optionally filter by type (0=billing, 1=shipping)."
       }),
       auth: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.addresses.auth`,
+        id: `${PLUGIN_ID}.settings.apiCollections.addresses.auth`,
         defaultMessage: "Auth: requires JWT token (Authorization: Bearer <token>) and ecommerce permission enabled."
       }),
       response: `{
@@ -26678,15 +26682,15 @@ const ApiCollectionsContent = () => {
       method: "GET",
       path: getApiPath("/api/webbycommerce/addresses/:id"),
       title: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.addresses.getSingle.title`,
+        id: `${PLUGIN_ID}.settings.apiCollections.addresses.getSingle.title`,
         defaultMessage: "Get Single Address"
       }),
       summary: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.addresses.getSingle.summary`,
+        id: `${PLUGIN_ID}.settings.apiCollections.addresses.getSingle.summary`,
         defaultMessage: "Retrieve a specific address by ID for the authenticated user."
       }),
       auth: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.addresses.auth`,
+        id: `${PLUGIN_ID}.settings.apiCollections.addresses.auth`,
         defaultMessage: "Auth: requires JWT token (Authorization: Bearer <token>) and ecommerce permission enabled."
       }),
       response: `{
@@ -26720,15 +26724,15 @@ const ApiCollectionsContent = () => {
       method: "POST",
       path: getApiPath("/api/webbycommerce/addresses"),
       title: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.addresses.create.title`,
+        id: `${PLUGIN_ID}.settings.apiCollections.addresses.create.title`,
         defaultMessage: "Create Address"
       }),
       summary: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.addresses.create.summary`,
+        id: `${PLUGIN_ID}.settings.apiCollections.addresses.create.summary`,
         defaultMessage: "Create a new billing or shipping address for the authenticated user."
       }),
       auth: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.addresses.auth`,
+        id: `${PLUGIN_ID}.settings.apiCollections.addresses.auth`,
         defaultMessage: "Auth: requires JWT token (Authorization: Bearer <token>) and ecommerce permission enabled."
       }),
       response: `{
@@ -26779,15 +26783,15 @@ const ApiCollectionsContent = () => {
       method: "PUT",
       path: getApiPath("/api/webbycommerce/addresses/:id"),
       title: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.addresses.update.title`,
+        id: `${PLUGIN_ID}.settings.apiCollections.addresses.update.title`,
         defaultMessage: "Update Address"
       }),
       summary: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.addresses.update.summary`,
+        id: `${PLUGIN_ID}.settings.apiCollections.addresses.update.summary`,
         defaultMessage: "Update an existing address for the authenticated user."
       }),
       auth: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.addresses.auth`,
+        id: `${PLUGIN_ID}.settings.apiCollections.addresses.auth`,
         defaultMessage: "Auth: requires JWT token (Authorization: Bearer <token>) and ecommerce permission enabled."
       }),
       response: `{
@@ -26836,15 +26840,15 @@ const ApiCollectionsContent = () => {
       method: "DELETE",
       path: getApiPath("/api/webbycommerce/addresses/:id"),
       title: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.addresses.delete.title`,
+        id: `${PLUGIN_ID}.settings.apiCollections.addresses.delete.title`,
         defaultMessage: "Delete Address"
       }),
       summary: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.addresses.delete.summary`,
+        id: `${PLUGIN_ID}.settings.apiCollections.addresses.delete.summary`,
         defaultMessage: "Delete an address for the authenticated user."
       }),
       auth: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.addresses.auth`,
+        id: `${PLUGIN_ID}.settings.apiCollections.addresses.auth`,
         defaultMessage: "Auth: requires JWT token (Authorization: Bearer <token>) and ecommerce permission enabled."
       }),
       response: `{
@@ -26865,15 +26869,15 @@ const ApiCollectionsContent = () => {
       method: "GET",
       path: getApiPath("/api/webbycommerce/products"),
       title: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.products.getList.title`,
+        id: `${PLUGIN_ID}.settings.apiCollections.products.getList.title`,
         defaultMessage: "Get All Products"
       }),
       summary: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.products.getList.summary`,
+        id: `${PLUGIN_ID}.settings.apiCollections.products.getList.summary`,
         defaultMessage: "Retrieve all products with optional filtering by product category, tag, or search."
       }),
       auth: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.products.auth`,
+        id: `${PLUGIN_ID}.settings.apiCollections.products.auth`,
         defaultMessage: "Auth: public (no authentication required)."
       }),
       response: `{
@@ -26911,15 +26915,15 @@ const ApiCollectionsContent = () => {
       method: "GET",
       path: getApiPath("/api/webbycommerce/products/:id"),
       title: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.products.getSingle.title`,
+        id: `${PLUGIN_ID}.settings.apiCollections.products.getSingle.title`,
         defaultMessage: "Get Single Product"
       }),
       summary: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.products.getSingle.summary`,
+        id: `${PLUGIN_ID}.settings.apiCollections.products.getSingle.summary`,
         defaultMessage: "Retrieve a specific product by ID."
       }),
       auth: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.products.auth`,
+        id: `${PLUGIN_ID}.settings.apiCollections.products.auth`,
         defaultMessage: "Auth: public (no authentication required)."
       }),
       response: `{
@@ -26950,15 +26954,15 @@ const ApiCollectionsContent = () => {
       method: "GET",
       path: getApiPath("/api/webbycommerce/products/:slug"),
       title: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.products.getBySlug.title`,
+        id: `${PLUGIN_ID}.settings.apiCollections.products.getBySlug.title`,
         defaultMessage: "Get Single Product (By Slug)"
       }),
       summary: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.products.getBySlug.summary`,
+        id: `${PLUGIN_ID}.settings.apiCollections.products.getBySlug.summary`,
         defaultMessage: "Retrieve a specific product by slug."
       }),
       auth: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.products.auth`,
+        id: `${PLUGIN_ID}.settings.apiCollections.products.auth`,
         defaultMessage: "Auth: public (no authentication required)."
       }),
       response: `{
@@ -26989,15 +26993,15 @@ const ApiCollectionsContent = () => {
       method: "POST",
       path: getApiPath("/api/webbycommerce/products"),
       title: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.products.create.title`,
+        id: `${PLUGIN_ID}.settings.apiCollections.products.create.title`,
         defaultMessage: "Create Product"
       }),
       summary: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.products.create.summary`,
+        id: `${PLUGIN_ID}.settings.apiCollections.products.create.summary`,
         defaultMessage: "Create a new product. Requires administrator privileges."
       }),
       auth: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.products.authAdmin`,
+        id: `${PLUGIN_ID}.settings.apiCollections.products.authAdmin`,
         defaultMessage: "Auth: requires JWT token (Authorization: Bearer <token>) and administrator role."
       }),
       response: `{
@@ -27046,15 +27050,15 @@ const ApiCollectionsContent = () => {
       method: "PUT",
       path: getApiPath("/api/webbycommerce/products/:id"),
       title: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.products.update.title`,
+        id: `${PLUGIN_ID}.settings.apiCollections.products.update.title`,
         defaultMessage: "Update Product"
       }),
       summary: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.products.update.summary`,
+        id: `${PLUGIN_ID}.settings.apiCollections.products.update.summary`,
         defaultMessage: "Update an existing product. Requires administrator privileges."
       }),
       auth: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.products.authAdmin`,
+        id: `${PLUGIN_ID}.settings.apiCollections.products.authAdmin`,
         defaultMessage: "Auth: requires JWT token (Authorization: Bearer <token>) and administrator role."
       }),
       response: `{
@@ -27097,15 +27101,15 @@ const ApiCollectionsContent = () => {
       method: "DELETE",
       path: getApiPath("/api/webbycommerce/products/:id"),
       title: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.products.delete.title`,
+        id: `${PLUGIN_ID}.settings.apiCollections.products.delete.title`,
         defaultMessage: "Delete Product"
       }),
       summary: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.products.delete.summary`,
+        id: `${PLUGIN_ID}.settings.apiCollections.products.delete.summary`,
         defaultMessage: "Delete a product. Requires administrator privileges."
       }),
       auth: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.products.authAdmin`,
+        id: `${PLUGIN_ID}.settings.apiCollections.products.authAdmin`,
         defaultMessage: "Auth: requires JWT token (Authorization: Bearer <token>) and administrator role."
       }),
       response: `{
@@ -27126,15 +27130,15 @@ const ApiCollectionsContent = () => {
       method: "GET",
       path: getApiPath("/api/webbycommerce/product-variants"),
       title: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.productVariants.getList.title`,
+        id: `${PLUGIN_ID}.settings.apiCollections.productVariants.getList.title`,
         defaultMessage: "Get All Product Variants"
       }),
       summary: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.productVariants.getList.summary`,
+        id: `${PLUGIN_ID}.settings.apiCollections.productVariants.getList.summary`,
         defaultMessage: "Retrieve all product variants with optional filtering by product ID."
       }),
       auth: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.productVariants.auth`,
+        id: `${PLUGIN_ID}.settings.apiCollections.productVariants.auth`,
         defaultMessage: "Auth: public (no authentication required by default)."
       }),
       response: `{
@@ -27172,15 +27176,15 @@ const ApiCollectionsContent = () => {
       method: "GET",
       path: getApiPath("/api/webbycommerce/product-variants/:id"),
       title: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.productVariants.getSingle.title`,
+        id: `${PLUGIN_ID}.settings.apiCollections.productVariants.getSingle.title`,
         defaultMessage: "Get Single Product Variant"
       }),
       summary: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.productVariants.getSingle.summary`,
+        id: `${PLUGIN_ID}.settings.apiCollections.productVariants.getSingle.summary`,
         defaultMessage: "Retrieve a specific product variant by ID."
       }),
       auth: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.productVariants.auth`,
+        id: `${PLUGIN_ID}.settings.apiCollections.productVariants.auth`,
         defaultMessage: "Auth: public (no authentication required by default)."
       }),
       response: `{
@@ -27211,15 +27215,15 @@ const ApiCollectionsContent = () => {
       method: "POST",
       path: getApiPath("/api/webbycommerce/product-variants"),
       title: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.productVariants.create.title`,
+        id: `${PLUGIN_ID}.settings.apiCollections.productVariants.create.title`,
         defaultMessage: "Create Product Variant"
       }),
       summary: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.productVariants.create.summary`,
+        id: `${PLUGIN_ID}.settings.apiCollections.productVariants.create.summary`,
         defaultMessage: "Create a new product variant. Requires administrator privileges."
       }),
       auth: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.productVariants.authAdmin`,
+        id: `${PLUGIN_ID}.settings.apiCollections.productVariants.authAdmin`,
         defaultMessage: "Auth: requires JWT token (Authorization: Bearer <token>) and administrator role."
       }),
       response: `{
@@ -27266,15 +27270,15 @@ const ApiCollectionsContent = () => {
       method: "PUT",
       path: getApiPath("/api/webbycommerce/product-variants/:id"),
       title: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.productVariants.update.title`,
+        id: `${PLUGIN_ID}.settings.apiCollections.productVariants.update.title`,
         defaultMessage: "Update Product Variant"
       }),
       summary: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.productVariants.update.summary`,
+        id: `${PLUGIN_ID}.settings.apiCollections.productVariants.update.summary`,
         defaultMessage: "Update an existing product variant. Requires administrator privileges."
       }),
       auth: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.productVariants.authAdmin`,
+        id: `${PLUGIN_ID}.settings.apiCollections.productVariants.authAdmin`,
         defaultMessage: "Auth: requires JWT token (Authorization: Bearer <token>) and administrator role."
       }),
       response: `{
@@ -27321,15 +27325,15 @@ const ApiCollectionsContent = () => {
       method: "DELETE",
       path: getApiPath("/api/webbycommerce/product-variants/:id"),
       title: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.productVariants.delete.title`,
+        id: `${PLUGIN_ID}.settings.apiCollections.productVariants.delete.title`,
         defaultMessage: "Delete Product Variant"
       }),
       summary: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.productVariants.delete.summary`,
+        id: `${PLUGIN_ID}.settings.apiCollections.productVariants.delete.summary`,
         defaultMessage: "Delete a product variant. Requires administrator privileges."
       }),
       auth: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.productVariants.authAdmin`,
+        id: `${PLUGIN_ID}.settings.apiCollections.productVariants.authAdmin`,
         defaultMessage: "Auth: requires JWT token (Authorization: Bearer <token>) and administrator role."
       }),
       response: `{
@@ -27350,15 +27354,15 @@ const ApiCollectionsContent = () => {
       method: "GET",
       path: getApiPath("/api/webbycommerce/product-categories"),
       title: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.productCategories.getList.title`,
+        id: `${PLUGIN_ID}.settings.apiCollections.productCategories.getList.title`,
         defaultMessage: "Get All Product Categories"
       }),
       summary: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.productCategories.getList.summary`,
+        id: `${PLUGIN_ID}.settings.apiCollections.productCategories.getList.summary`,
         defaultMessage: "Retrieve all product categories with optional search."
       }),
       auth: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.productCategories.auth`,
+        id: `${PLUGIN_ID}.settings.apiCollections.productCategories.auth`,
         defaultMessage: "Auth: public (no authentication required)."
       }),
       response: `{
@@ -27375,15 +27379,15 @@ const ApiCollectionsContent = () => {
       method: "GET",
       path: getApiPath("/api/webbycommerce/product-categories/:id"),
       title: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.productCategories.getSingle.title`,
+        id: `${PLUGIN_ID}.settings.apiCollections.productCategories.getSingle.title`,
         defaultMessage: "Get Single Product Category"
       }),
       summary: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.productCategories.getSingle.summary`,
+        id: `${PLUGIN_ID}.settings.apiCollections.productCategories.getSingle.summary`,
         defaultMessage: "Retrieve a specific product category by ID."
       }),
       auth: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.productCategories.auth`,
+        id: `${PLUGIN_ID}.settings.apiCollections.productCategories.auth`,
         defaultMessage: "Auth: public (no authentication required)."
       }),
       response: `{
@@ -27397,15 +27401,15 @@ const ApiCollectionsContent = () => {
       method: "POST",
       path: getApiPath("/api/webbycommerce/product-categories"),
       title: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.productCategories.create.title`,
+        id: `${PLUGIN_ID}.settings.apiCollections.productCategories.create.title`,
         defaultMessage: "Create Product Category"
       }),
       summary: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.productCategories.create.summary`,
+        id: `${PLUGIN_ID}.settings.apiCollections.productCategories.create.summary`,
         defaultMessage: "Create a new product category. Requires administrator privileges."
       }),
       auth: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.productCategories.authAdmin`,
+        id: `${PLUGIN_ID}.settings.apiCollections.productCategories.authAdmin`,
         defaultMessage: "Auth: requires JWT token (Authorization: Bearer <token>) and administrator role."
       }),
       response: `{
@@ -27428,15 +27432,15 @@ const ApiCollectionsContent = () => {
       method: "PUT",
       path: getApiPath("/api/webbycommerce/product-categories/:id"),
       title: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.productCategories.update.title`,
+        id: `${PLUGIN_ID}.settings.apiCollections.productCategories.update.title`,
         defaultMessage: "Update Product Category"
       }),
       summary: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.productCategories.update.summary`,
+        id: `${PLUGIN_ID}.settings.apiCollections.productCategories.update.summary`,
         defaultMessage: "Update an existing product category. Requires administrator privileges."
       }),
       auth: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.productCategories.authAdmin`,
+        id: `${PLUGIN_ID}.settings.apiCollections.productCategories.authAdmin`,
         defaultMessage: "Auth: requires JWT token (Authorization: Bearer <token>) and administrator role."
       }),
       response: `{
@@ -27459,15 +27463,15 @@ const ApiCollectionsContent = () => {
       method: "DELETE",
       path: getApiPath("/api/webbycommerce/product-categories/:id"),
       title: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.productCategories.delete.title`,
+        id: `${PLUGIN_ID}.settings.apiCollections.productCategories.delete.title`,
         defaultMessage: "Delete Product Category"
       }),
       summary: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.productCategories.delete.summary`,
+        id: `${PLUGIN_ID}.settings.apiCollections.productCategories.delete.summary`,
         defaultMessage: "Delete a product category. Requires administrator privileges."
       }),
       auth: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.productCategories.authAdmin`,
+        id: `${PLUGIN_ID}.settings.apiCollections.productCategories.authAdmin`,
         defaultMessage: "Auth: requires JWT token (Authorization: Bearer <token>) and administrator role."
       }),
       response: `{
@@ -27482,15 +27486,15 @@ const ApiCollectionsContent = () => {
       method: "GET",
       path: getApiPath("/api/webbycommerce/tags"),
       title: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.tags.getList.title`,
+        id: `${PLUGIN_ID}.settings.apiCollections.tags.getList.title`,
         defaultMessage: "Get All Tags"
       }),
       summary: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.tags.getList.summary`,
+        id: `${PLUGIN_ID}.settings.apiCollections.tags.getList.summary`,
         defaultMessage: "Retrieve all product tags with optional search."
       }),
       auth: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.tags.auth`,
+        id: `${PLUGIN_ID}.settings.apiCollections.tags.auth`,
         defaultMessage: "Auth: public (no authentication required)."
       }),
       response: `{
@@ -27507,15 +27511,15 @@ const ApiCollectionsContent = () => {
       method: "GET",
       path: getApiPath("/api/webbycommerce/tags/:id"),
       title: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.tags.getSingle.title`,
+        id: `${PLUGIN_ID}.settings.apiCollections.tags.getSingle.title`,
         defaultMessage: "Get Single Tag"
       }),
       summary: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.tags.getSingle.summary`,
+        id: `${PLUGIN_ID}.settings.apiCollections.tags.getSingle.summary`,
         defaultMessage: "Retrieve a specific tag by ID."
       }),
       auth: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.tags.auth`,
+        id: `${PLUGIN_ID}.settings.apiCollections.tags.auth`,
         defaultMessage: "Auth: public (no authentication required)."
       }),
       response: `{
@@ -27529,15 +27533,15 @@ const ApiCollectionsContent = () => {
       method: "POST",
       path: getApiPath("/api/webbycommerce/tags"),
       title: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.tags.create.title`,
+        id: `${PLUGIN_ID}.settings.apiCollections.tags.create.title`,
         defaultMessage: "Create Tag"
       }),
       summary: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.tags.create.summary`,
+        id: `${PLUGIN_ID}.settings.apiCollections.tags.create.summary`,
         defaultMessage: "Create a new product tag. Requires administrator privileges."
       }),
       auth: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.tags.authAdmin`,
+        id: `${PLUGIN_ID}.settings.apiCollections.tags.authAdmin`,
         defaultMessage: "Auth: requires JWT token (Authorization: Bearer <token>) and administrator role."
       }),
       response: `{
@@ -27558,15 +27562,15 @@ const ApiCollectionsContent = () => {
       method: "PUT",
       path: getApiPath("/api/webbycommerce/tags/:id"),
       title: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.tags.update.title`,
+        id: `${PLUGIN_ID}.settings.apiCollections.tags.update.title`,
         defaultMessage: "Update Tag"
       }),
       summary: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.tags.update.summary`,
+        id: `${PLUGIN_ID}.settings.apiCollections.tags.update.summary`,
         defaultMessage: "Update an existing tag. Requires administrator privileges."
       }),
       auth: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.tags.authAdmin`,
+        id: `${PLUGIN_ID}.settings.apiCollections.tags.authAdmin`,
         defaultMessage: "Auth: requires JWT token (Authorization: Bearer <token>) and administrator role."
       }),
       response: `{
@@ -27587,15 +27591,15 @@ const ApiCollectionsContent = () => {
       method: "DELETE",
       path: getApiPath("/api/webbycommerce/tags/:id"),
       title: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.tags.delete.title`,
+        id: `${PLUGIN_ID}.settings.apiCollections.tags.delete.title`,
         defaultMessage: "Delete Tag"
       }),
       summary: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.tags.delete.summary`,
+        id: `${PLUGIN_ID}.settings.apiCollections.tags.delete.summary`,
         defaultMessage: "Delete a tag. Requires administrator privileges."
       }),
       auth: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.tags.authAdmin`,
+        id: `${PLUGIN_ID}.settings.apiCollections.tags.authAdmin`,
         defaultMessage: "Auth: requires JWT token (Authorization: Bearer <token>) and administrator role."
       }),
       response: `{
@@ -27610,15 +27614,15 @@ const ApiCollectionsContent = () => {
       method: "GET",
       path: getApiPath("/api/webbycommerce/cart"),
       title: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.cart.getCart.title`,
+        id: `${PLUGIN_ID}.settings.apiCollections.cart.getCart.title`,
         defaultMessage: "Get My Cart"
       }),
       summary: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.cart.getCart.summary`,
+        id: `${PLUGIN_ID}.settings.apiCollections.cart.getCart.summary`,
         defaultMessage: "Retrieve the authenticated user's active cart with items and totals."
       }),
       auth: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.cart.auth`,
+        id: `${PLUGIN_ID}.settings.apiCollections.cart.auth`,
         defaultMessage: "Auth: requires JWT token (Authorization: Bearer <token>) and ecommerce permission enabled."
       }),
       response: `{
@@ -27656,11 +27660,11 @@ const ApiCollectionsContent = () => {
 }`,
       usage: [
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.cart.getCart.usage.cart`,
+          id: `${PLUGIN_ID}.settings.apiCollections.cart.getCart.usage.cart`,
           defaultMessage: "Returns cart with calculated subtotal/tax/discount/total."
         }),
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.cart.getCart.usage.items`,
+          id: `${PLUGIN_ID}.settings.apiCollections.cart.getCart.usage.items`,
           defaultMessage: "Includes cart items with product details and pricing snapshot."
         })
       ],
@@ -27672,15 +27676,15 @@ const ApiCollectionsContent = () => {
       method: "POST",
       path: getApiPath("/api/webbycommerce/cart/create"),
       title: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.cart.createCart.title`,
+        id: `${PLUGIN_ID}.settings.apiCollections.cart.createCart.title`,
         defaultMessage: "Create Cart (If Missing)"
       }),
       summary: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.cart.createCart.summary`,
+        id: `${PLUGIN_ID}.settings.apiCollections.cart.createCart.summary`,
         defaultMessage: "Create the authenticated user's cart if it does not already exist."
       }),
       auth: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.cart.auth`,
+        id: `${PLUGIN_ID}.settings.apiCollections.cart.auth`,
         defaultMessage: "Auth: requires JWT token (Authorization: Bearer <token>) and ecommerce permission enabled."
       }),
       response: `{
@@ -27702,7 +27706,7 @@ const ApiCollectionsContent = () => {
 }`,
       usage: [
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.cart.createCart.usage.create`,
+          id: `${PLUGIN_ID}.settings.apiCollections.cart.createCart.usage.create`,
           defaultMessage: "Useful on login or app bootstrap to ensure a cart exists."
         })
       ],
@@ -27714,15 +27718,15 @@ const ApiCollectionsContent = () => {
       method: "POST",
       path: getApiPath("/api/webbycommerce/cart"),
       title: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.cart.addItem.title`,
+        id: `${PLUGIN_ID}.settings.apiCollections.cart.addItem.title`,
         defaultMessage: "Add Item to Cart"
       }),
       summary: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.cart.addItem.summary`,
+        id: `${PLUGIN_ID}.settings.apiCollections.cart.addItem.summary`,
         defaultMessage: "Add a product to the authenticated user's shopping cart or update quantity if product already exists."
       }),
       auth: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.cart.auth`,
+        id: `${PLUGIN_ID}.settings.apiCollections.cart.auth`,
         defaultMessage: "Auth: requires JWT token (Authorization: Bearer <token>) and ecommerce permission enabled."
       }),
       response: `{
@@ -27753,15 +27757,15 @@ const ApiCollectionsContent = () => {
 }`,
       usage: [
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.cart.addItem.usage.product`,
+          id: `${PLUGIN_ID}.settings.apiCollections.cart.addItem.usage.product`,
           defaultMessage: "Provide product ID and quantity to add to cart."
         }),
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.cart.addItem.usage.existing`,
+          id: `${PLUGIN_ID}.settings.apiCollections.cart.addItem.usage.existing`,
           defaultMessage: "If product already exists in cart, quantity will be increased."
         }),
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.cart.addItem.usage.stock`,
+          id: `${PLUGIN_ID}.settings.apiCollections.cart.addItem.usage.stock`,
           defaultMessage: "System validates stock availability before adding to cart."
         })
       ],
@@ -27780,15 +27784,15 @@ const ApiCollectionsContent = () => {
       method: "PUT",
       path: getApiPath("/api/webbycommerce/cart/:cartItemId"),
       title: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.cart.updateItem.title`,
+        id: `${PLUGIN_ID}.settings.apiCollections.cart.updateItem.title`,
         defaultMessage: "Update Cart Item"
       }),
       summary: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.cart.updateItem.summary`,
+        id: `${PLUGIN_ID}.settings.apiCollections.cart.updateItem.summary`,
         defaultMessage: "Update the quantity of a specific item in the authenticated user's shopping cart."
       }),
       auth: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.cart.auth`,
+        id: `${PLUGIN_ID}.settings.apiCollections.cart.auth`,
         defaultMessage: "Auth: requires JWT token (Authorization: Bearer <token>) and ecommerce permission enabled."
       }),
       response: `{
@@ -27809,11 +27813,11 @@ const ApiCollectionsContent = () => {
 }`,
       usage: [
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.cart.updateItem.usage.quantity`,
+          id: `${PLUGIN_ID}.settings.apiCollections.cart.updateItem.usage.quantity`,
           defaultMessage: "Update quantity for an existing cart item."
         }),
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.cart.updateItem.usage.zero`,
+          id: `${PLUGIN_ID}.settings.apiCollections.cart.updateItem.usage.zero`,
           defaultMessage: "Setting quantity to 0 will remove the item from cart."
         })
       ],
@@ -27830,15 +27834,15 @@ const ApiCollectionsContent = () => {
       method: "DELETE",
       path: getApiPath("/api/webbycommerce/cart/:cartItemId"),
       title: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.cart.removeItem.title`,
+        id: `${PLUGIN_ID}.settings.apiCollections.cart.removeItem.title`,
         defaultMessage: "Remove Cart Item"
       }),
       summary: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.cart.removeItem.summary`,
+        id: `${PLUGIN_ID}.settings.apiCollections.cart.removeItem.summary`,
         defaultMessage: "Remove a specific item from the authenticated user's shopping cart."
       }),
       auth: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.cart.auth`,
+        id: `${PLUGIN_ID}.settings.apiCollections.cart.auth`,
         defaultMessage: "Auth: requires JWT token (Authorization: Bearer <token>) and ecommerce permission enabled."
       }),
       response: `{
@@ -27857,7 +27861,7 @@ const ApiCollectionsContent = () => {
 }`,
       usage: [
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.cart.removeItem.usage.item`,
+          id: `${PLUGIN_ID}.settings.apiCollections.cart.removeItem.usage.item`,
           defaultMessage: "Remove a specific item by providing cart item ID."
         })
       ],
@@ -27869,15 +27873,15 @@ const ApiCollectionsContent = () => {
       method: "DELETE",
       path: getApiPath("/api/webbycommerce/cart"),
       title: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.cart.clearCart.title`,
+        id: `${PLUGIN_ID}.settings.apiCollections.cart.clearCart.title`,
         defaultMessage: "Clear Cart"
       }),
       summary: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.cart.clearCart.summary`,
+        id: `${PLUGIN_ID}.settings.apiCollections.cart.clearCart.summary`,
         defaultMessage: "Remove all items from the authenticated user's shopping cart."
       }),
       auth: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.cart.auth`,
+        id: `${PLUGIN_ID}.settings.apiCollections.cart.auth`,
         defaultMessage: "Auth: requires JWT token (Authorization: Bearer <token>) and ecommerce permission enabled."
       }),
       response: `{
@@ -27896,7 +27900,7 @@ const ApiCollectionsContent = () => {
 }`,
       usage: [
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.cart.clearCart.usage.all`,
+          id: `${PLUGIN_ID}.settings.apiCollections.cart.clearCart.usage.all`,
           defaultMessage: "Removes all items from the cart in one operation."
         })
       ],
@@ -27908,15 +27912,15 @@ const ApiCollectionsContent = () => {
       method: "POST",
       path: getApiPath("/api/webbycommerce/cart/checkout"),
       title: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.cart.checkout.title`,
+        id: `${PLUGIN_ID}.settings.apiCollections.cart.checkout.title`,
         defaultMessage: "Checkout Cart (Mark Ordered)"
       }),
       summary: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.cart.checkout.summary`,
+        id: `${PLUGIN_ID}.settings.apiCollections.cart.checkout.summary`,
         defaultMessage: "Mark the authenticated user's cart as ordered."
       }),
       auth: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.cart.auth`,
+        id: `${PLUGIN_ID}.settings.apiCollections.cart.auth`,
         defaultMessage: "Auth: requires JWT token (Authorization: Bearer <token>) and ecommerce permission enabled."
       }),
       response: `{
@@ -27937,7 +27941,7 @@ const ApiCollectionsContent = () => {
 }`,
       usage: [
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.cart.checkout.usage.status`,
+          id: `${PLUGIN_ID}.settings.apiCollections.cart.checkout.usage.status`,
           defaultMessage: "Updates cart status to ordered (order creation is handled by the /checkout endpoint)."
         })
       ],
@@ -27949,15 +27953,15 @@ const ApiCollectionsContent = () => {
       method: "POST",
       path: getApiPath("/api/webbycommerce/checkout"),
       title: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.checkout.title`,
+        id: `${PLUGIN_ID}.settings.apiCollections.checkout.title`,
         defaultMessage: "Checkout"
       }),
       summary: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.checkout.summary`,
+        id: `${PLUGIN_ID}.settings.apiCollections.checkout.summary`,
         defaultMessage: "Process checkout for the authenticated user's cart, create an order, update inventory, and clear the cart."
       }),
       auth: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.checkout.auth`,
+        id: `${PLUGIN_ID}.settings.apiCollections.checkout.auth`,
         defaultMessage: "Auth: requires JWT token (Authorization: Bearer <token>) and ecommerce permission enabled."
       }),
       response: `{
@@ -27983,19 +27987,19 @@ const ApiCollectionsContent = () => {
 }`,
       usage: [
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.checkout.usage.cart`,
+          id: `${PLUGIN_ID}.settings.apiCollections.checkout.usage.cart`,
           defaultMessage: "Requires items in the user's cart before checkout."
         }),
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.checkout.usage.validation`,
+          id: `${PLUGIN_ID}.settings.apiCollections.checkout.usage.validation`,
           defaultMessage: "Validates stock availability and cart contents."
         }),
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.checkout.usage.inventory`,
+          id: `${PLUGIN_ID}.settings.apiCollections.checkout.usage.inventory`,
           defaultMessage: "Automatically updates product inventory after successful checkout."
         }),
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.checkout.usage.clear`,
+          id: `${PLUGIN_ID}.settings.apiCollections.checkout.usage.clear`,
           defaultMessage: "Clears the cart after successful order creation."
         })
       ],
@@ -28039,15 +28043,15 @@ const ApiCollectionsContent = () => {
       method: "GET",
       path: getApiPath("/api/webbycommerce/orders"),
       title: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.orders.getList.title`,
+        id: `${PLUGIN_ID}.settings.apiCollections.orders.getList.title`,
         defaultMessage: "Get Orders"
       }),
       summary: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.orders.getList.summary`,
+        id: `${PLUGIN_ID}.settings.apiCollections.orders.getList.summary`,
         defaultMessage: "Retrieve all orders for the authenticated user with optional filtering and pagination."
       }),
       auth: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.orders.auth`,
+        id: `${PLUGIN_ID}.settings.apiCollections.orders.auth`,
         defaultMessage: "Auth: requires JWT token (Authorization: Bearer <token>) and ecommerce permission enabled."
       }),
       response: `{
@@ -28074,15 +28078,15 @@ const ApiCollectionsContent = () => {
 }`,
       usage: [
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.orders.getList.usage.pagination`,
+          id: `${PLUGIN_ID}.settings.apiCollections.orders.getList.usage.pagination`,
           defaultMessage: "Supports pagination with ?page=1&limit=10 parameters."
         }),
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.orders.getList.usage.filter`,
+          id: `${PLUGIN_ID}.settings.apiCollections.orders.getList.usage.filter`,
           defaultMessage: "Filter by status with ?status=delivered parameter."
         }),
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.orders.getList.usage.sort`,
+          id: `${PLUGIN_ID}.settings.apiCollections.orders.getList.usage.sort`,
           defaultMessage: "Orders are sorted by creation date (newest first)."
         })
       ],
@@ -28094,15 +28098,15 @@ const ApiCollectionsContent = () => {
       method: "GET",
       path: getApiPath("/api/webbycommerce/orders/:id"),
       title: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.orders.getSingle.title`,
+        id: `${PLUGIN_ID}.settings.apiCollections.orders.getSingle.title`,
         defaultMessage: "Get Order Details"
       }),
       summary: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.orders.getSingle.summary`,
+        id: `${PLUGIN_ID}.settings.apiCollections.orders.getSingle.summary`,
         defaultMessage: "Retrieve detailed information for a specific order by ID."
       }),
       auth: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.orders.auth`,
+        id: `${PLUGIN_ID}.settings.apiCollections.orders.auth`,
         defaultMessage: "Auth: requires JWT token (Authorization: Bearer <token>) and ecommerce permission enabled."
       }),
       response: `{
@@ -28159,15 +28163,15 @@ const ApiCollectionsContent = () => {
 }`,
       usage: [
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.orders.getSingle.usage.id`,
+          id: `${PLUGIN_ID}.settings.apiCollections.orders.getSingle.usage.id`,
           defaultMessage: "Replace :id with the actual order ID."
         }),
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.orders.getSingle.usage.ownership`,
+          id: `${PLUGIN_ID}.settings.apiCollections.orders.getSingle.usage.ownership`,
           defaultMessage: "Users can only view their own orders."
         }),
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.orders.getSingle.usage.details`,
+          id: `${PLUGIN_ID}.settings.apiCollections.orders.getSingle.usage.details`,
           defaultMessage: "Returns complete order information including addresses and payment details."
         })
       ],
@@ -28179,15 +28183,15 @@ const ApiCollectionsContent = () => {
       method: "PUT",
       path: getApiPath("/api/webbycommerce/orders/:id/cancel"),
       title: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.orders.cancel.title`,
+        id: `${PLUGIN_ID}.settings.apiCollections.orders.cancel.title`,
         defaultMessage: "Cancel Order"
       }),
       summary: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.orders.cancel.summary`,
+        id: `${PLUGIN_ID}.settings.apiCollections.orders.cancel.summary`,
         defaultMessage: "Cancel a pending order and restore product inventory."
       }),
       auth: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.orders.auth`,
+        id: `${PLUGIN_ID}.settings.apiCollections.orders.auth`,
         defaultMessage: "Auth: requires JWT token (Authorization: Bearer <token>) and ecommerce permission enabled."
       }),
       response: `{
@@ -28200,15 +28204,15 @@ const ApiCollectionsContent = () => {
 }`,
       usage: [
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.orders.cancel.usage.pending`,
+          id: `${PLUGIN_ID}.settings.apiCollections.orders.cancel.usage.pending`,
           defaultMessage: "Only pending orders can be cancelled."
         }),
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.orders.cancel.usage.inventory`,
+          id: `${PLUGIN_ID}.settings.apiCollections.orders.cancel.usage.inventory`,
           defaultMessage: "Automatically restores product inventory when order is cancelled."
         }),
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.orders.cancel.usage.ownership`,
+          id: `${PLUGIN_ID}.settings.apiCollections.orders.cancel.usage.ownership`,
           defaultMessage: "Users can only cancel their own orders."
         })
       ],
@@ -28220,15 +28224,15 @@ const ApiCollectionsContent = () => {
       method: "PUT",
       path: getApiPath("/api/webbycommerce/orders/:id/status"),
       title: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.orders.updateStatus.title`,
+        id: `${PLUGIN_ID}.settings.apiCollections.orders.updateStatus.title`,
         defaultMessage: "Update Order Status"
       }),
       summary: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.orders.updateStatus.summary`,
+        id: `${PLUGIN_ID}.settings.apiCollections.orders.updateStatus.summary`,
         defaultMessage: "Update the status of an existing order (admin functionality or user's own orders)."
       }),
       auth: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.orders.auth`,
+        id: `${PLUGIN_ID}.settings.apiCollections.orders.auth`,
         defaultMessage: "Auth: requires JWT token (Authorization: Bearer <token>) and ecommerce permission enabled."
       }),
       response: `{
@@ -28244,19 +28248,19 @@ const ApiCollectionsContent = () => {
 }`,
       usage: [
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.orders.updateStatus.usage.admin`,
+          id: `${PLUGIN_ID}.settings.apiCollections.orders.updateStatus.usage.admin`,
           defaultMessage: "Administrators can update any order status."
         }),
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.orders.updateStatus.usage.user`,
+          id: `${PLUGIN_ID}.settings.apiCollections.orders.updateStatus.usage.user`,
           defaultMessage: "Regular users can only update their own orders."
         }),
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.orders.updateStatus.usage.stock`,
+          id: `${PLUGIN_ID}.settings.apiCollections.orders.updateStatus.usage.stock`,
           defaultMessage: "Cancelling an order automatically restores product inventory."
         }),
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.orders.updateStatus.usage.email`,
+          id: `${PLUGIN_ID}.settings.apiCollections.orders.updateStatus.usage.email`,
           defaultMessage: "Status updates trigger email notifications to customers."
         })
       ],
@@ -28276,15 +28280,15 @@ const ApiCollectionsContent = () => {
       method: "GET",
       path: getApiPath("/api/webbycommerce/orders/:id/tracking"),
       title: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.orders.getTracking.title`,
+        id: `${PLUGIN_ID}.settings.apiCollections.orders.getTracking.title`,
         defaultMessage: "Get Order Tracking"
       }),
       summary: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.orders.getTracking.summary`,
+        id: `${PLUGIN_ID}.settings.apiCollections.orders.getTracking.summary`,
         defaultMessage: "Retrieve detailed tracking information and timeline for a specific order."
       }),
       auth: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.orders.auth`,
+        id: `${PLUGIN_ID}.settings.apiCollections.orders.auth`,
         defaultMessage: "Auth: requires JWT token (Authorization: Bearer <token>) and ecommerce permission enabled."
       }),
       response: `{
@@ -28334,19 +28338,19 @@ const ApiCollectionsContent = () => {
 }`,
       usage: [
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.orders.getTracking.usage.timeline`,
+          id: `${PLUGIN_ID}.settings.apiCollections.orders.getTracking.usage.timeline`,
           defaultMessage: "Returns a complete tracking timeline showing order progress."
         }),
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.orders.getTracking.usage.location`,
+          id: `${PLUGIN_ID}.settings.apiCollections.orders.getTracking.usage.location`,
           defaultMessage: "Shows current location and delivery status."
         }),
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.orders.getTracking.usage.ownership`,
+          id: `${PLUGIN_ID}.settings.apiCollections.orders.getTracking.usage.ownership`,
           defaultMessage: "Users can only track their own orders."
         }),
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.orders.getTracking.usage.realTime`,
+          id: `${PLUGIN_ID}.settings.apiCollections.orders.getTracking.usage.realTime`,
           defaultMessage: "Tracking information updates in real-time based on order status."
         })
       ],
@@ -28358,15 +28362,15 @@ const ApiCollectionsContent = () => {
       method: "GET",
       path: getApiPath("/api/webbycommerce/wishlist"),
       title: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.wishlist.getWishlist.title`,
+        id: `${PLUGIN_ID}.settings.apiCollections.wishlist.getWishlist.title`,
         defaultMessage: "Get Wishlist"
       }),
       summary: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.wishlist.getWishlist.summary`,
+        id: `${PLUGIN_ID}.settings.apiCollections.wishlist.getWishlist.summary`,
         defaultMessage: "Retrieve all products in the authenticated user's wishlist."
       }),
       auth: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.wishlist.auth`,
+        id: `${PLUGIN_ID}.settings.apiCollections.wishlist.auth`,
         defaultMessage: "Auth: requires JWT token (Authorization: Bearer <token>)."
       }),
       response: `{
@@ -28392,7 +28396,7 @@ const ApiCollectionsContent = () => {
 }`,
       usage: [
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.wishlist.getWishlist.title`,
+          id: `${PLUGIN_ID}.settings.apiCollections.wishlist.getWishlist.title`,
           defaultMessage: "GET /wishlist - Get user's wishlist"
         })
       ],
@@ -28404,15 +28408,15 @@ const ApiCollectionsContent = () => {
       method: "POST",
       path: getApiPath("/api/webbycommerce/wishlist"),
       title: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.wishlist.addToWishlist.title`,
+        id: `${PLUGIN_ID}.settings.apiCollections.wishlist.addToWishlist.title`,
         defaultMessage: "Add to Wishlist"
       }),
       summary: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.wishlist.addToWishlist.summary`,
+        id: `${PLUGIN_ID}.settings.apiCollections.wishlist.addToWishlist.summary`,
         defaultMessage: "Add a product to the authenticated user's wishlist."
       }),
       auth: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.wishlist.auth`,
+        id: `${PLUGIN_ID}.settings.apiCollections.wishlist.auth`,
         defaultMessage: "Auth: requires JWT token (Authorization: Bearer <token>)."
       }),
       response: `{
@@ -28428,7 +28432,7 @@ const ApiCollectionsContent = () => {
 }`,
       usage: [
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.wishlist.addToWishlist.title`,
+          id: `${PLUGIN_ID}.settings.apiCollections.wishlist.addToWishlist.title`,
           defaultMessage: "POST /wishlist - Add product to wishlist"
         })
       ],
@@ -28445,15 +28449,15 @@ const ApiCollectionsContent = () => {
       method: "DELETE",
       path: getApiPath("/api/webbycommerce/wishlist/{productId}"),
       title: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.wishlist.removeFromWishlist.title`,
+        id: `${PLUGIN_ID}.settings.apiCollections.wishlist.removeFromWishlist.title`,
         defaultMessage: "Remove from Wishlist"
       }),
       summary: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.wishlist.removeFromWishlist.summary`,
+        id: `${PLUGIN_ID}.settings.apiCollections.wishlist.removeFromWishlist.summary`,
         defaultMessage: "Remove a specific product from the authenticated user's wishlist."
       }),
       auth: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.wishlist.auth`,
+        id: `${PLUGIN_ID}.settings.apiCollections.wishlist.auth`,
         defaultMessage: "Auth: requires JWT token (Authorization: Bearer <token>)."
       }),
       response: `{
@@ -28469,7 +28473,7 @@ const ApiCollectionsContent = () => {
 }`,
       usage: [
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.wishlist.removeFromWishlist.title`,
+          id: `${PLUGIN_ID}.settings.apiCollections.wishlist.removeFromWishlist.title`,
           defaultMessage: "DELETE /wishlist/{productId} - Remove from wishlist"
         })
       ],
@@ -28481,15 +28485,15 @@ const ApiCollectionsContent = () => {
       method: "DELETE",
       path: getApiPath("/api/webbycommerce/wishlist"),
       title: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.wishlist.clearWishlist.title`,
+        id: `${PLUGIN_ID}.settings.apiCollections.wishlist.clearWishlist.title`,
         defaultMessage: "Clear Wishlist"
       }),
       summary: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.wishlist.clearWishlist.summary`,
+        id: `${PLUGIN_ID}.settings.apiCollections.wishlist.clearWishlist.summary`,
         defaultMessage: "Remove all products from the authenticated user's wishlist."
       }),
       auth: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.wishlist.auth`,
+        id: `${PLUGIN_ID}.settings.apiCollections.wishlist.auth`,
         defaultMessage: "Auth: requires JWT token (Authorization: Bearer <token>)."
       }),
       response: `{
@@ -28505,7 +28509,7 @@ const ApiCollectionsContent = () => {
 }`,
       usage: [
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.wishlist.clearWishlist.title`,
+          id: `${PLUGIN_ID}.settings.apiCollections.wishlist.clearWishlist.title`,
           defaultMessage: "DELETE /wishlist - Clear entire wishlist"
         })
       ],
@@ -28517,15 +28521,15 @@ const ApiCollectionsContent = () => {
       method: "PUT",
       path: getApiPath("/api/webbycommerce/wishlist"),
       title: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.wishlist.updateWishlist.title`,
+        id: `${PLUGIN_ID}.settings.apiCollections.wishlist.updateWishlist.title`,
         defaultMessage: "Update Wishlist Settings"
       }),
       summary: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.wishlist.updateWishlist.summary`,
+        id: `${PLUGIN_ID}.settings.apiCollections.wishlist.updateWishlist.summary`,
         defaultMessage: "Update wishlist settings and preferences."
       }),
       auth: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.wishlist.auth`,
+        id: `${PLUGIN_ID}.settings.apiCollections.wishlist.auth`,
         defaultMessage: "Auth: requires JWT token (Authorization: Bearer <token>)."
       }),
       response: `{
@@ -28539,7 +28543,7 @@ const ApiCollectionsContent = () => {
 }`,
       usage: [
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.wishlist.updateWishlist.title`,
+          id: `${PLUGIN_ID}.settings.apiCollections.wishlist.updateWishlist.title`,
           defaultMessage: "PUT /wishlist - Update wishlist settings"
         })
       ],
@@ -28558,15 +28562,15 @@ const ApiCollectionsContent = () => {
       method: "GET",
       path: getApiPath("/api/webbycommerce/wishlist/status"),
       title: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.wishlist.checkWishlistStatus.title`,
+        id: `${PLUGIN_ID}.settings.apiCollections.wishlist.checkWishlistStatus.title`,
         defaultMessage: "Check Wishlist Status"
       }),
       summary: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.wishlist.checkWishlistStatus.summary`,
+        id: `${PLUGIN_ID}.settings.apiCollections.wishlist.checkWishlistStatus.summary`,
         defaultMessage: "Check if specific products are in the authenticated user's wishlist."
       }),
       auth: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.wishlist.auth`,
+        id: `${PLUGIN_ID}.settings.apiCollections.wishlist.auth`,
         defaultMessage: "Auth: requires JWT token (Authorization: Bearer <token>)."
       }),
       response: `{
@@ -28579,7 +28583,7 @@ const ApiCollectionsContent = () => {
 }`,
       usage: [
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.wishlist.checkWishlistStatus.title`,
+          id: `${PLUGIN_ID}.settings.apiCollections.wishlist.checkWishlistStatus.title`,
           defaultMessage: "GET /wishlist/status - Check if products are in wishlist"
         })
       ],
@@ -28591,15 +28595,15 @@ const ApiCollectionsContent = () => {
       method: "GET",
       path: getApiPath("/api/webbycommerce/compare"),
       title: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.compare.getCompareList.title`,
+        id: `${PLUGIN_ID}.settings.apiCollections.compare.getCompareList.title`,
         defaultMessage: "Get Compare List"
       }),
       summary: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.compare.getCompareList.summary`,
+        id: `${PLUGIN_ID}.settings.apiCollections.compare.getCompareList.summary`,
         defaultMessage: "Retrieve all products in the authenticated user's compare list."
       }),
       auth: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.compare.auth`,
+        id: `${PLUGIN_ID}.settings.apiCollections.compare.auth`,
         defaultMessage: "Auth: requires JWT token (Authorization: Bearer <token>)."
       }),
       response: `{
@@ -28634,7 +28638,7 @@ const ApiCollectionsContent = () => {
 }`,
       usage: [
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.compare.getCompareList.title`,
+          id: `${PLUGIN_ID}.settings.apiCollections.compare.getCompareList.title`,
           defaultMessage: "GET /compare - Get user's compare list"
         })
       ],
@@ -28646,15 +28650,15 @@ const ApiCollectionsContent = () => {
       method: "POST",
       path: getApiPath("/api/webbycommerce/compare"),
       title: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.compare.addToCompare.title`,
+        id: `${PLUGIN_ID}.settings.apiCollections.compare.addToCompare.title`,
         defaultMessage: "Add to Compare"
       }),
       summary: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.compare.addToCompare.summary`,
+        id: `${PLUGIN_ID}.settings.apiCollections.compare.addToCompare.summary`,
         defaultMessage: "Add a product to the authenticated user's compare list."
       }),
       auth: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.compare.auth`,
+        id: `${PLUGIN_ID}.settings.apiCollections.compare.auth`,
         defaultMessage: "Auth: requires JWT token (Authorization: Bearer <token>)."
       }),
       response: `{
@@ -28670,7 +28674,7 @@ const ApiCollectionsContent = () => {
 }`,
       usage: [
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.compare.addToCompare.title`,
+          id: `${PLUGIN_ID}.settings.apiCollections.compare.addToCompare.title`,
           defaultMessage: "POST /compare - Add product to compare list"
         }),
         "Maximum 4 products allowed in compare list"
@@ -28688,15 +28692,15 @@ const ApiCollectionsContent = () => {
       method: "DELETE",
       path: getApiPath("/api/webbycommerce/compare/{productId}"),
       title: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.compare.removeFromCompare.title`,
+        id: `${PLUGIN_ID}.settings.apiCollections.compare.removeFromCompare.title`,
         defaultMessage: "Remove from Compare"
       }),
       summary: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.compare.removeFromCompare.summary`,
+        id: `${PLUGIN_ID}.settings.apiCollections.compare.removeFromCompare.summary`,
         defaultMessage: "Remove a specific product from the authenticated user's compare list."
       }),
       auth: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.compare.auth`,
+        id: `${PLUGIN_ID}.settings.apiCollections.compare.auth`,
         defaultMessage: "Auth: requires JWT token (Authorization: Bearer <token>)."
       }),
       response: `{
@@ -28712,7 +28716,7 @@ const ApiCollectionsContent = () => {
 }`,
       usage: [
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.compare.removeFromCompare.title`,
+          id: `${PLUGIN_ID}.settings.apiCollections.compare.removeFromCompare.title`,
           defaultMessage: "DELETE /compare/{productId} - Remove from compare list"
         })
       ],
@@ -28724,15 +28728,15 @@ const ApiCollectionsContent = () => {
       method: "DELETE",
       path: getApiPath("/api/webbycommerce/compare"),
       title: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.compare.clearCompare.title`,
+        id: `${PLUGIN_ID}.settings.apiCollections.compare.clearCompare.title`,
         defaultMessage: "Clear Compare List"
       }),
       summary: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.compare.clearCompare.summary`,
+        id: `${PLUGIN_ID}.settings.apiCollections.compare.clearCompare.summary`,
         defaultMessage: "Remove all products from the authenticated user's compare list."
       }),
       auth: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.compare.auth`,
+        id: `${PLUGIN_ID}.settings.apiCollections.compare.auth`,
         defaultMessage: "Auth: requires JWT token (Authorization: Bearer <token>)."
       }),
       response: `{
@@ -28748,7 +28752,7 @@ const ApiCollectionsContent = () => {
 }`,
       usage: [
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.compare.clearCompare.title`,
+          id: `${PLUGIN_ID}.settings.apiCollections.compare.clearCompare.title`,
           defaultMessage: "DELETE /compare - Clear entire compare list"
         })
       ],
@@ -28760,15 +28764,15 @@ const ApiCollectionsContent = () => {
       method: "PUT",
       path: getApiPath("/api/webbycommerce/compare"),
       title: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.compare.updateCompare.title`,
+        id: `${PLUGIN_ID}.settings.apiCollections.compare.updateCompare.title`,
         defaultMessage: "Update Compare Settings"
       }),
       summary: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.compare.updateCompare.summary`,
+        id: `${PLUGIN_ID}.settings.apiCollections.compare.updateCompare.summary`,
         defaultMessage: "Update compare list settings and preferences."
       }),
       auth: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.compare.auth`,
+        id: `${PLUGIN_ID}.settings.apiCollections.compare.auth`,
         defaultMessage: "Auth: requires JWT token (Authorization: Bearer <token>)."
       }),
       response: `{
@@ -28781,7 +28785,7 @@ const ApiCollectionsContent = () => {
 }`,
       usage: [
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.compare.updateCompare.title`,
+          id: `${PLUGIN_ID}.settings.apiCollections.compare.updateCompare.title`,
           defaultMessage: "PUT /compare - Update compare list settings"
         })
       ],
@@ -28799,15 +28803,15 @@ const ApiCollectionsContent = () => {
       method: "GET",
       path: getApiPath("/api/webbycommerce/compare/data"),
       title: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.compare.getCompareData.title`,
+        id: `${PLUGIN_ID}.settings.apiCollections.compare.getCompareData.title`,
         defaultMessage: "Get Compare Data"
       }),
       summary: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.compare.getCompareData.summary`,
+        id: `${PLUGIN_ID}.settings.apiCollections.compare.getCompareData.summary`,
         defaultMessage: "Retrieve comparison data matrix for products in the compare list."
       }),
       auth: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.compare.auth`,
+        id: `${PLUGIN_ID}.settings.apiCollections.compare.auth`,
         defaultMessage: "Auth: requires JWT token (Authorization: Bearer <token>)."
       }),
       response: `{
@@ -28827,7 +28831,7 @@ const ApiCollectionsContent = () => {
 }`,
       usage: [
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.compare.getCompareData.title`,
+          id: `${PLUGIN_ID}.settings.apiCollections.compare.getCompareData.title`,
           defaultMessage: "GET /compare/data - Get comparison data matrix"
         })
       ],
@@ -28839,15 +28843,15 @@ const ApiCollectionsContent = () => {
       method: "GET",
       path: getApiPath("/api/webbycommerce/compare/status"),
       title: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.compare.checkCompareStatus.title`,
+        id: `${PLUGIN_ID}.settings.apiCollections.compare.checkCompareStatus.title`,
         defaultMessage: "Check Compare Status"
       }),
       summary: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.compare.checkCompareStatus.summary`,
+        id: `${PLUGIN_ID}.settings.apiCollections.compare.checkCompareStatus.summary`,
         defaultMessage: "Check if specific products are in the authenticated user's compare list."
       }),
       auth: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.compare.auth`,
+        id: `${PLUGIN_ID}.settings.apiCollections.compare.auth`,
         defaultMessage: "Auth: requires JWT token (Authorization: Bearer <token>)."
       }),
       response: `{
@@ -28860,7 +28864,7 @@ const ApiCollectionsContent = () => {
 }`,
       usage: [
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.compare.checkCompareStatus.title`,
+          id: `${PLUGIN_ID}.settings.apiCollections.compare.checkCompareStatus.title`,
           defaultMessage: "GET /compare/status - Check if products are in compare list"
         })
       ],
@@ -28981,7 +28985,7 @@ const ApiCollectionsContent = () => {
       title: "Get All Product Attributes",
       summary: "Retrieve all product attributes with optional filtering by variation status.",
       auth: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.productAttributes.auth`,
+        id: `${PLUGIN_ID}.settings.apiCollections.productAttributes.auth`,
         defaultMessage: "Auth: public for reading, admin for writing."
       }),
       response: `{
@@ -29003,15 +29007,15 @@ const ApiCollectionsContent = () => {
 }`,
       usage: [
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.productAttributes.getList.usage.filter`,
+          id: `${PLUGIN_ID}.settings.apiCollections.productAttributes.getList.usage.filter`,
           defaultMessage: "Optional query parameters: ?is_variation=true&limit=20&start=0"
         }),
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.productAttributes.getList.usage.variation`,
+          id: `${PLUGIN_ID}.settings.apiCollections.productAttributes.getList.usage.variation`,
           defaultMessage: "Filter attributes that are used for product variations."
         }),
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.productAttributes.getList.usage.sort`,
+          id: `${PLUGIN_ID}.settings.apiCollections.productAttributes.getList.usage.sort`,
           defaultMessage: "Attributes are sorted by sort_order field."
         })
       ],
@@ -29022,15 +29026,15 @@ const ApiCollectionsContent = () => {
       method: "GET",
       path: getApiPath("/api/webbycommerce/product-attributes/:id"),
       title: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.productAttributes.getSingle.title`,
+        id: `${PLUGIN_ID}.settings.apiCollections.productAttributes.getSingle.title`,
         defaultMessage: "Get Single Product Attribute"
       }),
       summary: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.productAttributes.getSingle.summary`,
+        id: `${PLUGIN_ID}.settings.apiCollections.productAttributes.getSingle.summary`,
         defaultMessage: "Retrieve detailed information for a specific product attribute by ID."
       }),
       auth: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.productAttributes.auth`,
+        id: `${PLUGIN_ID}.settings.apiCollections.productAttributes.auth`,
         defaultMessage: "Auth: public for reading, admin for writing."
       }),
       response: `{
@@ -29055,11 +29059,11 @@ const ApiCollectionsContent = () => {
 }`,
       usage: [
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.productAttributes.getSingle.usage.id`,
+          id: `${PLUGIN_ID}.settings.apiCollections.productAttributes.getSingle.usage.id`,
           defaultMessage: "Replace :id with the actual attribute ID."
         }),
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.productAttributes.getSingle.usage.populate`,
+          id: `${PLUGIN_ID}.settings.apiCollections.productAttributes.getSingle.usage.populate`,
           defaultMessage: "Returns attribute with all associated attribute values."
         })
       ],
@@ -29070,15 +29074,15 @@ const ApiCollectionsContent = () => {
       method: "POST",
       path: getApiPath("/api/webbycommerce/product-attributes"),
       title: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.productAttributes.create.title`,
+        id: `${PLUGIN_ID}.settings.apiCollections.productAttributes.create.title`,
         defaultMessage: "Create Product Attribute"
       }),
       summary: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.productAttributes.create.summary`,
+        id: `${PLUGIN_ID}.settings.apiCollections.productAttributes.create.summary`,
         defaultMessage: "Create a new product attribute (admin functionality)."
       }),
       auth: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.productAttributes.authAdmin`,
+        id: `${PLUGIN_ID}.settings.apiCollections.productAttributes.authAdmin`,
         defaultMessage: "Auth: requires JWT token (Authorization: Bearer <token>) and administrator role."
       }),
       response: `{
@@ -29093,11 +29097,11 @@ const ApiCollectionsContent = () => {
 }`,
       usage: [
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.productAttributes.create.usage.required`,
+          id: `${PLUGIN_ID}.settings.apiCollections.productAttributes.create.usage.required`,
           defaultMessage: "Required fields: name, is_variation (boolean)."
         }),
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.productAttributes.create.usage.sort`,
+          id: `${PLUGIN_ID}.settings.apiCollections.productAttributes.create.usage.sort`,
           defaultMessage: "Optional sort_order field to control display order."
         })
       ],
@@ -29116,15 +29120,15 @@ const ApiCollectionsContent = () => {
       method: "PUT",
       path: getApiPath("/api/webbycommerce/product-attributes/:id"),
       title: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.productAttributes.update.title`,
+        id: `${PLUGIN_ID}.settings.apiCollections.productAttributes.update.title`,
         defaultMessage: "Update Product Attribute"
       }),
       summary: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.productAttributes.update.summary`,
+        id: `${PLUGIN_ID}.settings.apiCollections.productAttributes.update.summary`,
         defaultMessage: "Update an existing product attribute (admin functionality)."
       }),
       auth: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.productAttributes.authAdmin`,
+        id: `${PLUGIN_ID}.settings.apiCollections.productAttributes.authAdmin`,
         defaultMessage: "Auth: requires JWT token (Authorization: Bearer <token>) and administrator role."
       }),
       response: `{
@@ -29138,11 +29142,11 @@ const ApiCollectionsContent = () => {
 }`,
       usage: [
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.productAttributes.update.usage.fields`,
+          id: `${PLUGIN_ID}.settings.apiCollections.productAttributes.update.usage.fields`,
           defaultMessage: "Update name, is_variation, or sort_order fields."
         }),
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.productAttributes.update.usage.impact`,
+          id: `${PLUGIN_ID}.settings.apiCollections.productAttributes.update.usage.impact`,
           defaultMessage: "Changing is_variation may affect existing product variations."
         })
       ],
@@ -29160,15 +29164,15 @@ const ApiCollectionsContent = () => {
       method: "DELETE",
       path: getApiPath("/api/webbycommerce/product-attributes/:id"),
       title: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.productAttributes.delete.title`,
+        id: `${PLUGIN_ID}.settings.apiCollections.productAttributes.delete.title`,
         defaultMessage: "Delete Product Attribute"
       }),
       summary: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.productAttributes.delete.summary`,
+        id: `${PLUGIN_ID}.settings.apiCollections.productAttributes.delete.summary`,
         defaultMessage: "Delete a product attribute (admin functionality)."
       }),
       auth: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.productAttributes.authAdmin`,
+        id: `${PLUGIN_ID}.settings.apiCollections.productAttributes.authAdmin`,
         defaultMessage: "Auth: requires JWT token (Authorization: Bearer <token>) and administrator role."
       }),
       response: `{
@@ -29178,11 +29182,11 @@ const ApiCollectionsContent = () => {
 }`,
       usage: [
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.productAttributes.delete.usage.cascade`,
+          id: `${PLUGIN_ID}.settings.apiCollections.productAttributes.delete.usage.cascade`,
           defaultMessage: "Deleting an attribute also removes all associated attribute values."
         }),
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.productAttributes.delete.usage.impact`,
+          id: `${PLUGIN_ID}.settings.apiCollections.productAttributes.delete.usage.impact`,
           defaultMessage: "May affect products that use this attribute in their variations."
         })
       ],
@@ -29194,15 +29198,15 @@ const ApiCollectionsContent = () => {
       method: "GET",
       path: getApiPath("/api/webbycommerce/product-attribute-values"),
       title: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.productAttributeValues.getList.title`,
+        id: `${PLUGIN_ID}.settings.apiCollections.productAttributeValues.getList.title`,
         defaultMessage: "Get All Product Attribute Values"
       }),
       summary: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.productAttributeValues.getList.summary`,
+        id: `${PLUGIN_ID}.settings.apiCollections.productAttributeValues.getList.summary`,
         defaultMessage: "Retrieve all product attribute values with optional filtering by attribute ID."
       }),
       auth: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.productAttributeValues.auth`,
+        id: `${PLUGIN_ID}.settings.apiCollections.productAttributeValues.auth`,
         defaultMessage: "Auth: public for reading, admin for writing."
       }),
       response: `{
@@ -29231,15 +29235,15 @@ const ApiCollectionsContent = () => {
 }`,
       usage: [
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.productAttributeValues.getList.usage.filter`,
+          id: `${PLUGIN_ID}.settings.apiCollections.productAttributeValues.getList.usage.filter`,
           defaultMessage: "Optional query parameters: ?product_attribute=1&limit=20&start=0"
         }),
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.productAttributeValues.getList.usage.attribute`,
+          id: `${PLUGIN_ID}.settings.apiCollections.productAttributeValues.getList.usage.attribute`,
           defaultMessage: "Filter values by parent attribute ID."
         }),
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.productAttributeValues.getList.usage.sort`,
+          id: `${PLUGIN_ID}.settings.apiCollections.productAttributeValues.getList.usage.sort`,
           defaultMessage: "Values are sorted by sort_order field."
         })
       ],
@@ -29250,15 +29254,15 @@ const ApiCollectionsContent = () => {
       method: "GET",
       path: getApiPath("/api/webbycommerce/product-attribute-values/:id"),
       title: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.productAttributeValues.getSingle.title`,
+        id: `${PLUGIN_ID}.settings.apiCollections.productAttributeValues.getSingle.title`,
         defaultMessage: "Get Single Product Attribute Value"
       }),
       summary: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.productAttributeValues.getSingle.summary`,
+        id: `${PLUGIN_ID}.settings.apiCollections.productAttributeValues.getSingle.summary`,
         defaultMessage: "Retrieve detailed information for a specific attribute value by ID."
       }),
       auth: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.productAttributeValues.auth`,
+        id: `${PLUGIN_ID}.settings.apiCollections.productAttributeValues.auth`,
         defaultMessage: "Auth: public for reading, admin for writing."
       }),
       response: `{
@@ -29275,11 +29279,11 @@ const ApiCollectionsContent = () => {
 }`,
       usage: [
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.productAttributeValues.getSingle.usage.id`,
+          id: `${PLUGIN_ID}.settings.apiCollections.productAttributeValues.getSingle.usage.id`,
           defaultMessage: "Replace :id with the actual attribute value ID."
         }),
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.productAttributeValues.getSingle.usage.populate`,
+          id: `${PLUGIN_ID}.settings.apiCollections.productAttributeValues.getSingle.usage.populate`,
           defaultMessage: "Returns value with associated attribute information."
         })
       ],
@@ -29290,15 +29294,15 @@ const ApiCollectionsContent = () => {
       method: "POST",
       path: getApiPath("/api/webbycommerce/product-attribute-values"),
       title: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.productAttributeValues.create.title`,
+        id: `${PLUGIN_ID}.settings.apiCollections.productAttributeValues.create.title`,
         defaultMessage: "Create Product Attribute Value"
       }),
       summary: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.productAttributeValues.create.summary`,
+        id: `${PLUGIN_ID}.settings.apiCollections.productAttributeValues.create.summary`,
         defaultMessage: "Create a new value for a product attribute (admin functionality)."
       }),
       auth: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.productAttributeValues.authAdmin`,
+        id: `${PLUGIN_ID}.settings.apiCollections.productAttributeValues.authAdmin`,
         defaultMessage: "Auth: requires JWT token (Authorization: Bearer <token>) and administrator role."
       }),
       response: `{
@@ -29316,15 +29320,15 @@ const ApiCollectionsContent = () => {
 }`,
       usage: [
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.productAttributeValues.create.usage.required`,
+          id: `${PLUGIN_ID}.settings.apiCollections.productAttributeValues.create.usage.required`,
           defaultMessage: "Required fields: value, product_attribute (ID of parent attribute)."
         }),
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.productAttributeValues.create.usage.sort`,
+          id: `${PLUGIN_ID}.settings.apiCollections.productAttributeValues.create.usage.sort`,
           defaultMessage: "Optional sort_order field to control display order."
         }),
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.productAttributeValues.create.usage.unique`,
+          id: `${PLUGIN_ID}.settings.apiCollections.productAttributeValues.create.usage.unique`,
           defaultMessage: "Value must be unique within the same attribute."
         })
       ],
@@ -29343,15 +29347,15 @@ const ApiCollectionsContent = () => {
       method: "PUT",
       path: getApiPath("/api/webbycommerce/product-attribute-values/:id"),
       title: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.productAttributeValues.update.title`,
+        id: `${PLUGIN_ID}.settings.apiCollections.productAttributeValues.update.title`,
         defaultMessage: "Update Product Attribute Value"
       }),
       summary: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.productAttributeValues.update.summary`,
+        id: `${PLUGIN_ID}.settings.apiCollections.productAttributeValues.update.summary`,
         defaultMessage: "Update an existing attribute value (admin functionality)."
       }),
       auth: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.productAttributeValues.authAdmin`,
+        id: `${PLUGIN_ID}.settings.apiCollections.productAttributeValues.authAdmin`,
         defaultMessage: "Auth: requires JWT token (Authorization: Bearer <token>) and administrator role."
       }),
       response: `{
@@ -29368,11 +29372,11 @@ const ApiCollectionsContent = () => {
 }`,
       usage: [
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.productAttributeValues.update.usage.fields`,
+          id: `${PLUGIN_ID}.settings.apiCollections.productAttributeValues.update.usage.fields`,
           defaultMessage: "Update value, sort_order, or product_attribute fields."
         }),
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.productAttributeValues.update.usage.impact`,
+          id: `${PLUGIN_ID}.settings.apiCollections.productAttributeValues.update.usage.impact`,
           defaultMessage: "Changing product_attribute may affect existing product variations."
         })
       ],
@@ -29390,15 +29394,15 @@ const ApiCollectionsContent = () => {
       method: "DELETE",
       path: getApiPath("/api/webbycommerce/product-attribute-values/:id"),
       title: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.productAttributeValues.delete.title`,
+        id: `${PLUGIN_ID}.settings.apiCollections.productAttributeValues.delete.title`,
         defaultMessage: "Delete Product Attribute Value"
       }),
       summary: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.productAttributeValues.delete.summary`,
+        id: `${PLUGIN_ID}.settings.apiCollections.productAttributeValues.delete.summary`,
         defaultMessage: "Delete an attribute value (admin functionality)."
       }),
       auth: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.productAttributeValues.authAdmin`,
+        id: `${PLUGIN_ID}.settings.apiCollections.productAttributeValues.authAdmin`,
         defaultMessage: "Auth: requires JWT token (Authorization: Bearer <token>) and administrator role."
       }),
       response: `{
@@ -29408,11 +29412,11 @@ const ApiCollectionsContent = () => {
 }`,
       usage: [
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.productAttributeValues.delete.usage.impact`,
+          id: `${PLUGIN_ID}.settings.apiCollections.productAttributeValues.delete.usage.impact`,
           defaultMessage: "May affect products that use this attribute value in their variations."
         }),
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.productAttributeValues.delete.usage.check`,
+          id: `${PLUGIN_ID}.settings.apiCollections.productAttributeValues.delete.usage.check`,
           defaultMessage: "Ensure no products are currently using this value before deletion."
         })
       ],
@@ -29531,15 +29535,15 @@ const ApiCollectionsContent = () => {
       method: "POST",
       path: getApiPath("/api/webbycommerce/shipping/calculate"),
       title: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.shipping.calculate.title`,
+        id: `${PLUGIN_ID}.settings.apiCollections.shipping.calculate.title`,
         defaultMessage: "Calculate Shipping Costs"
       }),
       summary: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.shipping.calculate.summary`,
+        id: `${PLUGIN_ID}.settings.apiCollections.shipping.calculate.summary`,
         defaultMessage: "Calculate available shipping methods and costs for cart items and delivery address."
       }),
       auth: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.shipping.calculate.auth`,
+        id: `${PLUGIN_ID}.settings.apiCollections.shipping.calculate.auth`,
         defaultMessage: "Auth: requires JWT token (Authorization: Bearer <token>) and ecommerce permission enabled."
       }),
       response: `{
@@ -29582,19 +29586,19 @@ const ApiCollectionsContent = () => {
 }`,
       usage: [
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.shipping.calculate.usage.cart`,
+          id: `${PLUGIN_ID}.settings.apiCollections.shipping.calculate.usage.cart`,
           defaultMessage: "Requires cart items and valid shipping address."
         }),
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.shipping.calculate.usage.methods`,
+          id: `${PLUGIN_ID}.settings.apiCollections.shipping.calculate.usage.methods`,
           defaultMessage: "Returns all eligible shipping methods with calculated costs."
         }),
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.shipping.calculate.usage.free`,
+          id: `${PLUGIN_ID}.settings.apiCollections.shipping.calculate.usage.free`,
           defaultMessage: "Automatically applies free shipping when cart meets threshold."
         }),
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.shipping.calculate.usage.rules`,
+          id: `${PLUGIN_ID}.settings.apiCollections.shipping.calculate.usage.rules`,
           defaultMessage: "Applies shipping rules, restrictions, and surcharges."
         })
       ],
@@ -29623,15 +29627,15 @@ const ApiCollectionsContent = () => {
       method: "GET",
       path: getApiPath("/api/webbycommerce/shipping/zones"),
       title: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.shipping.zones.getList.title`,
+        id: `${PLUGIN_ID}.settings.apiCollections.shipping.zones.getList.title`,
         defaultMessage: "Get All Shipping Zones"
       }),
       summary: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.shipping.zones.getList.summary`,
+        id: `${PLUGIN_ID}.settings.apiCollections.shipping.zones.getList.summary`,
         defaultMessage: "Retrieve all shipping zones with optional filtering (admin only)."
       }),
       auth: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.shipping.zones.authAdmin`,
+        id: `${PLUGIN_ID}.settings.apiCollections.shipping.zones.authAdmin`,
         defaultMessage: "Auth: requires JWT token (Authorization: Bearer <token>) and administrator role."
       }),
       response: `{
@@ -29650,11 +29654,11 @@ const ApiCollectionsContent = () => {
 }`,
       usage: [
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.shipping.zones.getList.usage.zones`,
+          id: `${PLUGIN_ID}.settings.apiCollections.shipping.zones.getList.usage.zones`,
           defaultMessage: "Returns all active shipping zones."
         }),
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.shipping.zones.getList.usage.filter`,
+          id: `${PLUGIN_ID}.settings.apiCollections.shipping.zones.getList.usage.filter`,
           defaultMessage: "Optional query parameters: ?is_active=true&limit=20&start=0"
         })
       ],
@@ -29666,15 +29670,15 @@ const ApiCollectionsContent = () => {
       method: "POST",
       path: getApiPath("/api/webbycommerce/shipping/zones"),
       title: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.shipping.zones.create.title`,
+        id: `${PLUGIN_ID}.settings.apiCollections.shipping.zones.create.title`,
         defaultMessage: "Create Shipping Zone"
       }),
       summary: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.shipping.zones.create.summary`,
+        id: `${PLUGIN_ID}.settings.apiCollections.shipping.zones.create.summary`,
         defaultMessage: "Create a new shipping zone with countries, states, and postal codes (admin only)."
       }),
       auth: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.shipping.zones.authAdmin`,
+        id: `${PLUGIN_ID}.settings.apiCollections.shipping.zones.authAdmin`,
         defaultMessage: "Auth: requires JWT token (Authorization: Bearer <token>) and administrator role."
       }),
       response: `{
@@ -29691,11 +29695,11 @@ const ApiCollectionsContent = () => {
 }`,
       usage: [
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.shipping.zones.create.usage.required`,
+          id: `${PLUGIN_ID}.settings.apiCollections.shipping.zones.create.usage.required`,
           defaultMessage: "Required fields: name, countries array."
         }),
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.shipping.zones.create.usage.geography`,
+          id: `${PLUGIN_ID}.settings.apiCollections.shipping.zones.create.usage.geography`,
           defaultMessage: "Define geographical areas using countries, states, or postal codes."
         })
       ],
@@ -29716,15 +29720,15 @@ const ApiCollectionsContent = () => {
       method: "PUT",
       path: getApiPath("/api/webbycommerce/shipping/zones/:id"),
       title: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.shipping.zones.update.title`,
+        id: `${PLUGIN_ID}.settings.apiCollections.shipping.zones.update.title`,
         defaultMessage: "Update Shipping Zone"
       }),
       summary: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.shipping.zones.update.summary`,
+        id: `${PLUGIN_ID}.settings.apiCollections.shipping.zones.update.summary`,
         defaultMessage: "Update an existing shipping zone (admin only)."
       }),
       auth: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.shipping.zones.authAdmin`,
+        id: `${PLUGIN_ID}.settings.apiCollections.shipping.zones.authAdmin`,
         defaultMessage: "Auth: requires JWT token (Authorization: Bearer <token>) and administrator role."
       }),
       response: `{
@@ -29739,11 +29743,11 @@ const ApiCollectionsContent = () => {
 }`,
       usage: [
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.shipping.zones.update.usage.fields`,
+          id: `${PLUGIN_ID}.settings.apiCollections.shipping.zones.update.usage.fields`,
           defaultMessage: "Update zone name, geography, or active status."
         }),
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.shipping.zones.update.usage.methods`,
+          id: `${PLUGIN_ID}.settings.apiCollections.shipping.zones.update.usage.methods`,
           defaultMessage: "Zone changes may affect associated shipping methods."
         })
       ],
@@ -29762,15 +29766,15 @@ const ApiCollectionsContent = () => {
       method: "DELETE",
       path: getApiPath("/api/webbycommerce/shipping/zones/:id"),
       title: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.shipping.zones.delete.title`,
+        id: `${PLUGIN_ID}.settings.apiCollections.shipping.zones.delete.title`,
         defaultMessage: "Delete Shipping Zone"
       }),
       summary: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.shipping.zones.delete.summary`,
+        id: `${PLUGIN_ID}.settings.apiCollections.shipping.zones.delete.summary`,
         defaultMessage: "Delete a shipping zone (admin only)."
       }),
       auth: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.shipping.zones.authAdmin`,
+        id: `${PLUGIN_ID}.settings.apiCollections.shipping.zones.authAdmin`,
         defaultMessage: "Auth: requires JWT token (Authorization: Bearer <token>) and administrator role."
       }),
       response: `{
@@ -29780,11 +29784,11 @@ const ApiCollectionsContent = () => {
 }`,
       usage: [
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.shipping.zones.delete.usage.methods`,
+          id: `${PLUGIN_ID}.settings.apiCollections.shipping.zones.delete.usage.methods`,
           defaultMessage: "Cannot delete zones with associated shipping methods."
         }),
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.shipping.zones.delete.usage.check`,
+          id: `${PLUGIN_ID}.settings.apiCollections.shipping.zones.delete.usage.check`,
           defaultMessage: "Ensure no shipping methods reference this zone before deletion."
         })
       ],
@@ -29796,15 +29800,15 @@ const ApiCollectionsContent = () => {
       method: "GET",
       path: getApiPath("/api/webbycommerce/shipping/methods"),
       title: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.shipping.methods.getList.title`,
+        id: `${PLUGIN_ID}.settings.apiCollections.shipping.methods.getList.title`,
         defaultMessage: "Get All Shipping Methods"
       }),
       summary: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.shipping.methods.getList.summary`,
+        id: `${PLUGIN_ID}.settings.apiCollections.shipping.methods.getList.summary`,
         defaultMessage: "Retrieve all shipping methods with optional filtering (admin only)."
       }),
       auth: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.shipping.zones.authAdmin`,
+        id: `${PLUGIN_ID}.settings.apiCollections.shipping.zones.authAdmin`,
         defaultMessage: "Auth: requires JWT token (Authorization: Bearer <token>) and administrator role."
       }),
       response: `{
@@ -29828,11 +29832,11 @@ const ApiCollectionsContent = () => {
 }`,
       usage: [
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.shipping.methods.getList.usage.methods`,
+          id: `${PLUGIN_ID}.settings.apiCollections.shipping.methods.getList.usage.methods`,
           defaultMessage: "Returns all shipping methods with carrier information."
         }),
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.shipping.methods.getList.usage.filter`,
+          id: `${PLUGIN_ID}.settings.apiCollections.shipping.methods.getList.usage.filter`,
           defaultMessage: "Optional query parameters: ?carrier=UPS&is_active=true&zone=1"
         })
       ],
@@ -29844,15 +29848,15 @@ const ApiCollectionsContent = () => {
       method: "POST",
       path: getApiPath("/api/webbycommerce/shipping/methods"),
       title: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.shipping.methods.create.title`,
+        id: `${PLUGIN_ID}.settings.apiCollections.shipping.methods.create.title`,
         defaultMessage: "Create Shipping Method"
       }),
       summary: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.shipping.methods.create.summary`,
+        id: `${PLUGIN_ID}.settings.apiCollections.shipping.methods.create.summary`,
         defaultMessage: "Create a new shipping method with carrier and pricing (admin only)."
       }),
       auth: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.shipping.zones.authAdmin`,
+        id: `${PLUGIN_ID}.settings.apiCollections.shipping.zones.authAdmin`,
         defaultMessage: "Auth: requires JWT token (Authorization: Bearer <token>) and administrator role."
       }),
       response: `{
@@ -29874,15 +29878,15 @@ const ApiCollectionsContent = () => {
 }`,
       usage: [
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.shipping.methods.create.usage.required`,
+          id: `${PLUGIN_ID}.settings.apiCollections.shipping.methods.create.usage.required`,
           defaultMessage: "Required fields: name, carrier, service_type, zone."
         }),
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.shipping.methods.create.usage.carrier`,
+          id: `${PLUGIN_ID}.settings.apiCollections.shipping.methods.create.usage.carrier`,
           defaultMessage: "Supports UPS, FedEx, USPS, DHL, and custom carriers."
         }),
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.shipping.methods.create.usage.free`,
+          id: `${PLUGIN_ID}.settings.apiCollections.shipping.methods.create.usage.free`,
           defaultMessage: "Set is_free_shipping=true and free_shipping_threshold for free shipping."
         })
       ],
@@ -29910,15 +29914,15 @@ const ApiCollectionsContent = () => {
       method: "PUT",
       path: getApiPath("/api/webbycommerce/shipping/methods/:id"),
       title: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.shipping.methods.update.title`,
+        id: `${PLUGIN_ID}.settings.apiCollections.shipping.methods.update.title`,
         defaultMessage: "Update Shipping Method"
       }),
       summary: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.shipping.methods.update.summary`,
+        id: `${PLUGIN_ID}.settings.apiCollections.shipping.methods.update.summary`,
         defaultMessage: "Update an existing shipping method (admin only)."
       }),
       auth: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.shipping.zones.authAdmin`,
+        id: `${PLUGIN_ID}.settings.apiCollections.shipping.zones.authAdmin`,
         defaultMessage: "Auth: requires JWT token (Authorization: Bearer <token>) and administrator role."
       }),
       response: `{
@@ -29931,11 +29935,11 @@ const ApiCollectionsContent = () => {
 }`,
       usage: [
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.shipping.methods.update.usage.fields`,
+          id: `${PLUGIN_ID}.settings.apiCollections.shipping.methods.update.usage.fields`,
           defaultMessage: "Update carrier, pricing, or free shipping settings."
         }),
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.shipping.methods.update.usage.rates`,
+          id: `${PLUGIN_ID}.settings.apiCollections.shipping.methods.update.usage.rates`,
           defaultMessage: "Method changes affect associated shipping rates."
         })
       ],
@@ -29953,15 +29957,15 @@ const ApiCollectionsContent = () => {
       method: "DELETE",
       path: getApiPath("/api/webbycommerce/shipping/methods/:id"),
       title: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.shipping.methods.delete.title`,
+        id: `${PLUGIN_ID}.settings.apiCollections.shipping.methods.delete.title`,
         defaultMessage: "Delete Shipping Method"
       }),
       summary: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.shipping.methods.delete.summary`,
+        id: `${PLUGIN_ID}.settings.apiCollections.shipping.methods.delete.summary`,
         defaultMessage: "Delete a shipping method (admin only)."
       }),
       auth: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.shipping.zones.authAdmin`,
+        id: `${PLUGIN_ID}.settings.apiCollections.shipping.zones.authAdmin`,
         defaultMessage: "Auth: requires JWT token (Authorization: Bearer <token>) and administrator role."
       }),
       response: `{
@@ -29971,11 +29975,11 @@ const ApiCollectionsContent = () => {
 }`,
       usage: [
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.shipping.methods.delete.usage.rates`,
+          id: `${PLUGIN_ID}.settings.apiCollections.shipping.methods.delete.usage.rates`,
           defaultMessage: "Cannot delete methods with associated shipping rates."
         }),
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.shipping.methods.delete.usage.check`,
+          id: `${PLUGIN_ID}.settings.apiCollections.shipping.methods.delete.usage.check`,
           defaultMessage: "Ensure no shipping rates reference this method before deletion."
         })
       ],
@@ -29987,15 +29991,15 @@ const ApiCollectionsContent = () => {
       method: "GET",
       path: getApiPath("/api/webbycommerce/shipping/methods/:methodId/rates"),
       title: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.shipping.rates.getList.title`,
+        id: `${PLUGIN_ID}.settings.apiCollections.shipping.rates.getList.title`,
         defaultMessage: "Get Shipping Rates"
       }),
       summary: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.shipping.rates.getList.summary`,
+        id: `${PLUGIN_ID}.settings.apiCollections.shipping.rates.getList.summary`,
         defaultMessage: "Retrieve shipping rates for a specific method (admin only)."
       }),
       auth: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.shipping.zones.authAdmin`,
+        id: `${PLUGIN_ID}.settings.apiCollections.shipping.zones.authAdmin`,
         defaultMessage: "Auth: requires JWT token (Authorization: Bearer <token>) and administrator role."
       }),
       response: `{
@@ -30018,11 +30022,11 @@ const ApiCollectionsContent = () => {
 }`,
       usage: [
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.shipping.rates.getList.usage.method`,
+          id: `${PLUGIN_ID}.settings.apiCollections.shipping.rates.getList.usage.method`,
           defaultMessage: "Replace :methodId with the actual shipping method ID."
         }),
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.shipping.rates.getList.usage.rates`,
+          id: `${PLUGIN_ID}.settings.apiCollections.shipping.rates.getList.usage.rates`,
           defaultMessage: "Returns all rate tiers for the specified method."
         })
       ],
@@ -30034,15 +30038,15 @@ const ApiCollectionsContent = () => {
       method: "POST",
       path: getApiPath("/api/webbycommerce/shipping/rates"),
       title: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.shipping.rates.create.title`,
+        id: `${PLUGIN_ID}.settings.apiCollections.shipping.rates.create.title`,
         defaultMessage: "Create Shipping Rate"
       }),
       summary: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.shipping.rates.create.summary`,
+        id: `${PLUGIN_ID}.settings.apiCollections.shipping.rates.create.summary`,
         defaultMessage: "Create a new shipping rate tier (admin only)."
       }),
       auth: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.shipping.zones.authAdmin`,
+        id: `${PLUGIN_ID}.settings.apiCollections.shipping.zones.authAdmin`,
         defaultMessage: "Auth: requires JWT token (Authorization: Bearer <token>) and administrator role."
       }),
       response: `{
@@ -30064,15 +30068,15 @@ const ApiCollectionsContent = () => {
 }`,
       usage: [
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.shipping.rates.create.usage.required`,
+          id: `${PLUGIN_ID}.settings.apiCollections.shipping.rates.create.usage.required`,
           defaultMessage: "Required fields: name, condition_type, min_value, rate, method."
         }),
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.shipping.rates.create.usage.condition`,
+          id: `${PLUGIN_ID}.settings.apiCollections.shipping.rates.create.usage.condition`,
           defaultMessage: "Conditions: weight, price, quantity, volume, dimension."
         }),
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.shipping.rates.create.usage.tier`,
+          id: `${PLUGIN_ID}.settings.apiCollections.shipping.rates.create.usage.tier`,
           defaultMessage: "Use min_value and max_value to create pricing tiers."
         })
       ],
@@ -30097,15 +30101,15 @@ const ApiCollectionsContent = () => {
       method: "PUT",
       path: getApiPath("/api/webbycommerce/shipping/rates/:id"),
       title: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.shipping.rates.update.title`,
+        id: `${PLUGIN_ID}.settings.apiCollections.shipping.rates.update.title`,
         defaultMessage: "Update Shipping Rate"
       }),
       summary: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.shipping.rates.update.summary`,
+        id: `${PLUGIN_ID}.settings.apiCollections.shipping.rates.update.summary`,
         defaultMessage: "Update an existing shipping rate (admin only)."
       }),
       auth: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.shipping.zones.authAdmin`,
+        id: `${PLUGIN_ID}.settings.apiCollections.shipping.zones.authAdmin`,
         defaultMessage: "Auth: requires JWT token (Authorization: Bearer <token>) and administrator role."
       }),
       response: `{
@@ -30117,11 +30121,11 @@ const ApiCollectionsContent = () => {
 }`,
       usage: [
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.shipping.rates.update.usage.fields`,
+          id: `${PLUGIN_ID}.settings.apiCollections.shipping.rates.update.usage.fields`,
           defaultMessage: "Update rate values, conditions, or pricing tiers."
         }),
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.shipping.rates.update.usage.calculation`,
+          id: `${PLUGIN_ID}.settings.apiCollections.shipping.rates.update.usage.calculation`,
           defaultMessage: "Rate changes affect shipping cost calculations."
         })
       ],
@@ -30139,15 +30143,15 @@ const ApiCollectionsContent = () => {
       method: "DELETE",
       path: getApiPath("/api/webbycommerce/shipping/rates/:id"),
       title: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.shipping.rates.delete.title`,
+        id: `${PLUGIN_ID}.settings.apiCollections.shipping.rates.delete.title`,
         defaultMessage: "Delete Shipping Rate"
       }),
       summary: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.shipping.rates.delete.summary`,
+        id: `${PLUGIN_ID}.settings.apiCollections.shipping.rates.delete.summary`,
         defaultMessage: "Delete a shipping rate (admin only)."
       }),
       auth: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.apiCollections.shipping.zones.authAdmin`,
+        id: `${PLUGIN_ID}.settings.apiCollections.shipping.zones.authAdmin`,
         defaultMessage: "Auth: requires JWT token (Authorization: Bearer <token>) and administrator role."
       }),
       response: `{
@@ -30157,7 +30161,7 @@ const ApiCollectionsContent = () => {
 }`,
       usage: [
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.shipping.rates.delete.usage.rates`,
+          id: `${PLUGIN_ID}.settings.apiCollections.shipping.rates.delete.usage.rates`,
           defaultMessage: "Deleting rates may affect shipping cost calculations."
         })
       ],
@@ -30327,18 +30331,18 @@ const ApiCollectionsContent = () => {
   -H "Authorization: Bearer YOUR_JWT_TOKEN"`
     }
   ], [routePrefix, formatMessage]);
-  const pageCount = React.useMemo(() => {
+  const pageCount = useMemo(() => {
     return Math.max(1, Math.ceil(endpoints.length / pageSize));
   }, [endpoints.length]);
-  React.useEffect(() => {
+  useEffect(() => {
     setPage((current) => Math.min(Math.max(current, 1), pageCount));
   }, [pageCount]);
-  const pagedEndpoints = React.useMemo(() => {
+  const pagedEndpoints = useMemo(() => {
     const start = (page - 1) * pageSize;
     const end = start + pageSize;
     return endpoints.slice(start, end);
   }, [endpoints, page]);
-  const pageItems = React.useMemo(() => {
+  const pageItems = useMemo(() => {
     const items = [];
     const maxVisible = 7;
     if (pageCount <= maxVisible) {
@@ -30355,10 +30359,10 @@ const ApiCollectionsContent = () => {
     return items;
   }, [page, pageCount]);
   const activeEndpoint = endpoints.find((ep) => ep.id === openModalId) || null;
-  return /* @__PURE__ */ jsxRuntime.jsxs(designSystem.Box, { paddingTop: 6, children: [
-    /* @__PURE__ */ jsxRuntime.jsx(designSystem.Typography, { variant: "epsilon", textColor: "neutral800", children: description }),
-    /* @__PURE__ */ jsxRuntime.jsx(designSystem.Box, { marginTop: 4, children: /* @__PURE__ */ jsxRuntime.jsxs(
-      designSystem.Box,
+  return /* @__PURE__ */ jsxs(Box, { paddingTop: 6, children: [
+    /* @__PURE__ */ jsx(Typography, { variant: "epsilon", textColor: "neutral800", children: description }),
+    /* @__PURE__ */ jsx(Box, { marginTop: 4, children: /* @__PURE__ */ jsxs(
+      Box,
       {
         as: "table",
         width: "100%",
@@ -30367,41 +30371,41 @@ const ApiCollectionsContent = () => {
           fontSize: 13
         },
         children: [
-          /* @__PURE__ */ jsxRuntime.jsx("thead", { children: /* @__PURE__ */ jsxRuntime.jsxs("tr", { children: [
-            /* @__PURE__ */ jsxRuntime.jsx("th", { style: { textAlign: "left", padding: "8px 12px" }, children: /* @__PURE__ */ jsxRuntime.jsx(designSystem.Typography, { variant: "sigma", textColor: "neutral600", children: formatMessage({
-              id: `${index.PLUGIN_ID}.settings.apiCollections.column.method`,
+          /* @__PURE__ */ jsx("thead", { children: /* @__PURE__ */ jsxs("tr", { children: [
+            /* @__PURE__ */ jsx("th", { style: { textAlign: "left", padding: "8px 12px" }, children: /* @__PURE__ */ jsx(Typography, { variant: "sigma", textColor: "neutral600", children: formatMessage({
+              id: `${PLUGIN_ID}.settings.apiCollections.column.method`,
               defaultMessage: "Method"
             }) }) }),
-            /* @__PURE__ */ jsxRuntime.jsx("th", { style: { textAlign: "left", padding: "8px 12px" }, children: /* @__PURE__ */ jsxRuntime.jsx(designSystem.Typography, { variant: "sigma", textColor: "neutral600", children: formatMessage({
-              id: `${index.PLUGIN_ID}.settings.apiCollections.column.name`,
+            /* @__PURE__ */ jsx("th", { style: { textAlign: "left", padding: "8px 12px" }, children: /* @__PURE__ */ jsx(Typography, { variant: "sigma", textColor: "neutral600", children: formatMessage({
+              id: `${PLUGIN_ID}.settings.apiCollections.column.name`,
               defaultMessage: "Name"
             }) }) }),
-            /* @__PURE__ */ jsxRuntime.jsx("th", { style: { textAlign: "left", padding: "8px 12px" }, children: /* @__PURE__ */ jsxRuntime.jsx(designSystem.Typography, { variant: "sigma", textColor: "neutral600", children: formatMessage({
-              id: `${index.PLUGIN_ID}.settings.apiCollections.column.path`,
+            /* @__PURE__ */ jsx("th", { style: { textAlign: "left", padding: "8px 12px" }, children: /* @__PURE__ */ jsx(Typography, { variant: "sigma", textColor: "neutral600", children: formatMessage({
+              id: `${PLUGIN_ID}.settings.apiCollections.column.path`,
               defaultMessage: "Path"
             }) }) }),
-            /* @__PURE__ */ jsxRuntime.jsx("th", { style: { textAlign: "left", padding: "8px 12px" }, children: /* @__PURE__ */ jsxRuntime.jsx(designSystem.Typography, { variant: "sigma", textColor: "neutral600", children: formatMessage({
-              id: `${index.PLUGIN_ID}.settings.apiCollections.column.summary`,
+            /* @__PURE__ */ jsx("th", { style: { textAlign: "left", padding: "8px 12px" }, children: /* @__PURE__ */ jsx(Typography, { variant: "sigma", textColor: "neutral600", children: formatMessage({
+              id: `${PLUGIN_ID}.settings.apiCollections.column.summary`,
               defaultMessage: "Summary"
             }) }) }),
-            /* @__PURE__ */ jsxRuntime.jsx("th", { style: { textAlign: "right", padding: "8px 12px" }, children: /* @__PURE__ */ jsxRuntime.jsx(designSystem.Typography, { variant: "sigma", textColor: "neutral600", children: formatMessage({
-              id: `${index.PLUGIN_ID}.settings.apiCollections.column.actions`,
+            /* @__PURE__ */ jsx("th", { style: { textAlign: "right", padding: "8px 12px" }, children: /* @__PURE__ */ jsx(Typography, { variant: "sigma", textColor: "neutral600", children: formatMessage({
+              id: `${PLUGIN_ID}.settings.apiCollections.column.actions`,
               defaultMessage: "Actions"
             }) }) })
           ] }) }),
-          /* @__PURE__ */ jsxRuntime.jsx("tbody", { children: pagedEndpoints.map((endpoint) => /* @__PURE__ */ jsxRuntime.jsxs("tr", { style: { borderTop: "1px solid #e5e5ef" }, children: [
-            /* @__PURE__ */ jsxRuntime.jsx("td", { style: { padding: "8px 12px", whiteSpace: "nowrap" }, children: /* @__PURE__ */ jsxRuntime.jsx(designSystem.Typography, { variant: "pi", fontWeight: "bold", textColor: "success600", children: endpoint.method }) }),
-            /* @__PURE__ */ jsxRuntime.jsx("td", { style: { padding: "8px 12px" }, children: /* @__PURE__ */ jsxRuntime.jsx(designSystem.Typography, { variant: "pi", textColor: "neutral800", children: endpoint.title }) }),
-            /* @__PURE__ */ jsxRuntime.jsx("td", { style: { padding: "8px 12px" }, children: /* @__PURE__ */ jsxRuntime.jsx(designSystem.Typography, { variant: "pi", textColor: "neutral800", children: endpoint.path }) }),
-            /* @__PURE__ */ jsxRuntime.jsx("td", { style: { padding: "8px 12px" }, children: /* @__PURE__ */ jsxRuntime.jsx(designSystem.Typography, { variant: "pi", textColor: "neutral600", children: endpoint.summary }) }),
-            /* @__PURE__ */ jsxRuntime.jsx("td", { style: { padding: "8px 12px", textAlign: "right" }, children: /* @__PURE__ */ jsxRuntime.jsx(
-              designSystem.Button,
+          /* @__PURE__ */ jsx("tbody", { children: pagedEndpoints.map((endpoint) => /* @__PURE__ */ jsxs("tr", { style: { borderTop: "1px solid #e5e5ef" }, children: [
+            /* @__PURE__ */ jsx("td", { style: { padding: "8px 12px", whiteSpace: "nowrap" }, children: /* @__PURE__ */ jsx(Typography, { variant: "pi", fontWeight: "bold", textColor: "success600", children: endpoint.method }) }),
+            /* @__PURE__ */ jsx("td", { style: { padding: "8px 12px" }, children: /* @__PURE__ */ jsx(Typography, { variant: "pi", textColor: "neutral800", children: endpoint.title }) }),
+            /* @__PURE__ */ jsx("td", { style: { padding: "8px 12px" }, children: /* @__PURE__ */ jsx(Typography, { variant: "pi", textColor: "neutral800", children: endpoint.path }) }),
+            /* @__PURE__ */ jsx("td", { style: { padding: "8px 12px" }, children: /* @__PURE__ */ jsx(Typography, { variant: "pi", textColor: "neutral600", children: endpoint.summary }) }),
+            /* @__PURE__ */ jsx("td", { style: { padding: "8px 12px", textAlign: "right" }, children: /* @__PURE__ */ jsx(
+              Button,
               {
                 size: "S",
                 variant: "tertiary",
                 onClick: () => setOpenModalId(endpoint.id),
                 children: formatMessage({
-                  id: `${index.PLUGIN_ID}.settings.apiCollections.action.details`,
+                  id: `${PLUGIN_ID}.settings.apiCollections.action.details`,
                   defaultMessage: "Show details"
                 })
               }
@@ -30410,18 +30414,18 @@ const ApiCollectionsContent = () => {
         ]
       }
     ) }),
-    pageCount > 1 && /* @__PURE__ */ jsxRuntime.jsx(designSystem.Box, { marginTop: 4, children: /* @__PURE__ */ jsxRuntime.jsx(designSystem.Flex, { justifyContent: "flex-end", children: /* @__PURE__ */ jsxRuntime.jsxs(
-      designSystem.Pagination,
+    pageCount > 1 && /* @__PURE__ */ jsx(Box, { marginTop: 4, children: /* @__PURE__ */ jsx(Flex, { justifyContent: "flex-end", children: /* @__PURE__ */ jsxs(
+      Pagination,
       {
         activePage: page,
         pageCount,
         label: formatMessage({
-          id: `${index.PLUGIN_ID}.settings.apiCollections.pagination.label`,
+          id: `${PLUGIN_ID}.settings.apiCollections.pagination.label`,
           defaultMessage: "API collections pagination"
         }),
         children: [
-          /* @__PURE__ */ jsxRuntime.jsx(
-            designSystem.PreviousLink,
+          /* @__PURE__ */ jsx(
+            PreviousLink,
             {
               as: "button",
               type: "button",
@@ -30431,10 +30435,10 @@ const ApiCollectionsContent = () => {
           ),
           pageItems.map((item, idx) => {
             if (item === "dots") {
-              return /* @__PURE__ */ jsxRuntime.jsx(designSystem.Dots, { children: "…" }, `dots-${idx}`);
+              return /* @__PURE__ */ jsx(Dots, { children: "…" }, `dots-${idx}`);
             }
-            return /* @__PURE__ */ jsxRuntime.jsx(
-              designSystem.PageLink,
+            return /* @__PURE__ */ jsx(
+              PageLink,
               {
                 as: "button",
                 type: "button",
@@ -30444,8 +30448,8 @@ const ApiCollectionsContent = () => {
               item
             );
           }),
-          /* @__PURE__ */ jsxRuntime.jsx(
-            designSystem.NextLink,
+          /* @__PURE__ */ jsx(
+            NextLink,
             {
               as: "button",
               type: "button",
@@ -30456,12 +30460,12 @@ const ApiCollectionsContent = () => {
         ]
       }
     ) }) }),
-    /* @__PURE__ */ jsxRuntime.jsx(designSystem.Box, { marginTop: 6, children: /* @__PURE__ */ jsxRuntime.jsx(designSystem.Typography, { variant: "pi", textColor: "neutral500", children: formatMessage({
-      id: `${index.PLUGIN_ID}.settings.apiCollections.footer`,
+    /* @__PURE__ */ jsx(Box, { marginTop: 6, children: /* @__PURE__ */ jsx(Typography, { variant: "pi", textColor: "neutral500", children: formatMessage({
+      id: `${PLUGIN_ID}.settings.apiCollections.footer`,
       defaultMessage: "As you add more ecommerce endpoints (products, cart, orders, etc.), they can be documented here for your team."
     }) }) }),
-    activeEndpoint && /* @__PURE__ */ jsxRuntime.jsx(
-      designSystem.Modal.Root,
+    activeEndpoint && /* @__PURE__ */ jsx(
+      Modal.Root,
       {
         open: Boolean(activeEndpoint),
         onOpenChange: (open) => {
@@ -30469,32 +30473,32 @@ const ApiCollectionsContent = () => {
             setOpenModalId(null);
           }
         },
-        children: /* @__PURE__ */ jsxRuntime.jsxs(designSystem.Modal.Content, { style: { width: "clamp(360px, 90vw, 720px)" }, children: [
-          /* @__PURE__ */ jsxRuntime.jsx(
-            designSystem.Modal.Header,
+        children: /* @__PURE__ */ jsxs(Modal.Content, { style: { width: "clamp(360px, 90vw, 720px)" }, children: [
+          /* @__PURE__ */ jsx(
+            Modal.Header,
             {
               closeLabel: formatMessage({
-                id: `${index.PLUGIN_ID}.settings.apiCollections.modal.close`,
+                id: `${PLUGIN_ID}.settings.apiCollections.modal.close`,
                 defaultMessage: "Close details"
               }),
-              children: /* @__PURE__ */ jsxRuntime.jsx(designSystem.Modal.Title, { children: activeEndpoint.title })
+              children: /* @__PURE__ */ jsx(Modal.Title, { children: activeEndpoint.title })
             }
           ),
-          /* @__PURE__ */ jsxRuntime.jsx(designSystem.Modal.Body, { children: /* @__PURE__ */ jsxRuntime.jsxs(designSystem.Box, { paddingTop: 2, paddingBottom: 4, children: [
-            /* @__PURE__ */ jsxRuntime.jsx(designSystem.Box, { marginBottom: 4, children: /* @__PURE__ */ jsxRuntime.jsx(designSystem.Typography, { variant: "pi", textColor: "neutral600", children: activeEndpoint.summary }) }),
-            /* @__PURE__ */ jsxRuntime.jsxs(designSystem.Box, { marginBottom: 4, children: [
-              /* @__PURE__ */ jsxRuntime.jsx(designSystem.Typography, { variant: "pi", fontWeight: "bold", children: activeEndpoint.method }),
+          /* @__PURE__ */ jsx(Modal.Body, { children: /* @__PURE__ */ jsxs(Box, { paddingTop: 2, paddingBottom: 4, children: [
+            /* @__PURE__ */ jsx(Box, { marginBottom: 4, children: /* @__PURE__ */ jsx(Typography, { variant: "pi", textColor: "neutral600", children: activeEndpoint.summary }) }),
+            /* @__PURE__ */ jsxs(Box, { marginBottom: 4, children: [
+              /* @__PURE__ */ jsx(Typography, { variant: "pi", fontWeight: "bold", children: activeEndpoint.method }),
               " ",
-              /* @__PURE__ */ jsxRuntime.jsx(designSystem.Typography, { variant: "pi", textColor: "neutral800", children: activeEndpoint.path }),
-              /* @__PURE__ */ jsxRuntime.jsx(designSystem.Box, { marginTop: 1, children: /* @__PURE__ */ jsxRuntime.jsx(designSystem.Typography, { variant: "pi", textColor: "neutral600", children: activeEndpoint.auth }) })
+              /* @__PURE__ */ jsx(Typography, { variant: "pi", textColor: "neutral800", children: activeEndpoint.path }),
+              /* @__PURE__ */ jsx(Box, { marginTop: 1, children: /* @__PURE__ */ jsx(Typography, { variant: "pi", textColor: "neutral600", children: activeEndpoint.auth }) })
             ] }),
-            activeEndpoint.requestBody && /* @__PURE__ */ jsxRuntime.jsxs(designSystem.Box, { marginBottom: 4, children: [
-              /* @__PURE__ */ jsxRuntime.jsx(designSystem.Typography, { variant: "pi", textColor: "neutral800", fontWeight: "bold", children: formatMessage({
-                id: `${index.PLUGIN_ID}.settings.apiCollections.request.title`,
+            activeEndpoint.requestBody && /* @__PURE__ */ jsxs(Box, { marginBottom: 4, children: [
+              /* @__PURE__ */ jsx(Typography, { variant: "pi", textColor: "neutral800", fontWeight: "bold", children: formatMessage({
+                id: `${PLUGIN_ID}.settings.apiCollections.request.title`,
                 defaultMessage: "Request body"
               }) }),
-              /* @__PURE__ */ jsxRuntime.jsx(
-                designSystem.Box,
+              /* @__PURE__ */ jsx(
+                Box,
                 {
                   marginTop: 2,
                   padding: 4,
@@ -30505,13 +30509,13 @@ const ApiCollectionsContent = () => {
                 }
               )
             ] }),
-            /* @__PURE__ */ jsxRuntime.jsxs(designSystem.Box, { marginBottom: 4, children: [
-              /* @__PURE__ */ jsxRuntime.jsx(designSystem.Typography, { variant: "pi", textColor: "neutral800", fontWeight: "bold", children: formatMessage({
-                id: `${index.PLUGIN_ID}.settings.apiCollections.response.title`,
+            /* @__PURE__ */ jsxs(Box, { marginBottom: 4, children: [
+              /* @__PURE__ */ jsx(Typography, { variant: "pi", textColor: "neutral800", fontWeight: "bold", children: formatMessage({
+                id: `${PLUGIN_ID}.settings.apiCollections.response.title`,
                 defaultMessage: "Successful response (200 OK)"
               }) }),
-              /* @__PURE__ */ jsxRuntime.jsx(
-                designSystem.Box,
+              /* @__PURE__ */ jsx(
+                Box,
                 {
                   marginTop: 2,
                   padding: 4,
@@ -30522,17 +30526,17 @@ const ApiCollectionsContent = () => {
                 }
               )
             ] }),
-            /* @__PURE__ */ jsxRuntime.jsxs(designSystem.Box, { marginBottom: 4, children: [
-              /* @__PURE__ */ jsxRuntime.jsx(designSystem.Typography, { variant: "pi", textColor: "neutral800", fontWeight: "bold", children: formatMessage({
-                id: `${index.PLUGIN_ID}.settings.apiCollections.usage.title`,
+            /* @__PURE__ */ jsxs(Box, { marginBottom: 4, children: [
+              /* @__PURE__ */ jsx(Typography, { variant: "pi", textColor: "neutral800", fontWeight: "bold", children: formatMessage({
+                id: `${PLUGIN_ID}.settings.apiCollections.usage.title`,
                 defaultMessage: "Typical usage"
               }) }),
-              /* @__PURE__ */ jsxRuntime.jsx(designSystem.Box, { as: "ul", marginTop: 1, paddingLeft: 4, children: activeEndpoint.usage.map((usageItem, index2) => /* @__PURE__ */ jsxRuntime.jsx("li", { children: /* @__PURE__ */ jsxRuntime.jsx(designSystem.Typography, { variant: "pi", textColor: "neutral600", children: usageItem }) }, index2)) })
+              /* @__PURE__ */ jsx(Box, { as: "ul", marginTop: 1, paddingLeft: 4, children: activeEndpoint.usage.map((usageItem, index) => /* @__PURE__ */ jsx("li", { children: /* @__PURE__ */ jsx(Typography, { variant: "pi", textColor: "neutral600", children: usageItem }) }, index)) })
             ] }),
-            /* @__PURE__ */ jsxRuntime.jsxs(designSystem.Box, { children: [
-              /* @__PURE__ */ jsxRuntime.jsx(designSystem.Typography, { variant: "pi", textColor: "neutral800", fontWeight: "bold", children: "curl" }),
-              /* @__PURE__ */ jsxRuntime.jsx(
-                designSystem.Box,
+            /* @__PURE__ */ jsxs(Box, { children: [
+              /* @__PURE__ */ jsx(Typography, { variant: "pi", textColor: "neutral800", fontWeight: "bold", children: "curl" }),
+              /* @__PURE__ */ jsx(
+                Box,
                 {
                   marginTop: 2,
                   padding: 4,
@@ -30544,13 +30548,13 @@ const ApiCollectionsContent = () => {
               )
             ] })
           ] }) }),
-          /* @__PURE__ */ jsxRuntime.jsx(designSystem.Modal.Footer, { justifyContent: "flex-end", gap: 2, children: /* @__PURE__ */ jsxRuntime.jsx(
-            designSystem.Button,
+          /* @__PURE__ */ jsx(Modal.Footer, { justifyContent: "flex-end", gap: 2, children: /* @__PURE__ */ jsx(
+            Button,
             {
               variant: "tertiary",
               onClick: () => setOpenModalId(null),
               children: formatMessage({
-                id: `${index.PLUGIN_ID}.settings.apiCollections.modal.close`,
+                id: `${PLUGIN_ID}.settings.apiCollections.modal.close`,
                 defaultMessage: "Close"
               })
             }
@@ -30561,14 +30565,14 @@ const ApiCollectionsContent = () => {
   ] });
 };
 const LoginRegisterContent = () => {
-  const { formatMessage } = reactIntl.useIntl();
+  const { formatMessage } = useIntl();
   const fetchClient = useFetchClient();
-  const [loading, setLoading] = React.useState(true);
-  const [saving, setSaving] = React.useState(false);
-  const [method, setMethod] = React.useState("default");
-  const [error, setError] = React.useState(null);
-  const [success, setSuccess] = React.useState(false);
-  React.useEffect(() => {
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [method, setMethod] = useState("default");
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(false);
+  useEffect(() => {
     loadSettings();
   }, []);
   const loadSettings = async () => {
@@ -30583,7 +30587,7 @@ const LoginRegisterContent = () => {
       console.error("Failed to load login/register settings:", err);
       setError(
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.loginRegister.load.error`,
+          id: `${PLUGIN_ID}.settings.loginRegister.load.error`,
           defaultMessage: "Failed to load settings."
         })
       );
@@ -30605,7 +30609,7 @@ const LoginRegisterContent = () => {
       console.error("Failed to save login/register settings:", err);
       setError(
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.loginRegister.save.error`,
+          id: `${PLUGIN_ID}.settings.loginRegister.save.error`,
           defaultMessage: "Failed to save settings."
         })
       );
@@ -30614,22 +30618,22 @@ const LoginRegisterContent = () => {
     }
   };
   if (loading) {
-    return /* @__PURE__ */ jsxRuntime.jsx(designSystem.Box, { paddingTop: 6, children: /* @__PURE__ */ jsxRuntime.jsx(designSystem.Typography, { variant: "omega", textColor: "neutral600", children: formatMessage({
-      id: `${index.PLUGIN_ID}.settings.loginRegister.loading`,
+    return /* @__PURE__ */ jsx(Box, { paddingTop: 6, children: /* @__PURE__ */ jsx(Typography, { variant: "omega", textColor: "neutral600", children: formatMessage({
+      id: `${PLUGIN_ID}.settings.loginRegister.loading`,
       defaultMessage: "Loading settings..."
     }) }) });
   }
-  return /* @__PURE__ */ jsxRuntime.jsxs(designSystem.Box, { paddingTop: 6, children: [
-    /* @__PURE__ */ jsxRuntime.jsx(designSystem.Typography, { variant: "delta", textColor: "neutral800", fontWeight: "bold", marginBottom: 4, children: formatMessage({
-      id: `${index.PLUGIN_ID}.settings.loginRegister.title`,
+  return /* @__PURE__ */ jsxs(Box, { paddingTop: 6, children: [
+    /* @__PURE__ */ jsx(Typography, { variant: "delta", textColor: "neutral800", fontWeight: "bold", marginBottom: 4, children: formatMessage({
+      id: `${PLUGIN_ID}.settings.loginRegister.title`,
       defaultMessage: "Login/Register Configuration"
     }) }),
-    /* @__PURE__ */ jsxRuntime.jsx(designSystem.Typography, { variant: "omega", textColor: "neutral600", marginBottom: 6, display: "block", children: formatMessage({
-      id: `${index.PLUGIN_ID}.settings.loginRegister.description`,
+    /* @__PURE__ */ jsx(Typography, { variant: "omega", textColor: "neutral600", marginBottom: 6, display: "block", children: formatMessage({
+      id: `${PLUGIN_ID}.settings.loginRegister.description`,
       defaultMessage: "Choose the authentication method for user login and registration. Default uses Strapi's standard email/password authentication. OTP allows users to login or register using email or mobile number with OTP verification."
     }) }),
-    /* @__PURE__ */ jsxRuntime.jsxs(
-      designSystem.Box,
+    /* @__PURE__ */ jsxs(
+      Box,
       {
         background: "neutral0",
         hasRadius: true,
@@ -30637,17 +30641,17 @@ const LoginRegisterContent = () => {
         padding: 4,
         style: { maxWidth: "640px" },
         children: [
-          /* @__PURE__ */ jsxRuntime.jsx(designSystem.Typography, { variant: "delta", textColor: "neutral800", fontWeight: "semiBold", children: formatMessage({
-            id: `${index.PLUGIN_ID}.settings.loginRegister.method.label`,
+          /* @__PURE__ */ jsx(Typography, { variant: "delta", textColor: "neutral800", fontWeight: "semiBold", children: formatMessage({
+            id: `${PLUGIN_ID}.settings.loginRegister.method.label`,
             defaultMessage: "Authentication Method"
           }) }),
-          /* @__PURE__ */ jsxRuntime.jsx(designSystem.Box, { marginTop: 1, children: /* @__PURE__ */ jsxRuntime.jsx(designSystem.Typography, { variant: "pi", textColor: "neutral600", children: formatMessage({
-            id: `${index.PLUGIN_ID}.settings.loginRegister.method.hint`,
+          /* @__PURE__ */ jsx(Box, { marginTop: 1, children: /* @__PURE__ */ jsx(Typography, { variant: "pi", textColor: "neutral600", children: formatMessage({
+            id: `${PLUGIN_ID}.settings.loginRegister.method.hint`,
             defaultMessage: "Select the method users will use to login and register."
           }) }) }),
-          /* @__PURE__ */ jsxRuntime.jsx(designSystem.Box, { marginTop: 4, children: /* @__PURE__ */ jsxRuntime.jsxs(designSystem.Flex, { direction: "column", gap: 3, alignItems: "start", children: [
-            /* @__PURE__ */ jsxRuntime.jsx(
-              designSystem.Box,
+          /* @__PURE__ */ jsx(Box, { marginTop: 4, children: /* @__PURE__ */ jsxs(Flex, { direction: "column", gap: 3, alignItems: "start", children: [
+            /* @__PURE__ */ jsx(
+              Box,
               {
                 as: "label",
                 padding: 3,
@@ -30657,8 +30661,8 @@ const LoginRegisterContent = () => {
                   cursor: "pointer",
                   border: `1px solid ${method === "default" ? "#4945ff" : "#dcdce4"}`
                 },
-                children: /* @__PURE__ */ jsxRuntime.jsxs(designSystem.Flex, { gap: 2, alignItems: "flex-start", children: [
-                  /* @__PURE__ */ jsxRuntime.jsx(
+                children: /* @__PURE__ */ jsxs(Flex, { gap: 2, alignItems: "flex-start", children: [
+                  /* @__PURE__ */ jsx(
                     "input",
                     {
                       type: "radio",
@@ -30672,21 +30676,21 @@ const LoginRegisterContent = () => {
                       }
                     }
                   ),
-                  /* @__PURE__ */ jsxRuntime.jsxs(designSystem.Box, { children: [
-                    /* @__PURE__ */ jsxRuntime.jsx(designSystem.Typography, { variant: "omega", textColor: "neutral800", fontWeight: "semiBold", children: formatMessage({
-                      id: `${index.PLUGIN_ID}.settings.loginRegister.method.default`,
+                  /* @__PURE__ */ jsxs(Box, { children: [
+                    /* @__PURE__ */ jsx(Typography, { variant: "omega", textColor: "neutral800", fontWeight: "semiBold", children: formatMessage({
+                      id: `${PLUGIN_ID}.settings.loginRegister.method.default`,
                       defaultMessage: "Default (Email/Password)"
                     }) }),
-                    /* @__PURE__ */ jsxRuntime.jsx(designSystem.Typography, { variant: "pi", textColor: "neutral600", marginTop: 1, display: "block", children: formatMessage({
-                      id: `${index.PLUGIN_ID}.settings.loginRegister.method.default.description`,
+                    /* @__PURE__ */ jsx(Typography, { variant: "pi", textColor: "neutral600", marginTop: 1, display: "block", children: formatMessage({
+                      id: `${PLUGIN_ID}.settings.loginRegister.method.default.description`,
                       defaultMessage: "Uses Strapi's built-in authentication system with email and password."
                     }) })
                   ] })
                 ] })
               }
             ),
-            /* @__PURE__ */ jsxRuntime.jsx(
-              designSystem.Box,
+            /* @__PURE__ */ jsx(
+              Box,
               {
                 as: "label",
                 padding: 3,
@@ -30696,8 +30700,8 @@ const LoginRegisterContent = () => {
                   cursor: "pointer",
                   border: `1px solid ${method === "otp" ? "#4945ff" : "#dcdce4"}`
                 },
-                children: /* @__PURE__ */ jsxRuntime.jsxs(designSystem.Flex, { gap: 2, alignItems: "flex-start", children: [
-                  /* @__PURE__ */ jsxRuntime.jsx(
+                children: /* @__PURE__ */ jsxs(Flex, { gap: 2, alignItems: "flex-start", children: [
+                  /* @__PURE__ */ jsx(
                     "input",
                     {
                       type: "radio",
@@ -30711,13 +30715,13 @@ const LoginRegisterContent = () => {
                       }
                     }
                   ),
-                  /* @__PURE__ */ jsxRuntime.jsxs(designSystem.Box, { children: [
-                    /* @__PURE__ */ jsxRuntime.jsx(designSystem.Typography, { variant: "omega", textColor: "neutral800", fontWeight: "semiBold", children: formatMessage({
-                      id: `${index.PLUGIN_ID}.settings.loginRegister.method.otp`,
+                  /* @__PURE__ */ jsxs(Box, { children: [
+                    /* @__PURE__ */ jsx(Typography, { variant: "omega", textColor: "neutral800", fontWeight: "semiBold", children: formatMessage({
+                      id: `${PLUGIN_ID}.settings.loginRegister.method.otp`,
                       defaultMessage: "OTP (Email/Mobile Verification)"
                     }) }),
-                    /* @__PURE__ */ jsxRuntime.jsx(designSystem.Typography, { variant: "pi", textColor: "neutral600", marginTop: 1, display: "block", children: formatMessage({
-                      id: `${index.PLUGIN_ID}.settings.loginRegister.method.otp.description`,
+                    /* @__PURE__ */ jsx(Typography, { variant: "pi", textColor: "neutral600", marginTop: 1, display: "block", children: formatMessage({
+                      id: `${PLUGIN_ID}.settings.loginRegister.method.otp.description`,
                       defaultMessage: "Users can login or register using email or mobile number. An OTP (One-Time Password) will be sent for verification."
                     }) })
                   ] })
@@ -30725,13 +30729,13 @@ const LoginRegisterContent = () => {
               }
             )
           ] }) }),
-          error && /* @__PURE__ */ jsxRuntime.jsx(designSystem.Box, { marginTop: 4, padding: 3, background: "danger100", hasRadius: true, children: /* @__PURE__ */ jsxRuntime.jsx(designSystem.Typography, { variant: "omega", textColor: "danger700", children: error }) }),
-          success && /* @__PURE__ */ jsxRuntime.jsx(designSystem.Box, { marginTop: 4, padding: 3, background: "success100", hasRadius: true, children: /* @__PURE__ */ jsxRuntime.jsx(designSystem.Typography, { variant: "omega", textColor: "success700", children: formatMessage({
-            id: `${index.PLUGIN_ID}.settings.loginRegister.save.success`,
+          error && /* @__PURE__ */ jsx(Box, { marginTop: 4, padding: 3, background: "danger100", hasRadius: true, children: /* @__PURE__ */ jsx(Typography, { variant: "omega", textColor: "danger700", children: error }) }),
+          success && /* @__PURE__ */ jsx(Box, { marginTop: 4, padding: 3, background: "success100", hasRadius: true, children: /* @__PURE__ */ jsx(Typography, { variant: "omega", textColor: "success700", children: formatMessage({
+            id: `${PLUGIN_ID}.settings.loginRegister.save.success`,
             defaultMessage: "Settings updated successfully."
           }) }) }),
-          /* @__PURE__ */ jsxRuntime.jsx(designSystem.Flex, { marginTop: 6, gap: 2, children: /* @__PURE__ */ jsxRuntime.jsx(designSystem.Button, { onClick: handleSave, loading: saving, disabled: saving, children: formatMessage({
-            id: `${index.PLUGIN_ID}.settings.loginRegister.save`,
+          /* @__PURE__ */ jsx(Flex, { marginTop: 6, gap: 2, children: /* @__PURE__ */ jsx(Button, { onClick: handleSave, loading: saving, disabled: saving, children: formatMessage({
+            id: `${PLUGIN_ID}.settings.loginRegister.save`,
             defaultMessage: "Save settings"
           }) }) })
         ]
@@ -30740,14 +30744,14 @@ const LoginRegisterContent = () => {
   ] });
 };
 const ShippingTypeContent = () => {
-  const { formatMessage } = reactIntl.useIntl();
+  const { formatMessage } = useIntl();
   const fetchClient = useFetchClient();
-  const [loading, setLoading] = React.useState(true);
-  const [saving, setSaving] = React.useState(false);
-  const [shippingType, setShippingType] = React.useState("single");
-  const [error, setError] = React.useState(null);
-  const [success, setSuccess] = React.useState(false);
-  React.useEffect(() => {
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [shippingType, setShippingType] = useState("single");
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(false);
+  useEffect(() => {
     loadSettings();
   }, []);
   const loadSettings = async () => {
@@ -30762,7 +30766,7 @@ const ShippingTypeContent = () => {
       console.error("Failed to load shipping type settings:", err);
       setError(
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.shippingType.load.error`,
+          id: `${PLUGIN_ID}.settings.shippingType.load.error`,
           defaultMessage: "Failed to load settings."
         })
       );
@@ -30787,7 +30791,7 @@ const ShippingTypeContent = () => {
       console.error("Failed to save shipping type settings:", err);
       setError(
         formatMessage({
-          id: `${index.PLUGIN_ID}.settings.shippingType.save.error`,
+          id: `${PLUGIN_ID}.settings.shippingType.save.error`,
           defaultMessage: "Failed to save settings. Please try again."
         })
       );
@@ -30796,30 +30800,30 @@ const ShippingTypeContent = () => {
     }
   };
   if (loading) {
-    return /* @__PURE__ */ jsxRuntime.jsx(designSystem.Box, { padding: 4, children: /* @__PURE__ */ jsxRuntime.jsx(designSystem.Typography, { children: formatMessage({
-      id: `${index.PLUGIN_ID}.settings.shippingType.loading`,
+    return /* @__PURE__ */ jsx(Box, { padding: 4, children: /* @__PURE__ */ jsx(Typography, { children: formatMessage({
+      id: `${PLUGIN_ID}.settings.shippingType.loading`,
       defaultMessage: "Loading settings..."
     }) }) });
   }
-  return /* @__PURE__ */ jsxRuntime.jsxs(designSystem.Box, { children: [
-    /* @__PURE__ */ jsxRuntime.jsxs(designSystem.Box, { paddingBottom: 4, children: [
-      /* @__PURE__ */ jsxRuntime.jsx(designSystem.Typography, { variant: "beta", as: "h2", children: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.shippingType.title`,
+  return /* @__PURE__ */ jsxs(Box, { children: [
+    /* @__PURE__ */ jsxs(Box, { paddingBottom: 4, children: [
+      /* @__PURE__ */ jsx(Typography, { variant: "beta", as: "h2", children: formatMessage({
+        id: `${PLUGIN_ID}.settings.shippingType.title`,
         defaultMessage: "Shipping Type Settings"
       }) }),
-      /* @__PURE__ */ jsxRuntime.jsx(designSystem.Typography, { variant: "omega", textColor: "neutral600", as: "p", style: { marginTop: "8px" }, children: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.shippingType.description`,
+      /* @__PURE__ */ jsx(Typography, { variant: "omega", textColor: "neutral600", as: "p", style: { marginTop: "8px" }, children: formatMessage({
+        id: `${PLUGIN_ID}.settings.shippingType.description`,
         defaultMessage: "Configure how users can manage their billing and shipping addresses."
       }) })
     ] }),
-    /* @__PURE__ */ jsxRuntime.jsxs(designSystem.Box, { paddingBottom: 6, children: [
-      /* @__PURE__ */ jsxRuntime.jsx(designSystem.Box, { paddingBottom: 3, children: /* @__PURE__ */ jsxRuntime.jsx(designSystem.Typography, { variant: "omega", fontWeight: "semiBold", as: "label", style: { display: "block", marginBottom: "8px" }, children: formatMessage({
-        id: `${index.PLUGIN_ID}.settings.shippingType.method.label`,
+    /* @__PURE__ */ jsxs(Box, { paddingBottom: 6, children: [
+      /* @__PURE__ */ jsx(Box, { paddingBottom: 3, children: /* @__PURE__ */ jsx(Typography, { variant: "omega", fontWeight: "semiBold", as: "label", style: { display: "block", marginBottom: "8px" }, children: formatMessage({
+        id: `${PLUGIN_ID}.settings.shippingType.method.label`,
         defaultMessage: "Address Management Type"
       }) }) }),
-      /* @__PURE__ */ jsxRuntime.jsxs(designSystem.Flex, { direction: "column", gap: 3, alignItems: "start", children: [
-        /* @__PURE__ */ jsxRuntime.jsx(
-          designSystem.Box,
+      /* @__PURE__ */ jsxs(Flex, { direction: "column", gap: 3, alignItems: "start", children: [
+        /* @__PURE__ */ jsx(
+          Box,
           {
             as: "label",
             padding: 4,
@@ -30832,8 +30836,8 @@ const ShippingTypeContent = () => {
               backgroundColor: shippingType === "single" ? "rgba(0, 122, 255, 0.05)" : "transparent"
             },
             onClick: () => setShippingType("single"),
-            children: /* @__PURE__ */ jsxRuntime.jsxs(designSystem.Flex, { gap: 2, alignItems: "center", children: [
-              /* @__PURE__ */ jsxRuntime.jsx(
+            children: /* @__PURE__ */ jsxs(Flex, { gap: 2, alignItems: "center", children: [
+              /* @__PURE__ */ jsx(
                 "input",
                 {
                   type: "radio",
@@ -30844,21 +30848,21 @@ const ShippingTypeContent = () => {
                   style: { margin: 0 }
                 }
               ),
-              /* @__PURE__ */ jsxRuntime.jsxs(designSystem.Box, { children: [
-                /* @__PURE__ */ jsxRuntime.jsx(designSystem.Typography, { variant: "omega", fontWeight: "semiBold", children: formatMessage({
-                  id: `${index.PLUGIN_ID}.settings.shippingType.single.label`,
+              /* @__PURE__ */ jsxs(Box, { children: [
+                /* @__PURE__ */ jsx(Typography, { variant: "omega", fontWeight: "semiBold", children: formatMessage({
+                  id: `${PLUGIN_ID}.settings.shippingType.single.label`,
                   defaultMessage: "Single Address Mode"
                 }) }),
-                /* @__PURE__ */ jsxRuntime.jsx(designSystem.Typography, { variant: "omega", textColor: "neutral600", style: { marginTop: "4px" }, display: "block", children: formatMessage({
-                  id: `${index.PLUGIN_ID}.settings.shippingType.single.description`,
+                /* @__PURE__ */ jsx(Typography, { variant: "omega", textColor: "neutral600", style: { marginTop: "4px" }, display: "block", children: formatMessage({
+                  id: `${PLUGIN_ID}.settings.shippingType.single.description`,
                   defaultMessage: "Users can have one billing address and one shipping address. Suitable for simple e-commerce sites."
                 }) })
               ] })
             ] })
           }
         ),
-        /* @__PURE__ */ jsxRuntime.jsx(
-          designSystem.Box,
+        /* @__PURE__ */ jsx(
+          Box,
           {
             as: "label",
             padding: 4,
@@ -30871,8 +30875,8 @@ const ShippingTypeContent = () => {
               backgroundColor: shippingType === "multiple" ? "rgba(0, 122, 255, 0.05)" : "transparent"
             },
             onClick: () => setShippingType("multiple"),
-            children: /* @__PURE__ */ jsxRuntime.jsxs(designSystem.Flex, { gap: 2, alignItems: "center", children: [
-              /* @__PURE__ */ jsxRuntime.jsx(
+            children: /* @__PURE__ */ jsxs(Flex, { gap: 2, alignItems: "center", children: [
+              /* @__PURE__ */ jsx(
                 "input",
                 {
                   type: "radio",
@@ -30883,13 +30887,13 @@ const ShippingTypeContent = () => {
                   style: { margin: 0 }
                 }
               ),
-              /* @__PURE__ */ jsxRuntime.jsxs(designSystem.Box, { children: [
-                /* @__PURE__ */ jsxRuntime.jsx(designSystem.Typography, { variant: "omega", fontWeight: "semiBold", children: formatMessage({
-                  id: `${index.PLUGIN_ID}.settings.shippingType.multiple.label`,
+              /* @__PURE__ */ jsxs(Box, { children: [
+                /* @__PURE__ */ jsx(Typography, { variant: "omega", fontWeight: "semiBold", children: formatMessage({
+                  id: `${PLUGIN_ID}.settings.shippingType.multiple.label`,
                   defaultMessage: "Multiple Address Mode"
                 }) }),
-                /* @__PURE__ */ jsxRuntime.jsx(designSystem.Typography, { variant: "omega", textColor: "neutral600", style: { marginTop: "4px" }, display: "block", children: formatMessage({
-                  id: `${index.PLUGIN_ID}.settings.shippingType.multiple.description`,
+                /* @__PURE__ */ jsx(Typography, { variant: "omega", textColor: "neutral600", style: { marginTop: "4px" }, display: "block", children: formatMessage({
+                  id: `${PLUGIN_ID}.settings.shippingType.multiple.description`,
                   defaultMessage: "Users can have multiple billing and shipping addresses. They can select any address during checkout. Similar to Amazon/Flipkart."
                 }) })
               ] })
@@ -30898,21 +30902,21 @@ const ShippingTypeContent = () => {
         )
       ] })
     ] }),
-    error && /* @__PURE__ */ jsxRuntime.jsx(designSystem.Box, { paddingBottom: 4, children: /* @__PURE__ */ jsxRuntime.jsx(designSystem.Typography, { textColor: "danger600", variant: "omega", children: error }) }),
-    success && /* @__PURE__ */ jsxRuntime.jsx(designSystem.Box, { paddingBottom: 4, children: /* @__PURE__ */ jsxRuntime.jsx(designSystem.Typography, { textColor: "success600", variant: "omega", children: formatMessage({
-      id: `${index.PLUGIN_ID}.settings.shippingType.save.success`,
+    error && /* @__PURE__ */ jsx(Box, { paddingBottom: 4, children: /* @__PURE__ */ jsx(Typography, { textColor: "danger600", variant: "omega", children: error }) }),
+    success && /* @__PURE__ */ jsx(Box, { paddingBottom: 4, children: /* @__PURE__ */ jsx(Typography, { textColor: "success600", variant: "omega", children: formatMessage({
+      id: `${PLUGIN_ID}.settings.shippingType.save.success`,
       defaultMessage: "Settings saved successfully!"
     }) }) }),
-    /* @__PURE__ */ jsxRuntime.jsx(designSystem.Flex, { justifyContent: "flex-start", children: /* @__PURE__ */ jsxRuntime.jsx(designSystem.Button, { onClick: handleSave, loading: saving, disabled: saving, children: formatMessage({
-      id: `${index.PLUGIN_ID}.settings.shippingType.save.button`,
+    /* @__PURE__ */ jsx(Flex, { justifyContent: "flex-start", children: /* @__PURE__ */ jsx(Button, { onClick: handleSave, loading: saving, disabled: saving, children: formatMessage({
+      id: `${PLUGIN_ID}.settings.shippingType.save.button`,
       defaultMessage: "Save Settings"
     }) }) })
   ] });
 };
 const SmtpContent = () => {
-  const { formatMessage } = reactIntl.useIntl();
+  const { formatMessage } = useIntl();
   const fetchClient = useFetchClient();
-  const [smtpSettings, setSmtpSettings] = React.useState({
+  const [smtpSettings, setSmtpSettings] = useState({
     host: "",
     port: "587",
     secure: false,
@@ -30922,18 +30926,18 @@ const SmtpContent = () => {
     fromName: "",
     rejectUnauthorized: true
   });
-  const [isLoading, setIsLoading] = React.useState(false);
-  const [isSaving, setIsSaving] = React.useState(false);
-  const [feedback, setFeedback] = React.useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [feedback, setFeedback] = useState(null);
   const title = formatMessage({
-    id: `${index.PLUGIN_ID}.settings.smtp.title`,
+    id: `${PLUGIN_ID}.settings.smtp.title`,
     defaultMessage: "SMTP Configuration"
   });
   const description = formatMessage({
-    id: `${index.PLUGIN_ID}.settings.smtp.description`,
+    id: `${PLUGIN_ID}.settings.smtp.description`,
     defaultMessage: "Configure SMTP settings to send OTP emails. If not configured, Strapi's default email plugin will be used."
   });
-  React.useEffect(() => {
+  useEffect(() => {
     let isMounted = true;
     const loadSettings = async () => {
       try {
@@ -30956,7 +30960,7 @@ const SmtpContent = () => {
           setFeedback({
             type: "error",
             message: formatMessage({
-              id: `${index.PLUGIN_ID}.settings.smtp.load.error`,
+              id: `${PLUGIN_ID}.settings.smtp.load.error`,
               defaultMessage: "Failed to load SMTP settings."
             })
           });
@@ -30982,7 +30986,7 @@ const SmtpContent = () => {
       setFeedback({
         type: "success",
         message: formatMessage({
-          id: `${index.PLUGIN_ID}.settings.smtp.save.success`,
+          id: `${PLUGIN_ID}.settings.smtp.save.success`,
           defaultMessage: "SMTP settings updated successfully."
         })
       });
@@ -30990,7 +30994,7 @@ const SmtpContent = () => {
       setFeedback({
         type: "error",
         message: formatMessage({
-          id: `${index.PLUGIN_ID}.settings.smtp.save.error`,
+          id: `${PLUGIN_ID}.settings.smtp.save.error`,
           defaultMessage: "Failed to save SMTP settings."
         })
       });
@@ -30998,12 +31002,12 @@ const SmtpContent = () => {
       setIsSaving(false);
     }
   };
-  return /* @__PURE__ */ jsxRuntime.jsxs(designSystem.Box, { paddingTop: 6, children: [
-    /* @__PURE__ */ jsxRuntime.jsx(designSystem.Typography, { variant: "beta", textColor: "neutral800", children: title }),
-    /* @__PURE__ */ jsxRuntime.jsx(designSystem.Box, { marginTop: 2, children: /* @__PURE__ */ jsxRuntime.jsx(designSystem.Typography, { variant: "pi", textColor: "neutral600", children: description }) }),
-    /* @__PURE__ */ jsxRuntime.jsxs(designSystem.Box, { marginTop: 6, children: [
-      /* @__PURE__ */ jsxRuntime.jsxs(
-        designSystem.Box,
+  return /* @__PURE__ */ jsxs(Box, { paddingTop: 6, children: [
+    /* @__PURE__ */ jsx(Typography, { variant: "beta", textColor: "neutral800", children: title }),
+    /* @__PURE__ */ jsx(Box, { marginTop: 2, children: /* @__PURE__ */ jsx(Typography, { variant: "pi", textColor: "neutral600", children: description }) }),
+    /* @__PURE__ */ jsxs(Box, { marginTop: 6, children: [
+      /* @__PURE__ */ jsxs(
+        Box,
         {
           background: "neutral0",
           hasRadius: true,
@@ -31011,25 +31015,25 @@ const SmtpContent = () => {
           padding: 4,
           style: { maxWidth: "640px" },
           children: [
-            /* @__PURE__ */ jsxRuntime.jsx(designSystem.Typography, { variant: "delta", textColor: "neutral800", children: formatMessage({
-              id: `${index.PLUGIN_ID}.settings.configure.smtp.title`,
+            /* @__PURE__ */ jsx(Typography, { variant: "delta", textColor: "neutral800", children: formatMessage({
+              id: `${PLUGIN_ID}.settings.configure.smtp.title`,
               defaultMessage: "SMTP Configuration (for OTP emails)"
             }) }),
-            /* @__PURE__ */ jsxRuntime.jsx(designSystem.Box, { marginTop: 1, children: /* @__PURE__ */ jsxRuntime.jsx(designSystem.Typography, { variant: "pi", textColor: "neutral600", children: formatMessage({
-              id: `${index.PLUGIN_ID}.settings.configure.smtp.description`,
+            /* @__PURE__ */ jsx(Box, { marginTop: 1, children: /* @__PURE__ */ jsx(Typography, { variant: "pi", textColor: "neutral600", children: formatMessage({
+              id: `${PLUGIN_ID}.settings.configure.smtp.description`,
               defaultMessage: "Configure SMTP settings to send OTP emails. If not configured, Strapi's default email plugin will be used."
             }) }) }),
-            /* @__PURE__ */ jsxRuntime.jsx(designSystem.Box, { marginTop: 4, children: /* @__PURE__ */ jsxRuntime.jsxs(designSystem.Flex, { direction: "column", gap: 4, alignItems: "start", children: [
-              /* @__PURE__ */ jsxRuntime.jsx(
-                designSystem.TextInput,
+            /* @__PURE__ */ jsx(Box, { marginTop: 4, children: /* @__PURE__ */ jsxs(Flex, { direction: "column", gap: 4, alignItems: "start", children: [
+              /* @__PURE__ */ jsx(
+                TextInput,
                 {
                   name: "smtp-host",
                   label: formatMessage({
-                    id: `${index.PLUGIN_ID}.settings.configure.smtp.host.label`,
+                    id: `${PLUGIN_ID}.settings.configure.smtp.host.label`,
                     defaultMessage: "SMTP Host"
                   }),
                   placeholder: formatMessage({
-                    id: `${index.PLUGIN_ID}.settings.configure.smtp.host.placeholder`,
+                    id: `${PLUGIN_ID}.settings.configure.smtp.host.placeholder`,
                     defaultMessage: "e.g. smtp.gmail.com"
                   }),
                   value: smtpSettings.host,
@@ -31037,13 +31041,13 @@ const SmtpContent = () => {
                   disabled: isLoading || isSaving
                 }
               ),
-              /* @__PURE__ */ jsxRuntime.jsxs(designSystem.Flex, { gap: 3, alignItems: "flex-end", children: [
-                /* @__PURE__ */ jsxRuntime.jsx(designSystem.Box, { style: { flex: 1 }, children: /* @__PURE__ */ jsxRuntime.jsx(
-                  designSystem.TextInput,
+              /* @__PURE__ */ jsxs(Flex, { gap: 3, alignItems: "flex-end", children: [
+                /* @__PURE__ */ jsx(Box, { style: { flex: 1 }, children: /* @__PURE__ */ jsx(
+                  TextInput,
                   {
                     name: "smtp-port",
                     label: formatMessage({
-                      id: `${index.PLUGIN_ID}.settings.configure.smtp.port.label`,
+                      id: `${PLUGIN_ID}.settings.configure.smtp.port.label`,
                       defaultMessage: "SMTP Port"
                     }),
                     placeholder: "587",
@@ -31053,13 +31057,13 @@ const SmtpContent = () => {
                     type: "number"
                   }
                 ) }),
-                /* @__PURE__ */ jsxRuntime.jsxs(designSystem.Box, { style: { flex: 1 }, children: [
-                  /* @__PURE__ */ jsxRuntime.jsx(designSystem.Box, { marginBottom: 2, children: /* @__PURE__ */ jsxRuntime.jsx(designSystem.Typography, { variant: "pi", textColor: "neutral800", fontWeight: "semiBold", children: formatMessage({
-                    id: `${index.PLUGIN_ID}.settings.configure.smtp.secure.label`,
+                /* @__PURE__ */ jsxs(Box, { style: { flex: 1 }, children: [
+                  /* @__PURE__ */ jsx(Box, { marginBottom: 2, children: /* @__PURE__ */ jsx(Typography, { variant: "pi", textColor: "neutral800", fontWeight: "semiBold", children: formatMessage({
+                    id: `${PLUGIN_ID}.settings.configure.smtp.secure.label`,
                     defaultMessage: "Secure (TLS/SSL)"
                   }) }) }),
-                  /* @__PURE__ */ jsxRuntime.jsxs(designSystem.Flex, { alignItems: "center", gap: 2, children: [
-                    /* @__PURE__ */ jsxRuntime.jsx(
+                  /* @__PURE__ */ jsxs(Flex, { alignItems: "center", gap: 2, children: [
+                    /* @__PURE__ */ jsx(
                       "input",
                       {
                         type: "checkbox",
@@ -31078,23 +31082,23 @@ const SmtpContent = () => {
                         }
                       }
                     ),
-                    /* @__PURE__ */ jsxRuntime.jsx(designSystem.Typography, { variant: "pi", textColor: "neutral600", children: formatMessage({
-                      id: `${index.PLUGIN_ID}.settings.configure.smtp.secure.hint`,
+                    /* @__PURE__ */ jsx(Typography, { variant: "pi", textColor: "neutral600", children: formatMessage({
+                      id: `${PLUGIN_ID}.settings.configure.smtp.secure.hint`,
                       defaultMessage: "Enable for port 465 (SSL), disable for port 587 (TLS)"
                     }) })
                   ] })
                 ] })
               ] }),
-              /* @__PURE__ */ jsxRuntime.jsx(
-                designSystem.TextInput,
+              /* @__PURE__ */ jsx(
+                TextInput,
                 {
                   name: "smtp-username",
                   label: formatMessage({
-                    id: `${index.PLUGIN_ID}.settings.configure.smtp.username.label`,
+                    id: `${PLUGIN_ID}.settings.configure.smtp.username.label`,
                     defaultMessage: "SMTP Username"
                   }),
                   placeholder: formatMessage({
-                    id: `${index.PLUGIN_ID}.settings.configure.smtp.username.placeholder`,
+                    id: `${PLUGIN_ID}.settings.configure.smtp.username.placeholder`,
                     defaultMessage: "Your email address"
                   }),
                   value: smtpSettings.username,
@@ -31102,16 +31106,16 @@ const SmtpContent = () => {
                   disabled: isLoading || isSaving
                 }
               ),
-              /* @__PURE__ */ jsxRuntime.jsx(
-                designSystem.TextInput,
+              /* @__PURE__ */ jsx(
+                TextInput,
                 {
                   name: "smtp-password",
                   label: formatMessage({
-                    id: `${index.PLUGIN_ID}.settings.configure.smtp.password.label`,
+                    id: `${PLUGIN_ID}.settings.configure.smtp.password.label`,
                     defaultMessage: "SMTP Password"
                   }),
                   placeholder: formatMessage({
-                    id: `${index.PLUGIN_ID}.settings.configure.smtp.password.placeholder`,
+                    id: `${PLUGIN_ID}.settings.configure.smtp.password.placeholder`,
                     defaultMessage: "Your email password or app password"
                   }),
                   value: smtpSettings.password,
@@ -31120,16 +31124,16 @@ const SmtpContent = () => {
                   type: "password"
                 }
               ),
-              /* @__PURE__ */ jsxRuntime.jsx(
-                designSystem.TextInput,
+              /* @__PURE__ */ jsx(
+                TextInput,
                 {
                   name: "smtp-from",
                   label: formatMessage({
-                    id: `${index.PLUGIN_ID}.settings.configure.smtp.from.label`,
+                    id: `${PLUGIN_ID}.settings.configure.smtp.from.label`,
                     defaultMessage: "From Email"
                   }),
                   placeholder: formatMessage({
-                    id: `${index.PLUGIN_ID}.settings.configure.smtp.from.placeholder`,
+                    id: `${PLUGIN_ID}.settings.configure.smtp.from.placeholder`,
                     defaultMessage: "noreply@example.com"
                   }),
                   value: smtpSettings.from,
@@ -31137,16 +31141,16 @@ const SmtpContent = () => {
                   disabled: isLoading || isSaving
                 }
               ),
-              /* @__PURE__ */ jsxRuntime.jsx(
-                designSystem.TextInput,
+              /* @__PURE__ */ jsx(
+                TextInput,
                 {
                   name: "smtp-from-name",
                   label: formatMessage({
-                    id: `${index.PLUGIN_ID}.settings.configure.smtp.fromName.label`,
+                    id: `${PLUGIN_ID}.settings.configure.smtp.fromName.label`,
                     defaultMessage: "From Name"
                   }),
                   placeholder: formatMessage({
-                    id: `${index.PLUGIN_ID}.settings.configure.smtp.fromName.placeholder`,
+                    id: `${PLUGIN_ID}.settings.configure.smtp.fromName.placeholder`,
                     defaultMessage: "Strapi Advanced Ecommerce"
                   }),
                   value: smtpSettings.fromName,
@@ -31158,13 +31162,13 @@ const SmtpContent = () => {
           ]
         }
       ),
-      /* @__PURE__ */ jsxRuntime.jsx(designSystem.Box, { marginTop: 6, children: /* @__PURE__ */ jsxRuntime.jsxs(designSystem.Flex, { gap: 3, alignItems: "center", children: [
-        /* @__PURE__ */ jsxRuntime.jsx(designSystem.Button, { onClick: handleSave, loading: isSaving, disabled: isLoading || isSaving, children: formatMessage({
-          id: `${index.PLUGIN_ID}.settings.smtp.save`,
+      /* @__PURE__ */ jsx(Box, { marginTop: 6, children: /* @__PURE__ */ jsxs(Flex, { gap: 3, alignItems: "center", children: [
+        /* @__PURE__ */ jsx(Button, { onClick: handleSave, loading: isSaving, disabled: isLoading || isSaving, children: formatMessage({
+          id: `${PLUGIN_ID}.settings.smtp.save`,
           defaultMessage: "Save SMTP settings"
         }) }),
-        feedback && /* @__PURE__ */ jsxRuntime.jsx(
-          designSystem.Typography,
+        feedback && /* @__PURE__ */ jsx(
+          Typography,
           {
             variant: "pi",
             textColor: feedback.type === "error" ? "danger600" : "success600",
@@ -31176,78 +31180,80 @@ const SmtpContent = () => {
   ] });
 };
 const Settings = () => {
-  const { formatMessage } = reactIntl.useIntl();
-  const [activeView, setActiveView] = React.useState("configure");
-  const titleId = `${index.PLUGIN_ID}-settings-title`;
-  return /* @__PURE__ */ jsxRuntime.jsx(designSystem.Main, { labelledBy: titleId, children: /* @__PURE__ */ jsxRuntime.jsxs(designSystem.Box, { padding: 8, background: "neutral100", children: [
-    /* @__PURE__ */ jsxRuntime.jsx(designSystem.Box, { paddingBottom: 4, children: /* @__PURE__ */ jsxRuntime.jsx(designSystem.Typography, { id: titleId, variant: "alpha", as: "h1", children: formatMessage({
-      id: `${index.PLUGIN_ID}.settings.section`,
+  const { formatMessage } = useIntl();
+  const [activeView, setActiveView] = useState("configure");
+  const titleId = `${PLUGIN_ID}-settings-title`;
+  return /* @__PURE__ */ jsx(Main, { labelledBy: titleId, children: /* @__PURE__ */ jsxs(Box, { padding: 8, background: "neutral100", children: [
+    /* @__PURE__ */ jsx(Box, { paddingBottom: 4, children: /* @__PURE__ */ jsx(Typography, { id: titleId, variant: "alpha", as: "h1", children: formatMessage({
+      id: `${PLUGIN_ID}.settings.section`,
       defaultMessage: "Advanced Ecommerce"
     }) }) }),
-    /* @__PURE__ */ jsxRuntime.jsxs(designSystem.Box, { background: "neutral0", padding: 6, shadow: "filterShadow", hasRadius: true, children: [
-      /* @__PURE__ */ jsxRuntime.jsxs(designSystem.Flex, { gap: 2, marginBottom: 6, wrap: "wrap", children: [
-        /* @__PURE__ */ jsxRuntime.jsx(
-          designSystem.Button,
+    /* @__PURE__ */ jsxs(Box, { background: "neutral0", padding: 6, shadow: "filterShadow", hasRadius: true, children: [
+      /* @__PURE__ */ jsxs(Flex, { gap: 2, marginBottom: 6, wrap: "wrap", children: [
+        /* @__PURE__ */ jsx(
+          Button,
           {
             variant: activeView === "configure" ? "default" : "tertiary",
             onClick: () => setActiveView("configure"),
             children: formatMessage({
-              id: `${index.PLUGIN_ID}.settings.configure.title`,
+              id: `${PLUGIN_ID}.settings.configure.title`,
               defaultMessage: "Configure"
             })
           }
         ),
-        /* @__PURE__ */ jsxRuntime.jsx(
-          designSystem.Button,
+        /* @__PURE__ */ jsx(
+          Button,
           {
             variant: activeView === "login-register" ? "default" : "tertiary",
             onClick: () => setActiveView("login-register"),
             children: formatMessage({
-              id: `${index.PLUGIN_ID}.settings.loginRegister.title`,
+              id: `${PLUGIN_ID}.settings.loginRegister.title`,
               defaultMessage: "Login/Register"
             })
           }
         ),
-        /* @__PURE__ */ jsxRuntime.jsx(
-          designSystem.Button,
+        /* @__PURE__ */ jsx(
+          Button,
           {
             variant: activeView === "shipping-type" ? "default" : "tertiary",
             onClick: () => setActiveView("shipping-type"),
             children: formatMessage({
-              id: `${index.PLUGIN_ID}.settings.shippingType.title`,
+              id: `${PLUGIN_ID}.settings.shippingType.title`,
               defaultMessage: "Shipping Type"
             })
           }
         ),
-        /* @__PURE__ */ jsxRuntime.jsx(
-          designSystem.Button,
+        /* @__PURE__ */ jsx(
+          Button,
           {
             variant: activeView === "smtp" ? "default" : "tertiary",
             onClick: () => setActiveView("smtp"),
             children: formatMessage({
-              id: `${index.PLUGIN_ID}.settings.smtp.title`,
+              id: `${PLUGIN_ID}.settings.smtp.title`,
               defaultMessage: "SMTP"
             })
           }
         ),
-        /* @__PURE__ */ jsxRuntime.jsx(
-          designSystem.Button,
+        /* @__PURE__ */ jsx(
+          Button,
           {
             variant: activeView === "api-collections" ? "default" : "tertiary",
             onClick: () => setActiveView("api-collections"),
             children: formatMessage({
-              id: `${index.PLUGIN_ID}.settings.apiCollections.title`,
+              id: `${PLUGIN_ID}.settings.apiCollections.title`,
               defaultMessage: "API Collections"
             })
           }
         )
       ] }),
-      activeView === "configure" && /* @__PURE__ */ jsxRuntime.jsx(ConfigureContent, {}),
-      activeView === "login-register" && /* @__PURE__ */ jsxRuntime.jsx(LoginRegisterContent, {}),
-      activeView === "shipping-type" && /* @__PURE__ */ jsxRuntime.jsx(ShippingTypeContent, {}),
-      activeView === "smtp" && /* @__PURE__ */ jsxRuntime.jsx(SmtpContent, {}),
-      activeView === "api-collections" && /* @__PURE__ */ jsxRuntime.jsx(ApiCollectionsContent, {})
+      activeView === "configure" && /* @__PURE__ */ jsx(ConfigureContent, {}),
+      activeView === "login-register" && /* @__PURE__ */ jsx(LoginRegisterContent, {}),
+      activeView === "shipping-type" && /* @__PURE__ */ jsx(ShippingTypeContent, {}),
+      activeView === "smtp" && /* @__PURE__ */ jsx(SmtpContent, {}),
+      activeView === "api-collections" && /* @__PURE__ */ jsx(ApiCollectionsContent, {})
     ] })
   ] }) });
 };
-exports.default = Settings;
+export {
+  Settings as default
+};
