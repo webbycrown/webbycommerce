@@ -93,7 +93,7 @@ const index = {
           defaultMessage: "Configure"
         },
         to: `${PLUGIN_ID}`,
-        Component: () => Promise.resolve().then(() => require("./Settings-B44aZVv_.js"))
+        Component: () => Promise.resolve().then(() => require("./Settings-TToktNAy.js"))
       }
     );
   },
