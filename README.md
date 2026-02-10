@@ -580,6 +580,11 @@ Authorization: Bearer YOUR_JWT_TOKEN
 
 ## 📜 Changelog
 
+## [1.0.2] – Patch Release
+
+### Fixed
+- Fix critical bugs
+
 ## [1.0.1] – Patch Release
 
 ### Changed
