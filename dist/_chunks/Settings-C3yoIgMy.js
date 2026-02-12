@@ -4,7 +4,7 @@ const jsxRuntime = require("react/jsx-runtime");
 const React = require("react");
 const reactIntl = require("react-intl");
 const designSystem = require("@strapi/design-system");
-const index = require("./index-D0Y_VvWO.js");
+const index = require("./index-CtxKh-aM.js");
 const icons = require("@strapi/icons");
 require("react-dom/client");
 const ReactDOM = require("react-dom");
@@ -10310,7 +10310,7 @@ var objectInspect = function inspect_(obj, options, depth, seen) {
     var ys = arrObjKeys(obj, inspect2);
     var isPlainObject2 = gPO ? gPO(obj) === Object.prototype : obj instanceof Object || obj.constructor === Object;
     var protoTag = obj instanceof Object ? "" : "null prototype";
-    var stringTag2 = !isPlainObject2 && toStringTag$1 && Object(obj) === obj && toStringTag$1 in obj ? $slice.call(toStr(obj), 8, -1) : protoTag ? "Object" : "";
+    var stringTag2 = !isPlainObject2 && toStringTag$1 && Object(obj) === obj && toStringTag$1 in obj ? $slice.call(toStr$1(obj), 8, -1) : protoTag ? "Object" : "";
     var constructorTag = isPlainObject2 || typeof obj.constructor !== "function" ? "" : obj.constructor.name ? obj.constructor.name + " " : "";
     var tag = constructorTag + (stringTag2 || protoTag ? "[" + $join.call($concat$1.call([], stringTag2 || [], protoTag || []), ": ") + "] " : "");
     if (ys.length === 0) {
@@ -10335,25 +10335,25 @@ function canTrustToString(obj) {
   return !toStringTag$1 || !(typeof obj === "object" && (toStringTag$1 in obj || typeof obj[toStringTag$1] !== "undefined"));
 }
 function isArray$4(obj) {
-  return toStr(obj) === "[object Array]" && canTrustToString(obj);
+  return toStr$1(obj) === "[object Array]" && canTrustToString(obj);
 }
 function isDate$2(obj) {
-  return toStr(obj) === "[object Date]" && canTrustToString(obj);
+  return toStr$1(obj) === "[object Date]" && canTrustToString(obj);
 }
 function isRegExp$2(obj) {
-  return toStr(obj) === "[object RegExp]" && canTrustToString(obj);
+  return toStr$1(obj) === "[object RegExp]" && canTrustToString(obj);
 }
 function isError(obj) {
-  return toStr(obj) === "[object Error]" && canTrustToString(obj);
+  return toStr$1(obj) === "[object Error]" && canTrustToString(obj);
 }
 function isString$1(obj) {
-  return toStr(obj) === "[object String]" && canTrustToString(obj);
+  return toStr$1(obj) === "[object String]" && canTrustToString(obj);
 }
 function isNumber$1(obj) {
-  return toStr(obj) === "[object Number]" && canTrustToString(obj);
+  return toStr$1(obj) === "[object Number]" && canTrustToString(obj);
 }
 function isBoolean$1(obj) {
-  return toStr(obj) === "[object Boolean]" && canTrustToString(obj);
+  return toStr$1(obj) === "[object Boolean]" && canTrustToString(obj);
 }
 function isSymbol(obj) {
   if (hasShammedSymbols) {
@@ -10389,7 +10389,7 @@ var hasOwn$1 = Object.prototype.hasOwnProperty || function(key) {
 function has$5(obj, key) {
   return hasOwn$1.call(obj, key);
 }
-function toStr(obj) {
+function toStr$1(obj) {
   return objectToString.call(obj);
 }
 function nameOf(f2) {
@@ -10698,7 +10698,7 @@ var syntax = SyntaxError;
 var uri = URIError;
 var abs$1 = Math.abs;
 var floor$1 = Math.floor;
-var max$1 = Math.max;
+var max$2 = Math.max;
 var min$1 = Math.min;
 var pow$1 = Math.pow;
 var round$1 = Math.round;
@@ -10827,99 +10827,78 @@ function requireObject_getPrototypeOf() {
   Object_getPrototypeOf = $Object2.getPrototypeOf || null;
   return Object_getPrototypeOf;
 }
-var implementation;
-var hasRequiredImplementation;
-function requireImplementation() {
-  if (hasRequiredImplementation) return implementation;
-  hasRequiredImplementation = 1;
-  var ERROR_MESSAGE = "Function.prototype.bind called on incompatible ";
-  var toStr2 = Object.prototype.toString;
-  var max2 = Math.max;
-  var funcType = "[object Function]";
-  var concatty = function concatty2(a2, b2) {
-    var arr = [];
-    for (var i2 = 0; i2 < a2.length; i2 += 1) {
-      arr[i2] = a2[i2];
+var ERROR_MESSAGE = "Function.prototype.bind called on incompatible ";
+var toStr = Object.prototype.toString;
+var max$1 = Math.max;
+var funcType = "[object Function]";
+var concatty = function concatty2(a2, b2) {
+  var arr = [];
+  for (var i2 = 0; i2 < a2.length; i2 += 1) {
+    arr[i2] = a2[i2];
+  }
+  for (var j2 = 0; j2 < b2.length; j2 += 1) {
+    arr[j2 + a2.length] = b2[j2];
+  }
+  return arr;
+};
+var slicy = function slicy2(arrLike, offset) {
+  var arr = [];
+  for (var i2 = offset, j2 = 0; i2 < arrLike.length; i2 += 1, j2 += 1) {
+    arr[j2] = arrLike[i2];
+  }
+  return arr;
+};
+var joiny = function(arr, joiner) {
+  var str = "";
+  for (var i2 = 0; i2 < arr.length; i2 += 1) {
+    str += arr[i2];
+    if (i2 + 1 < arr.length) {
+      str += joiner;
     }
-    for (var j2 = 0; j2 < b2.length; j2 += 1) {
-      arr[j2 + a2.length] = b2[j2];
-    }
-    return arr;
-  };
-  var slicy = function slicy2(arrLike, offset) {
-    var arr = [];
-    for (var i2 = offset, j2 = 0; i2 < arrLike.length; i2 += 1, j2 += 1) {
-      arr[j2] = arrLike[i2];
-    }
-    return arr;
-  };
-  var joiny = function(arr, joiner) {
-    var str = "";
-    for (var i2 = 0; i2 < arr.length; i2 += 1) {
-      str += arr[i2];
-      if (i2 + 1 < arr.length) {
-        str += joiner;
-      }
-    }
-    return str;
-  };
-  implementation = function bind2(that) {
-    var target = this;
-    if (typeof target !== "function" || toStr2.apply(target) !== funcType) {
-      throw new TypeError(ERROR_MESSAGE + target);
-    }
-    var args = slicy(arguments, 1);
-    var bound;
-    var binder = function() {
-      if (this instanceof bound) {
-        var result = target.apply(
-          this,
-          concatty(args, arguments)
-        );
-        if (Object(result) === result) {
-          return result;
-        }
-        return this;
-      }
-      return target.apply(
-        that,
+  }
+  return str;
+};
+var implementation$1 = function bind(that) {
+  var target = this;
+  if (typeof target !== "function" || toStr.apply(target) !== funcType) {
+    throw new TypeError(ERROR_MESSAGE + target);
+  }
+  var args = slicy(arguments, 1);
+  var bound;
+  var binder = function() {
+    if (this instanceof bound) {
+      var result = target.apply(
+        this,
         concatty(args, arguments)
       );
-    };
-    var boundLength = max2(0, target.length - args.length);
-    var boundArgs = [];
-    for (var i2 = 0; i2 < boundLength; i2++) {
-      boundArgs[i2] = "$" + i2;
+      if (Object(result) === result) {
+        return result;
+      }
+      return this;
     }
-    bound = Function("binder", "return function (" + joiny(boundArgs, ",") + "){ return binder.apply(this,arguments); }")(binder);
-    if (target.prototype) {
-      var Empty = function Empty2() {
-      };
-      Empty.prototype = target.prototype;
-      bound.prototype = new Empty();
-      Empty.prototype = null;
-    }
-    return bound;
+    return target.apply(
+      that,
+      concatty(args, arguments)
+    );
   };
-  return implementation;
-}
-var functionBind;
-var hasRequiredFunctionBind;
-function requireFunctionBind() {
-  if (hasRequiredFunctionBind) return functionBind;
-  hasRequiredFunctionBind = 1;
-  var implementation2 = requireImplementation();
-  functionBind = Function.prototype.bind || implementation2;
-  return functionBind;
-}
-var functionCall;
-var hasRequiredFunctionCall;
-function requireFunctionCall() {
-  if (hasRequiredFunctionCall) return functionCall;
-  hasRequiredFunctionCall = 1;
-  functionCall = Function.prototype.call;
-  return functionCall;
-}
+  var boundLength = max$1(0, target.length - args.length);
+  var boundArgs = [];
+  for (var i2 = 0; i2 < boundLength; i2++) {
+    boundArgs[i2] = "$" + i2;
+  }
+  bound = Function("binder", "return function (" + joiny(boundArgs, ",") + "){ return binder.apply(this,arguments); }")(binder);
+  if (target.prototype) {
+    var Empty = function Empty2() {
+    };
+    Empty.prototype = target.prototype;
+    bound.prototype = new Empty();
+    Empty.prototype = null;
+  }
+  return bound;
+};
+var implementation = implementation$1;
+var functionBind = Function.prototype.bind || implementation;
+var functionCall = Function.prototype.call;
 var functionApply;
 var hasRequiredFunctionApply;
 function requireFunctionApply() {
@@ -10929,14 +10908,14 @@ function requireFunctionApply() {
   return functionApply;
 }
 var reflectApply = typeof Reflect !== "undefined" && Reflect && Reflect.apply;
-var bind$3 = requireFunctionBind();
+var bind$3 = functionBind;
 var $apply$1 = requireFunctionApply();
-var $call$2 = requireFunctionCall();
+var $call$2 = functionCall;
 var $reflectApply = reflectApply;
 var actualApply = $reflectApply || bind$3.call($call$2, $apply$1);
-var bind$2 = requireFunctionBind();
+var bind$2 = functionBind;
 var $TypeError$4 = type;
-var $call$1 = requireFunctionCall();
+var $call$1 = functionCall;
 var $actualApply = actualApply;
 var callBindApplyHelpers = function callBindBasic(args) {
   if (args.length < 1 || typeof args[0] !== "function") {
@@ -11002,8 +10981,8 @@ function requireHasown() {
   hasRequiredHasown = 1;
   var call = Function.prototype.call;
   var $hasOwn = Object.prototype.hasOwnProperty;
-  var bind2 = requireFunctionBind();
-  hasown = bind2.call(call, $hasOwn);
+  var bind3 = functionBind;
+  hasown = bind3.call(call, $hasOwn);
   return hasown;
 }
 var undefined$1;
@@ -11017,7 +10996,7 @@ var $TypeError$3 = type;
 var $URIError = uri;
 var abs = abs$1;
 var floor = floor$1;
-var max = max$1;
+var max = max$2;
 var min = min$1;
 var pow = pow$1;
 var round = round$1;
@@ -11051,7 +11030,7 @@ var getProto = requireGetProto();
 var $ObjectGPO = requireObject_getPrototypeOf();
 var $ReflectGPO = requireReflect_getPrototypeOf();
 var $apply = requireFunctionApply();
-var $call = requireFunctionCall();
+var $call = functionCall;
 var needsEval = {};
 var TypedArray = typeof Uint8Array === "undefined" || !getProto ? undefined$1 : getProto(Uint8Array);
 var INTRINSICS = {
@@ -11222,7 +11201,7 @@ var LEGACY_ALIASES = {
   "%WeakMapPrototype%": ["WeakMap", "prototype"],
   "%WeakSetPrototype%": ["WeakSet", "prototype"]
 };
-var bind$1 = requireFunctionBind();
+var bind$1 = functionBind;
 var hasOwn = requireHasown();
 var $concat = bind$1.call($call, Array.prototype.concat);
 var $spliceApply = bind$1.call($apply, Array.prototype.splice);
@@ -15553,7 +15532,7 @@ const admin = adminApi.enhanceEndpoints({
   overrideExisting: false
 });
 const { useInitQuery, useTelemetryPropertiesQuery, useInformationQuery, useProjectSettingsQuery, useUpdateProjectSettingsMutation, useGetPluginsQuery, useGetLicenseLimitsQuery, useGetLicenseTrialTimeLeftQuery, useGetGuidedTourMetaQuery } = admin;
-function bind(fn2, thisArg) {
+function bind2(fn2, thisArg) {
   return function wrap() {
     return fn2.apply(thisArg, arguments);
   };
@@ -15690,7 +15669,7 @@ function merge2() {
 const extend = (a2, b2, thisArg, { allOwnKeys } = {}) => {
   forEach$1(b2, (val, key) => {
     if (thisArg && isFunction$1(val)) {
-      a2[key] = bind(val, thisArg);
+      a2[key] = bind2(val, thisArg);
     } else {
       a2[key] = val;
     }
@@ -17970,7 +17949,7 @@ Object.entries(HttpStatusCode$1).forEach(([key, value]) => {
 });
 function createInstance(defaultConfig) {
   const context = new Axios$1(defaultConfig);
-  const instance = bind(Axios$1.prototype.request, context);
+  const instance = bind2(Axios$1.prototype.request, context);
   utils$1.extend(instance, Axios$1.prototype, context, { allOwnKeys: true });
   utils$1.extend(instance, context, null, { allOwnKeys: true });
   instance.create = function create2(instanceConfig) {
@@ -27085,6 +27064,115 @@ const ApiCollectionsContent = () => {
   "dimensions": {"length": 10, "width": 5, "height": 2},
   "product_categories": [1, 2],
   "tags": [1]
+}`
+    },
+    {
+      id: "create-bulk-products",
+      method: "POST",
+      path: getApiPath("/api/webbycommerce/products/bulk"),
+      title: formatMessage({
+        id: `${index.PLUGIN_ID}.settings.apiCollections.products.createBulk.title`,
+        defaultMessage: "Create Products in Bulk"
+      }),
+      summary: formatMessage({
+        id: `${index.PLUGIN_ID}.settings.apiCollections.products.createBulk.summary`,
+        defaultMessage: "Create multiple products in a single request. Returns detailed results for each product including success and failure status."
+      }),
+      auth: formatMessage({
+        id: `${index.PLUGIN_ID}.settings.apiCollections.products.authAdmin`,
+        defaultMessage: "Auth: requires JWT token (Authorization: Bearer <token>) and administrator role."
+      }),
+      response: `{
+  "data": {
+    "success": [
+      {
+        "index": 0,
+        "product": {
+          "id": 1,
+          "name": "Product 1",
+          "price": 49.99,
+          "sku": "P001",
+          "createdAt": "2024-01-01T00:00:00.000Z"
+        }
+      }
+    ],
+    "failed": [
+      {
+        "index": 1,
+        "product": {
+          "name": "Product 2",
+          "price": "invalid"
+        },
+        "errors": ["Price must be a valid positive number."]
+      }
+    ],
+    "summary": {
+      "total": 2,
+      "successful": 1,
+      "failed": 1
+    }
+  }
+}`,
+      usage: [
+        "Include the JWT token in the Authorization header.",
+        "Send an array of products in the request body.",
+        "Each product must have name and price (same validation as single product creation).",
+        "Maximum 100 products per request.",
+        "Returns 200 if all succeed, 207 if mixed results, 400 if all fail.",
+        "Check the summary and failed arrays to see which products succeeded or failed."
+      ],
+      getCurl: () => `curl -X POST http://localhost:1337${getApiPath("/api/webbycommerce/products/bulk")} \\
+  -H "Authorization: Bearer YOUR_JWT_TOKEN" \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "products": [
+      {
+        "name": "Product 1",
+        "price": 49.99,
+        "description": "First product",
+        "sku": "P001",
+        "stock_quantity": 50
+      },
+      {
+        "name": "Product 2",
+        "price": 29.99,
+        "description": "Second product",
+        "sku": "P002",
+        "stock_quantity": 30
+      }
+    ]
+  }'`,
+      requestBody: `{
+  "products": [
+    {
+      "name": "Product 1",
+      "description": "First product description",
+      "price": 49.99,
+      "sale_price": 39.99,
+      "sku": "P001",
+      "slug": "product-1",
+      "stock_quantity": 50,
+      "stock_status": "in_stock",
+      "weight": 1.5,
+      "dimensions": {"length": 10, "width": 5, "height": 2},
+      "product_categories": [1, 2],
+      "tags": [1],
+      "images": [1, 2]
+    },
+    {
+      "name": "Product 2",
+      "description": "Second product description",
+      "price": 29.99,
+      "sale_price": 24.99,
+      "sku": "P002",
+      "slug": "product-2",
+      "stock_quantity": 30,
+      "stock_status": "in_stock",
+      "weight": 0.8,
+      "product_categories": [1],
+      "tags": [2]
+    }
+  ]
 }`
     },
     {

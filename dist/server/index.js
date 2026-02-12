@@ -304,6 +304,16 @@ var require_routes = __commonJS({
             }
           },
           {
+            method: "POST",
+            path: "/products/bulk",
+            handler: "product.createBulkProducts",
+            config: {
+              auth: false,
+              // Authentication handled in controller
+              policies: []
+            }
+          },
+          {
             method: "PUT",
             path: "/products/:id",
             handler: "product.updateProduct",
@@ -3379,7 +3389,7 @@ var require_bootstrap = __commonJS({
             const productsIndex = pathParts.lastIndexOf("products");
             const next1 = productsIndex >= 0 ? pathParts[productsIndex + 1] : null;
             const next2 = productsIndex >= 0 ? pathParts[productsIndex + 2] : null;
-            const reserved = /* @__PURE__ */ new Set(["attributes", "categories", "tags", "slug"]);
+            const reserved = /* @__PURE__ */ new Set(["attributes", "categories", "tags", "slug", "bulk"]);
             const productAction = next1 && reserved.has(next1) ? next1 : null;
             const productId = next1 && !productAction ? next1 : null;
             const isRelated = Boolean(productId && next2 === "related");
@@ -3476,6 +3486,10 @@ var require_bootstrap = __commonJS({
                   await productController.getProductBySlug(ctx);
                   return;
                 }
+              }
+              if (method === "post" && productAction === "bulk" && typeof productController.createBulkProducts === "function") {
+                await productController.createBulkProducts(ctx);
+                return;
               }
               if (method === "post" && !productId && !productAction && typeof productController.createProduct === "function") {
                 await productController.createProduct(ctx);
@@ -7138,7 +7152,7 @@ var require_product2 = __commonJS({
           if (!await ensureEcommercePermission(ctx)) {
             return;
           }
-          const { product_category, tag, search, limit = 10, start = 0 } = ctx.query;
+          const { product_category, tag, search, limit, start = 0, getAll } = ctx.query;
           const where = { publishedAt: { $notNull: true } };
           if (product_category) {
             where.product_categories = { id: product_category };
@@ -7149,10 +7163,10 @@ var require_product2 = __commonJS({
           if (search) {
             where.name = { $containsi: search };
           }
-          const products = await strapi.db.query("plugin::webbycommerce.product").findMany({
+          const total = await strapi.db.query("plugin::webbycommerce.product").count({ where });
+          const shouldGetAll = getAll === "true" || getAll === true || limit === void 0 || limit === null;
+          const queryOptions = {
             where,
-            limit: parseInt(limit, 10),
-            start: parseInt(start, 10),
             orderBy: { createdAt: "desc" },
             populate: {
               product_categories: true,
@@ -7162,9 +7176,21 @@ var require_product2 = __commonJS({
                 populate: ["attributes", "attributeValues"]
               }
             }
-          });
-          const total = await strapi.db.query("plugin::webbycommerce.product").count({ where });
-          ctx.send({ data: products, meta: { total, limit: parseInt(limit, 10), start: parseInt(start, 10) } });
+          };
+          if (!shouldGetAll && limit) {
+            queryOptions.limit = parseInt(limit, 10);
+            queryOptions.start = parseInt(start, 10);
+          }
+          const products = await strapi.db.query("plugin::webbycommerce.product").findMany(queryOptions);
+          const responseMeta = shouldGetAll ? { total, returned: products.length, pagination: false } : {
+            total,
+            limit: parseInt(limit, 10),
+            start: parseInt(start, 10),
+            pagination: true,
+            page: Math.floor(parseInt(start, 10) / parseInt(limit, 10)) + 1,
+            pageCount: Math.ceil(total / parseInt(limit, 10))
+          };
+          ctx.send({ data: products, meta: responseMeta });
         } catch (error) {
           strapi.log.error(`[${PLUGIN_ID}] Error in getProducts:`, error);
           ctx.internalServerError("Failed to fetch products. Please try again.");
@@ -7266,14 +7292,6 @@ var require_product2 = __commonJS({
               return ctx.badRequest("Weight must be a valid positive number.");
             }
           }
-          const buildConnect = (arr) => {
-            if (!arr) return void 0;
-            if (Array.isArray(arr) && arr.length > 0) {
-              if (typeof arr[0] === "object") return arr;
-              return arr.map((id) => ({ id }));
-            }
-            return void 0;
-          };
           const data = {
             name,
             description,
@@ -7287,21 +7305,212 @@ var require_product2 = __commonJS({
             dimensions,
             publishedAt: /* @__PURE__ */ new Date()
           };
-          const productCategoriesConnect = buildConnect(product_categories);
-          if (productCategoriesConnect) data.product_categories = { connect: productCategoriesConnect };
-          const tagsConnect = buildConnect(tags);
-          if (tagsConnect) data.tags = { connect: tagsConnect };
-          const imagesConnect = buildConnect(images);
-          if (imagesConnect) data.images = { connect: imagesConnect };
-          const product = await strapi.db.query("plugin::webbycommerce.product").create({ data });
-          const populated = await strapi.db.query("plugin::webbycommerce.product").findOne({
-            where: { id: product.id },
+          let categoryIds = [];
+          if (product_categories && Array.isArray(product_categories) && product_categories.length > 0) {
+            categoryIds = product_categories.map(
+              (id) => typeof id === "object" && id.id ? id.id : id
+            );
+          }
+          let tagIds = [];
+          if (tags && Array.isArray(tags) && tags.length > 0) {
+            tagIds = tags.map(
+              (id) => typeof id === "object" && id.id ? id.id : id
+            );
+          }
+          let imageIds = [];
+          if (images && Array.isArray(images) && images.length > 0) {
+            imageIds = images.map(
+              (id) => typeof id === "object" && id.id ? id.id : id
+            );
+          }
+          const product = await strapi.entityService.create("plugin::webbycommerce.product", {
+            data
+          });
+          const updateData = {};
+          if (categoryIds.length > 0) {
+            updateData.product_categories = categoryIds;
+          }
+          if (tagIds.length > 0) {
+            updateData.tags = tagIds;
+          }
+          if (imageIds.length > 0) {
+            updateData.images = imageIds;
+          }
+          let updatedProduct = product;
+          if (Object.keys(updateData).length > 0) {
+            updatedProduct = await strapi.entityService.update("plugin::webbycommerce.product", product.id, {
+              data: updateData
+            });
+          }
+          const populated = await strapi.entityService.findOne("plugin::webbycommerce.product", updatedProduct.id, {
             populate: ["product_categories", "tags", "images", "variations"]
           });
-          ctx.send({ data: populated || product });
+          ctx.send({ data: populated || updatedProduct });
         } catch (error) {
           strapi.log.error(`[${PLUGIN_ID}] Error in createProduct:`, error);
           ctx.internalServerError("Failed to create product. Please try again.");
+        }
+      },
+      /**
+       * Create products in bulk
+       */
+      async createBulkProducts(ctx) {
+        try {
+          if (!await ensureEcommercePermission(ctx)) {
+            return;
+          }
+          const { products } = ctx.request.body || {};
+          if (!Array.isArray(products)) {
+            return ctx.badRequest("Products must be an array.");
+          }
+          if (products.length === 0) {
+            return ctx.badRequest("Products array cannot be empty.");
+          }
+          const MAX_BULK_SIZE = 100;
+          if (products.length > MAX_BULK_SIZE) {
+            return ctx.badRequest(`Cannot create more than ${MAX_BULK_SIZE} products at once.`);
+          }
+          const buildConnect = (arr) => {
+            if (!arr) return void 0;
+            if (Array.isArray(arr) && arr.length > 0) {
+              if (typeof arr[0] === "object") return arr;
+              return arr.map((id) => ({ id }));
+            }
+            return void 0;
+          };
+          const validateAndPrepareProduct = (productData, index) => {
+            const errors = [];
+            if (!productData.name || productData.price === void 0 || productData.price === null) {
+              errors.push("Name and price are required.");
+            }
+            const parsedPrice = parseFloat(productData.price);
+            if (isNaN(parsedPrice) || parsedPrice < 0) {
+              errors.push("Price must be a valid positive number.");
+            }
+            let parsedSalePrice = null;
+            if (productData.sale_price !== void 0 && productData.sale_price !== null) {
+              parsedSalePrice = parseFloat(productData.sale_price);
+              if (isNaN(parsedSalePrice) || parsedSalePrice < 0) {
+                errors.push("Sale price must be a valid positive number.");
+              }
+            }
+            let parsedStockQuantity = 0;
+            if (productData.stock_quantity !== void 0 && productData.stock_quantity !== null) {
+              parsedStockQuantity = parseInt(productData.stock_quantity, 10);
+              if (isNaN(parsedStockQuantity) || parsedStockQuantity < 0) {
+                errors.push("Stock quantity must be a valid non-negative integer.");
+              }
+            }
+            let parsedWeight = null;
+            if (productData.weight !== void 0 && productData.weight !== null) {
+              parsedWeight = parseFloat(productData.weight);
+              if (isNaN(parsedWeight) || parsedWeight < 0) {
+                errors.push("Weight must be a valid positive number.");
+              }
+            }
+            if (errors.length > 0) {
+              return { valid: false, errors, index };
+            }
+            const data = {
+              name: productData.name,
+              description: productData.description,
+              price: parsedPrice,
+              sale_price: parsedSalePrice,
+              sku: productData.sku,
+              slug: productData.slug,
+              stock_quantity: parsedStockQuantity,
+              stock_status: productData.stock_status || "in_stock",
+              weight: parsedWeight,
+              dimensions: productData.dimensions,
+              publishedAt: /* @__PURE__ */ new Date()
+            };
+            const relations = {
+              product_categories: [],
+              tags: [],
+              images: []
+            };
+            if (productData.product_categories && Array.isArray(productData.product_categories) && productData.product_categories.length > 0) {
+              relations.product_categories = productData.product_categories.map(
+                (id) => typeof id === "object" && id.id ? id.id : id
+              );
+            }
+            if (productData.tags && Array.isArray(productData.tags) && productData.tags.length > 0) {
+              relations.tags = productData.tags.map(
+                (id) => typeof id === "object" && id.id ? id.id : id
+              );
+            }
+            if (productData.images && Array.isArray(productData.images) && productData.images.length > 0) {
+              relations.images = productData.images.map(
+                (id) => typeof id === "object" && id.id ? id.id : id
+              );
+            }
+            return { valid: true, data, relations, index };
+          };
+          const results = {
+            success: [],
+            failed: [],
+            summary: {
+              total: products.length,
+              successful: 0,
+              failed: 0
+            }
+          };
+          for (let i = 0; i < products.length; i++) {
+            const productData = products[i];
+            const validation = validateAndPrepareProduct(productData, i);
+            if (!validation.valid) {
+              results.failed.push({
+                index: i,
+                product: productData,
+                errors: validation.errors
+              });
+              results.summary.failed++;
+              continue;
+            }
+            try {
+              const product = await strapi.entityService.create("plugin::webbycommerce.product", {
+                data: validation.data
+              });
+              const updateData = {};
+              if (validation.relations.product_categories.length > 0) {
+                updateData.product_categories = validation.relations.product_categories;
+              }
+              if (validation.relations.tags.length > 0) {
+                updateData.tags = validation.relations.tags;
+              }
+              if (validation.relations.images.length > 0) {
+                updateData.images = validation.relations.images;
+              }
+              let updatedProduct = product;
+              if (Object.keys(updateData).length > 0) {
+                updatedProduct = await strapi.entityService.update("plugin::webbycommerce.product", product.id, {
+                  data: updateData
+                });
+              }
+              const populated = await strapi.entityService.findOne("plugin::webbycommerce.product", updatedProduct.id, {
+                populate: ["product_categories", "tags", "images", "variations"]
+              });
+              results.success.push({
+                index: i,
+                product: populated || updatedProduct
+              });
+              results.summary.successful++;
+            } catch (error) {
+              strapi.log.error(`[${PLUGIN_ID}] Error creating product at index ${i}:`, error);
+              results.failed.push({
+                index: i,
+                product: productData,
+                errors: [error.message || "Failed to create product."]
+              });
+              results.summary.failed++;
+            }
+          }
+          const statusCode = results.summary.failed === 0 ? 200 : results.summary.successful === 0 ? 400 : 207;
+          ctx.status = statusCode;
+          ctx.send({ data: results });
+        } catch (error) {
+          strapi.log.error(`[${PLUGIN_ID}] Error in createBulkProducts:`, error);
+          ctx.internalServerError("Failed to create products in bulk. Please try again.");
         }
       },
       /**
@@ -7613,12 +7822,52 @@ var require_product2 = __commonJS({
           if (!data.publishedAt) {
             data.publishedAt = /* @__PURE__ */ new Date();
           }
-          const product = await strapi.db.query("plugin::webbycommerce.product").create({ data });
-          const populated = await strapi.db.query("plugin::webbycommerce.product").findOne({
-            where: { id: product.id },
+          const relations = {
+            product_categories: data.product_categories || [],
+            tags: data.tags || [],
+            images: data.images || []
+          };
+          delete data.product_categories;
+          delete data.tags;
+          delete data.images;
+          if (Array.isArray(relations.product_categories) && relations.product_categories.length > 0) {
+            relations.product_categories = relations.product_categories.map(
+              (id) => typeof id === "object" && id.id ? id.id : id
+            );
+          }
+          if (Array.isArray(relations.tags) && relations.tags.length > 0) {
+            relations.tags = relations.tags.map(
+              (id) => typeof id === "object" && id.id ? id.id : id
+            );
+          }
+          if (Array.isArray(relations.images) && relations.images.length > 0) {
+            relations.images = relations.images.map(
+              (id) => typeof id === "object" && id.id ? id.id : id
+            );
+          }
+          const product = await strapi.entityService.create("plugin::webbycommerce.product", {
+            data
+          });
+          const updateData = {};
+          if (relations.product_categories.length > 0) {
+            updateData.product_categories = relations.product_categories;
+          }
+          if (relations.tags.length > 0) {
+            updateData.tags = relations.tags;
+          }
+          if (relations.images.length > 0) {
+            updateData.images = relations.images;
+          }
+          let updatedProduct = product;
+          if (Object.keys(updateData).length > 0) {
+            updatedProduct = await strapi.entityService.update("plugin::webbycommerce.product", product.id, {
+              data: updateData
+            });
+          }
+          const populated = await strapi.entityService.findOne("plugin::webbycommerce.product", updatedProduct.id, {
             populate: ["product_categories", "tags", "images", "variations"]
           });
-          ctx.send({ data: populated || product });
+          ctx.send({ data: populated || updatedProduct });
         } catch (error) {
           strapi.log.error(`[${PLUGIN_ID}] Error in create:`, error);
           ctx.internalServerError("Failed to create product.");
@@ -7759,13 +8008,18 @@ var require_productTag = __commonJS({
           if (!name) {
             return ctx.badRequest("Name is required.");
           }
-          const tag = await strapi.db.query("plugin::webbycommerce.product-tag").create({
+          const tag = await strapi.entityService.create("plugin::webbycommerce.product-tag", {
             data: {
               name,
-              slug: slug || void 0
+              slug: slug || void 0,
+              publishedAt: /* @__PURE__ */ new Date()
+              // Set publishedAt so it appears in content manager
             }
           });
-          ctx.send({ data: tag });
+          const populated = await strapi.entityService.findOne("plugin::webbycommerce.product-tag", tag.id, {
+            populate: ["products"]
+          });
+          ctx.send({ data: populated || tag });
         } catch (error) {
           strapi.log.error(`[${PLUGIN_ID}] Error in createTag:`, error);
           ctx.internalServerError("Failed to create tag. Please try again.");
@@ -7872,9 +8126,10 @@ var require_productTag = __commonJS({
           if (!data.publishedAt) {
             data.publishedAt = /* @__PURE__ */ new Date();
           }
-          const tag = await strapi.db.query("plugin::webbycommerce.product-tag").create({ data });
-          const populated = await strapi.db.query("plugin::webbycommerce.product-tag").findOne({
-            where: { id: tag.id },
+          const tag = await strapi.entityService.create("plugin::webbycommerce.product-tag", {
+            data
+          });
+          const populated = await strapi.entityService.findOne("plugin::webbycommerce.product-tag", tag.id, {
             populate: ["products"]
           });
           ctx.send({ data: populated || tag });
@@ -8019,15 +8274,24 @@ var require_category = __commonJS({
           if (!name) {
             return ctx.badRequest("Name is required.");
           }
-          const productCategory = await strapi.db.query("plugin::webbycommerce.product-category").create({
-            data: {
-              name,
-              slug: slug || void 0,
-              description: description || void 0,
-              image: image || void 0
-            }
+          const data = {
+            name,
+            slug: slug || void 0,
+            description: description || void 0,
+            image: image || void 0,
+            publishedAt: /* @__PURE__ */ new Date()
+            // Set publishedAt so it appears in content manager
+          };
+          if (parent) {
+            data.parent = typeof parent === "object" && parent.id ? parent.id : parent;
+          }
+          const productCategory = await strapi.entityService.create("plugin::webbycommerce.product-category", {
+            data
           });
-          ctx.send({ data: productCategory });
+          const populated = await strapi.entityService.findOne("plugin::webbycommerce.product-category", productCategory.id, {
+            populate: ["products", "image", "parent"]
+          });
+          ctx.send({ data: populated || productCategory });
         } catch (error) {
           strapi.log.error(`[${PLUGIN_ID}] Error in createProductCategory:`, error);
           ctx.internalServerError("Failed to create product category. Please try again.");
@@ -8128,10 +8392,11 @@ var require_category = __commonJS({
           if (!data.publishedAt) {
             data.publishedAt = /* @__PURE__ */ new Date();
           }
-          const category = await strapi.db.query("plugin::webbycommerce.product-category").create({ data });
-          const populated = await strapi.db.query("plugin::webbycommerce.product-category").findOne({
-            where: { id: category.id },
-            populate: ["products", "image"]
+          const category = await strapi.entityService.create("plugin::webbycommerce.product-category", {
+            data
+          });
+          const populated = await strapi.entityService.findOne("plugin::webbycommerce.product-category", category.id, {
+            populate: ["products", "image", "parent"]
           });
           ctx.send({ data: populated || category });
         } catch (error) {

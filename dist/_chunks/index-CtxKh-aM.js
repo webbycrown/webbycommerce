@@ -93,7 +93,7 @@ const index = {
           defaultMessage: "Configure"
         },
         to: `${PLUGIN_ID}`,
-        Component: () => Promise.resolve().then(() => require("./Settings-TToktNAy.js"))
+        Component: () => Promise.resolve().then(() => require("./Settings-C3yoIgMy.js"))
       }
     );
   },
@@ -107,14 +107,14 @@ const index = {
       locales.map(async (locale) => {
         if (locale === "en") {
           try {
-            const { default: data } = await Promise.resolve().then(() => require("./en-CwvqDxF2.js"));
+            const { default: data } = await Promise.resolve().then(() => require("./en-DIeqB4AB.js"));
             return { data, locale };
           } catch {
             return { data: {}, locale };
           }
         }
         try {
-          const { default: data } = await __variableDynamicImportRuntimeHelper(/* @__PURE__ */ Object.assign({ "./translations/en.json": () => Promise.resolve().then(() => require("./en-CwvqDxF2.js")) }), `./translations/${locale}.json`, 3);
+          const { default: data } = await __variableDynamicImportRuntimeHelper(/* @__PURE__ */ Object.assign({ "./translations/en.json": () => Promise.resolve().then(() => require("./en-DIeqB4AB.js")) }), `./translations/${locale}.json`, 3);
           return { data, locale };
         } catch {
           return { data: {}, locale };

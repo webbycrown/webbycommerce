@@ -183,6 +183,8 @@ const en = {
   "webbycommerce.settings.apiCollections.products.getBySlug.summary": "Retrieve detailed information for a specific product by slug.",
   "webbycommerce.settings.apiCollections.products.create.title": "Create Product",
   "webbycommerce.settings.apiCollections.products.create.summary": "Create a new product (admin functionality).",
+  "webbycommerce.settings.apiCollections.products.createBulk.title": "Create Products in Bulk",
+  "webbycommerce.settings.apiCollections.products.createBulk.summary": "Create multiple products in a single request. Returns detailed results for each product including success and failure status.",
   "webbycommerce.settings.apiCollections.products.update.title": "Update Product",
   "webbycommerce.settings.apiCollections.products.update.summary": "Update an existing product (admin functionality).",
   "webbycommerce.settings.apiCollections.products.delete.title": "Delete Product",
