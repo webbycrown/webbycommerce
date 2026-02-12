@@ -580,6 +580,9 @@ Authorization: Bearer YOUR_JWT_TOKEN
 
 ## 📜 Changelog
 
+## [1.1.0]
+- ✨ Added Bulk Product API for mass product creation
+
 ## [1.0.2] – Patch Release
 
 ### Fixed
