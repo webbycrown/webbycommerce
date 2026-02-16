@@ -3,7 +3,7 @@ import * as React from "react";
 import React__default, { useContext, useRef, useCallback, useDebugValue, useMemo, useState, useEffect, useLayoutEffect, createContext as createContext$1, createElement, useReducer } from "react";
 import { useIntl, FormattedMessage } from "react-intl";
 import { Flex, Box, Popover, Typography, Button, LinkButton, Link as Link$1, Portal, Alert, Field, SubNav, Badge, TextInput, Pagination, PreviousLink, Dots, PageLink, NextLink, Modal, Main } from "@strapi/design-system";
-import { P as PLUGIN_ID } from "./index-DIGoLhGE.mjs";
+import { P as PLUGIN_ID } from "./index-BHqcM1qU.mjs";
 import { WarningCircle, CaretDown, Trash } from "@strapi/icons";
 import "react-dom/client";
 import ReactDOM, { unstable_batchedUpdates as unstable_batchedUpdates$1 } from "react-dom";
@@ -21625,6 +21625,7 @@ const MainSubNav = styled(SubNav)`
     position: sticky;
     top: 0;
     border-right: 1px solid ${({ theme }) => theme.colors.neutral150};
+    overscroll-behavior: contain;
   }
   ${({ theme }) => theme.breakpoints.large} {
     height: 100dvh;

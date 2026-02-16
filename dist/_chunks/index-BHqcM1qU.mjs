@@ -92,7 +92,7 @@ const index = {
           defaultMessage: "Configure"
         },
         to: `${PLUGIN_ID}`,
-        Component: () => import("./Settings-BWuSG1Bc.mjs")
+        Component: () => import("./Settings-VM6V_KJt.mjs")
       }
     );
   },

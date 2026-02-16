@@ -580,8 +580,11 @@ Authorization: Bearer YOUR_JWT_TOKEN
 
 ## 📜 Changelog
 
-## [1.1.1]
-- ✨ Added Bulk Product API for mass product creation
+## [1.1.2]
+- Fixed bugs and resolved issues with the category slug API.
+
+## [1.1.0]
+- Added Bulk Product API
 
 ## [1.0.2] – Patch Release
 
