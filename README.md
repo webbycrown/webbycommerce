@@ -580,10 +580,19 @@ Authorization: Bearer YOUR_JWT_TOKEN
 
 ## 📜 Changelog
 
-## [1.1.2]
+## [1.2.0] - New feature
+
+### Added
+- Created auth login method API
+- Created unified auth method API
+
+### Fixed
+- Fixed bugs of update schema 
+
+## [1.1.2] - Patch Release
 - Fixed bugs and resolved issues with the category slug API.
 
-## [1.1.0]
+## [1.1.0] - New feature
 - Added Bulk Product API
 
 ## [1.0.2] – Patch Release

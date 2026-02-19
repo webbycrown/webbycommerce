@@ -1,5 +1,3 @@
-"use strict";
-Object.defineProperty(exports, Symbol.toStringTag, { value: "Module" });
 const en = {
   "webbycommerce.name": "WebbyCommerce",
   "webbycommerce.description": "Complete ecommerce solution for Strapi CMS",
@@ -88,6 +86,19 @@ const en = {
   "webbycommerce.settings.apiCollections.verifyOtp.usage.verify": "Submit the OTP code received via email or SMS.",
   "webbycommerce.settings.apiCollections.verifyOtp.usage.token": "Receive a JWT token for authenticated API requests.",
   "webbycommerce.settings.apiCollections.verifyOtp.usage.store": "Store the JWT token securely and include it in subsequent requests.",
+  "webbycommerce.settings.apiCollections.authMethod.title": "Get Authentication Method",
+  "webbycommerce.settings.apiCollections.authMethod.summary": "Get the current authentication method (default or otp) configured in the plugin settings. Use this endpoint in your frontend to determine which authentication flow to display.",
+  "webbycommerce.settings.apiCollections.authMethod.auth": "Auth: public (no authentication required).",
+  "webbycommerce.settings.apiCollections.authMethod.usage.frontend": "Call this endpoint on app initialization to determine which auth UI to show.",
+  "webbycommerce.settings.apiCollections.authMethod.usage.conditional": 'If method is "otp", show OTP login/register form. If "default", show email/password form.',
+  "webbycommerce.settings.apiCollections.authMethod.usage.dynamic": "Method can change based on plugin settings, so check this endpoint periodically.",
+  "webbycommerce.settings.apiCollections.unifiedAuth.title": "Unified Authentication",
+  "webbycommerce.settings.apiCollections.unifiedAuth.summary": "Unified authentication endpoint that supports both OTP and default (email/password) methods. Automatically detects which method to use based on request body. Perfect for frontends that want to support both authentication methods simultaneously.",
+  "webbycommerce.settings.apiCollections.unifiedAuth.auth": "Auth: public (no authentication required).",
+  "webbycommerce.settings.apiCollections.unifiedAuth.usage.unified": "Use this single endpoint for all authentication needs - OTP and default methods.",
+  "webbycommerce.settings.apiCollections.unifiedAuth.usage.otp": 'For OTP: First call with step="request" and email/mobile, then call with step="verify" and OTP code.',
+  "webbycommerce.settings.apiCollections.unifiedAuth.usage.default": 'For default: Call with step="login" and identifier/password, or step="register" with username/email/password.',
+  "webbycommerce.settings.apiCollections.unifiedAuth.usage.auto": 'Method is auto-detected from request body, or specify authMethod="otp" or "default" explicitly.',
   "webbycommerce.settings.apiCollections.defaultLogin.title": "Default Login (Email/Password)",
   "webbycommerce.settings.apiCollections.defaultLogin.summary": "Use Strapi's built-in /auth/local endpoint for email/password login when the authentication method is set to Default.",
   "webbycommerce.settings.apiCollections.defaultLogin.auth": "Auth: public (uses Strapi's core Users & Permissions authentication).",
@@ -130,6 +141,8 @@ const en = {
   "webbycommerce.settings.loginRegister.method.default.description": "Uses Strapi's built-in authentication system with email and password.",
   "webbycommerce.settings.loginRegister.method.otp": "OTP (Email/Mobile Verification)",
   "webbycommerce.settings.loginRegister.method.otp.description": "Users can login or register using email or mobile number. An OTP (One-Time Password) will be sent for verification.",
+  "webbycommerce.settings.loginRegister.method.both": "Both Methods (Unified)",
+  "webbycommerce.settings.loginRegister.method.both.description": "Users can choose between OTP or email/password authentication. Use the unified /auth/unified endpoint to support both methods simultaneously.",
   "webbycommerce.settings.loginRegister.save": "Save settings",
   "webbycommerce.settings.loginRegister.save.success": "Settings updated successfully.",
   "webbycommerce.settings.loginRegister.save.error": "Failed to save settings.",
@@ -556,4 +569,6 @@ const en = {
   "webbycommerce.coupon.fields.expiresAt": "Expires At",
   "webbycommerce.coupon.fields.isActive": "Active Status"
 };
-exports.default = en;
+export {
+  en as default
+};

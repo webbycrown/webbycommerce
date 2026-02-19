@@ -159,6 +159,38 @@ var require_routes = __commonJS({
           },
           {
             method: "GET",
+            path: "/auth/method",
+            handler: "auth.getAuthMethod",
+            config: {
+              auth: false,
+              policies: []
+            },
+            info: {
+              type: "content-api",
+              pluginName: PLUGIN_ID,
+              description: "Get current authentication method (default or otp)",
+              summary: "Get auth method",
+              tags: ["Authentication"]
+            }
+          },
+          {
+            method: "POST",
+            path: "/auth/unified",
+            handler: "auth.unifiedAuth",
+            config: {
+              auth: false,
+              policies: []
+            },
+            info: {
+              type: "content-api",
+              pluginName: PLUGIN_ID,
+              description: "Unified authentication endpoint supporting both OTP and default (email/password) methods",
+              summary: "Unified auth",
+              tags: ["Authentication"]
+            }
+          },
+          {
+            method: "GET",
             path: "/auth/profile",
             handler: "auth.getProfile",
             config: {
@@ -1242,7 +1274,8 @@ var require_register = __commonJS({
             uid: shippingZoneUid,
             modelType: "component",
             modelName: "shipping-zone-location",
-            globalId: "ComponentPluginWebbycommerceShippingZoneLocation"
+            globalId: "ComponentPluginWebbycommerceShippingZoneLocation",
+            category: shippingZoneSchema.category || "WebbyCommerce Shared"
           });
           strapi2.log.info(`[webbycommerce] Component registered: ${shippingZoneUid}`);
         } else {
@@ -1257,7 +1290,8 @@ var require_register = __commonJS({
             uid: contentBlockUid,
             modelType: "component",
             modelName: "content-block",
-            globalId: "ComponentPluginWebbycommerceContentBlock"
+            globalId: "ComponentPluginWebbycommerceContentBlock",
+            category: contentBlockSchema.category || "WebbyCommerce Shared"
           });
           strapi2.log.info(`[webbycommerce] Component registered: ${contentBlockUid}`);
         } else {
@@ -3157,6 +3191,8 @@ var require_content_types = __commonJS({
 var require_bootstrap = __commonJS({
   "server/src/bootstrap.js"(exports2, module2) {
     "use strict";
+    var fs = require("fs");
+    var path = require("path");
     var { registerEcommerceActions, ensureEcommercePermission } = require_check_ecommerce_permission();
     var { extendUserSchemaWithOtpFields } = require_extend_user_schema();
     module2.exports = async ({ strapi: strapi2 }) => {
@@ -3212,8 +3248,8 @@ var require_bootstrap = __commonJS({
             return "webbycommerce";
           }
         };
-        const isAdminRoute = (path) => {
-          if (!path) return false;
+        const isAdminRoute = (path2) => {
+          if (!path2) return false;
           const adminRoutePatterns = [
             "/admin/",
             "/content-type-builder/",
@@ -3224,8 +3260,288 @@ var require_bootstrap = __commonJS({
             "/documentation/",
             "/graphql"
           ];
-          return adminRoutePatterns.some((pattern) => path.startsWith(pattern));
+          return adminRoutePatterns.some((pattern) => path2.startsWith(pattern));
         };
+        strapi2.server.use(async (ctx, next) => {
+          if (ctx.path === "/content-type-builder/update-schema" && ctx.method === "POST") {
+            try {
+              let body = ctx.request.body;
+              let bodyWasParsed = false;
+              if (!body || typeof body === "object" && Object.keys(body).length === 0) {
+                try {
+                  const contentType = ctx.request.header["content-type"] || "";
+                  if (contentType.includes("application/json") && ctx.req && typeof ctx.req[Symbol.asyncIterator] === "function") {
+                    const chunks = [];
+                    for await (const chunk of ctx.req) {
+                      chunks.push(chunk);
+                    }
+                    const rawBody = Buffer.concat(chunks).toString("utf8");
+                    if (rawBody && rawBody.trim()) {
+                      body = JSON.parse(rawBody);
+                      ctx.request.body = body;
+                      bodyWasParsed = true;
+                      const { Readable } = require("stream");
+                      ctx.req = Readable.from([Buffer.from(rawBody)]);
+                      strapi2.log.info("[webbycommerce] EARLY: Manually parsed request body");
+                    }
+                  }
+                } catch (parseError) {
+                  strapi2.log.warn("[webbycommerce] EARLY: Could not parse body:", parseError.message);
+                }
+              }
+              body = body || {};
+              const data = body.data || body;
+              const contentTypes3 = data.contentTypes || [];
+              const components = data.components || [];
+              strapi2.log.info("[webbycommerce] ===== EARLY: Processing content-type-builder update-schema request =====");
+              strapi2.log.info("[webbycommerce] EARLY: Body type:", typeof body);
+              strapi2.log.info("[webbycommerce] EARLY: Body keys:", Object.keys(body));
+              strapi2.log.info("[webbycommerce] EARLY: Content types found:", contentTypes3.length);
+              strapi2.log.info("[webbycommerce] EARLY: Components found:", components.length);
+              let appDir;
+              if (strapi2.dirs && strapi2.dirs.app && strapi2.dirs.app.root) {
+                appDir = strapi2.dirs.app.root;
+              } else if (strapi2.dirs && strapi2.dirs.root) {
+                appDir = strapi2.dirs.root;
+              } else {
+                appDir = path.resolve(__dirname, "../..");
+              }
+              if (!strapi2.dirs) {
+                strapi2.dirs = {};
+              }
+              if (!strapi2.dirs.app) {
+                strapi2.dirs.app = {};
+              }
+              if (!strapi2.dirs.app.root) {
+                strapi2.dirs.app.root = appDir;
+              }
+              for (const contentType of contentTypes3) {
+                if (contentType.uid && contentType.uid.startsWith("api::")) {
+                  const uidParts = contentType.uid.split("::");
+                  if (uidParts.length === 2) {
+                    const apiAndType = uidParts[1].split(".");
+                    if (apiAndType.length >= 2) {
+                      const apiName = apiAndType[0];
+                      const contentTypeName = apiAndType[1];
+                      const apiDir = path.join(appDir, "src", "api", apiName);
+                      const contentTypeDir = path.join(apiDir, "content-types", contentTypeName);
+                      const schemaPath = path.join(contentTypeDir, "schema.json");
+                      fs.mkdirSync(contentTypeDir, { recursive: true });
+                      let existingSchema = {};
+                      if (fs.existsSync(schemaPath)) {
+                        try {
+                          existingSchema = JSON.parse(fs.readFileSync(schemaPath, "utf8"));
+                        } catch (e) {
+                          existingSchema = {};
+                        }
+                      }
+                      const attributes = { ...existingSchema.attributes || {} };
+                      if (contentType.attributes && Array.isArray(contentType.attributes)) {
+                        for (const attr of contentType.attributes) {
+                          if (attr.name && attr.properties) {
+                            const attributeDef = { ...attr.properties };
+                            if (attributeDef.type === "component") {
+                              if (attributeDef.component) {
+                                strapi2.log.info(`[webbycommerce] EARLY: Processing component attribute: ${attr.name} -> ${attributeDef.component}`);
+                              }
+                              if (!attributeDef.repeatable) {
+                                attributeDef.repeatable = false;
+                              }
+                            }
+                            if (attributeDef.type === "dynamiczone") {
+                              if (Array.isArray(attributeDef.components)) {
+                                strapi2.log.info(`[webbycommerce] EARLY: Processing dynamiczone: ${attr.name} with ${attributeDef.components.length} components`);
+                              }
+                            }
+                            if (attributeDef.type === "relation") {
+                              if (attributeDef.target) {
+                                strapi2.log.info(`[webbycommerce] EARLY: Processing relation: ${attr.name} -> ${attributeDef.target}`);
+                              }
+                            }
+                            attributes[attr.name] = attributeDef;
+                            const action = attr.action || "update";
+                            strapi2.log.info(`[webbycommerce] EARLY: ${action === "create" ? "Added" : "Updated"} attribute: ${attr.name} (type: ${attributeDef.type || "unknown"})`);
+                          }
+                        }
+                      }
+                      const schema = {
+                        kind: contentType.kind || existingSchema.kind || "collectionType",
+                        collectionName: contentType.collectionName || existingSchema.collectionName || (contentType.kind === "singleType" ? contentTypeName : `${contentTypeName}s`),
+                        info: {
+                          singularName: contentType.singularName || existingSchema.info?.singularName || contentTypeName,
+                          pluralName: contentType.pluralName || existingSchema.info?.pluralName || (contentType.kind === "singleType" ? contentTypeName : `${contentTypeName}s`),
+                          displayName: contentType.displayName || contentType.modelName || existingSchema.info?.displayName || contentTypeName,
+                          description: contentType.description || existingSchema.info?.description || ""
+                        },
+                        options: {
+                          draftAndPublish: contentType.draftAndPublish !== void 0 ? contentType.draftAndPublish : existingSchema.options?.draftAndPublish !== void 0 ? existingSchema.options.draftAndPublish : false
+                        },
+                        pluginOptions: contentType.pluginOptions || existingSchema.pluginOptions || {
+                          "content-manager": {
+                            visible: true
+                          },
+                          "content-api": {
+                            visible: true
+                          }
+                        },
+                        attributes
+                      };
+                      const schemaJson = JSON.stringify(schema, null, 2);
+                      fs.writeFileSync(schemaPath, schemaJson, "utf8");
+                      if (fs.existsSync(schemaPath)) {
+                        try {
+                          const verifySchema = JSON.parse(fs.readFileSync(schemaPath, "utf8"));
+                          const fileStats = fs.statSync(schemaPath);
+                          strapi2.log.info(`[webbycommerce] ========================================`);
+                          strapi2.log.info(`[webbycommerce] \u2713 COLLECTION SCHEMA CREATED/UPDATED`);
+                          strapi2.log.info(`[webbycommerce] ========================================`);
+                          strapi2.log.info(`[webbycommerce] \u2713 File: ${schemaPath}`);
+                          strapi2.log.info(`[webbycommerce] \u2713 File size: ${fileStats.size} bytes`);
+                          strapi2.log.info(`[webbycommerce] \u2713 Schema is valid JSON`);
+                          strapi2.log.info(`[webbycommerce] \u2713 Schema kind: ${verifySchema.kind}`);
+                          strapi2.log.info(`[webbycommerce] \u2713 Collection name: ${verifySchema.collectionName}`);
+                          strapi2.log.info(`[webbycommerce] \u2713 Display name: ${verifySchema.info?.displayName || "N/A"}`);
+                          strapi2.log.info(`[webbycommerce] \u2713 Total attributes: ${Object.keys(verifySchema.attributes || {}).length}`);
+                          const attrNames = Object.keys(verifySchema.attributes || {});
+                          if (attrNames.length > 0) {
+                            strapi2.log.info(`[webbycommerce] \u2713 Attributes list:`);
+                            attrNames.forEach((attrName) => {
+                              const attr = verifySchema.attributes[attrName];
+                              const attrType = attr.type || "unknown";
+                              const attrInfo = attrType === "component" ? `component: ${attr.component}` : attrType === "dynamiczone" ? `dynamiczone: ${(attr.components || []).join(", ")}` : attrType === "relation" ? `relation: ${attr.target}` : attrType;
+                              strapi2.log.info(`[webbycommerce]   - ${attrName}: ${attrInfo}`);
+                            });
+                          } else {
+                            strapi2.log.warn(`[webbycommerce] \u26A0 No attributes found - this is a new empty collection`);
+                          }
+                          strapi2.log.info(`[webbycommerce] \u2713 File will trigger auto-restart`);
+                          strapi2.log.info(`[webbycommerce] \u2713 After restart, collection will be registered with all fields/components`);
+                          strapi2.log.info(`[webbycommerce] ========================================`);
+                          fs.chmodSync(schemaPath, 420);
+                          const now = /* @__PURE__ */ new Date();
+                          fs.utimesSync(schemaPath, now, now);
+                          ctx.state.schemaFileCreated = true;
+                          ctx.state.schemaPath = schemaPath;
+                          ctx.state.contentTypeUid = contentType.uid;
+                        } catch (verifyError) {
+                          strapi2.log.error(`[webbycommerce] \u2717 Schema file verification failed: ${verifyError.message}`);
+                          strapi2.log.error(`[webbycommerce] \u2717 Stack: ${verifyError.stack}`);
+                        }
+                      } else {
+                        strapi2.log.error(`[webbycommerce] \u2717 Schema file was not created: ${schemaPath}`);
+                      }
+                      const controllersDir = path.join(apiDir, "controllers", contentTypeName);
+                      const servicesDir = path.join(apiDir, "services", contentTypeName);
+                      const routesDir = path.join(apiDir, "routes", contentTypeName);
+                      [controllersDir, servicesDir, routesDir].forEach((dir) => {
+                        if (!fs.existsSync(dir)) {
+                          fs.mkdirSync(dir, { recursive: true });
+                          strapi2.log.info(`[webbycommerce] EARLY: \u2713 Created directory: ${dir}`);
+                        }
+                      });
+                    }
+                  }
+                }
+              }
+              if (ctx.state.schemaFileCreated && contentTypes3.length > 0) {
+                strapi2.log.info(`[webbycommerce] EARLY: \u2713 Schema file(s) created successfully`);
+                strapi2.log.info(`[webbycommerce] EARLY: \u2713 File watcher will detect change and trigger auto-restart`);
+                strapi2.log.info(`[webbycommerce] EARLY: \u2713 After restart, collection will be automatically registered with all fields/components`);
+                ctx.status = 200;
+                ctx.body = {
+                  data: {
+                    contentTypes: contentTypes3.map((ct) => {
+                      const uidParts = ct.uid.split("::");
+                      const apiAndType = uidParts.length === 2 ? uidParts[1].split(".") : [];
+                      return {
+                        uid: ct.uid,
+                        apiID: ct.uid,
+                        schema: {
+                          kind: ct.kind || "collectionType",
+                          collectionName: ct.collectionName || (ct.kind === "singleType" ? apiAndType[1] : `${apiAndType[1]}s`),
+                          info: {
+                            singularName: ct.singularName || apiAndType[1],
+                            pluralName: ct.pluralName || (ct.kind === "singleType" ? apiAndType[1] : `${apiAndType[1]}s`),
+                            displayName: ct.displayName || ct.modelName || apiAndType[1],
+                            description: ct.description || ""
+                          },
+                          options: {
+                            draftAndPublish: ct.draftAndPublish !== void 0 ? ct.draftAndPublish : false
+                          }
+                        }
+                      };
+                    }),
+                    components: (components || []).map((comp) => ({
+                      uid: comp.uid,
+                      category: comp.uid ? comp.uid.split(".")[0] : "",
+                      apiID: comp.uid
+                    }))
+                  }
+                };
+                strapi2.log.info(`[webbycommerce] EARLY: \u2713 Success response sent - request handled`);
+                return;
+              }
+            } catch (error) {
+              strapi2.log.error("[webbycommerce] EARLY: Error in content-type-builder fix:", error.message);
+              strapi2.log.error("[webbycommerce] EARLY: Stack:", error.stack);
+            }
+          }
+          return next();
+        });
+        strapi2.server.use(async (ctx, next) => {
+          if (ctx.path.includes("/content-manager/collection-types/") && (ctx.method === "POST" || ctx.method === "PUT") && ctx.request.body) {
+            try {
+              const match = ctx.path.match(/collection-types\/([^\/\?]+)/);
+              const contentTypeUid = match?.[1];
+              if (contentTypeUid && contentTypeUid.startsWith("api::")) {
+                const contentType = strapi2.contentTypes[contentTypeUid];
+                if (contentType && contentType.attributes) {
+                  const body = ctx.request.body;
+                  let modified = false;
+                  const sanitizeJsonValue = (value, fieldName) => {
+                    if (value === "" || value === '""') {
+                      return null;
+                    }
+                    if (typeof value === "string" && value.trim() === "") {
+                      return null;
+                    }
+                    if (typeof value === "string" && (value.startsWith("{") || value.startsWith("["))) {
+                      try {
+                        return JSON.parse(value);
+                      } catch (e) {
+                        strapi2.log.warn(`[webbycommerce] Failed to parse JSON string for field "${fieldName}", using null`);
+                        return null;
+                      }
+                    }
+                    return value;
+                  };
+                  for (const [fieldName, fieldValue] of Object.entries(body)) {
+                    if (fieldName === "id" || fieldName === "documentId" || fieldName.startsWith("_") || fieldName === "createdAt" || fieldName === "updatedAt" || fieldName === "publishedAt" || fieldName === "createdBy" || fieldName === "updatedBy") {
+                      continue;
+                    }
+                    const attribute = contentType.attributes[fieldName];
+                    if (attribute && attribute.type === "json") {
+                      const sanitizedValue = sanitizeJsonValue(fieldValue, fieldName);
+                      if (sanitizedValue !== fieldValue) {
+                        body[fieldName] = sanitizedValue;
+                        modified = true;
+                        strapi2.log.info(`[webbycommerce] Sanitized JSON field "${fieldName}": "${fieldValue}" -> ${sanitizedValue === null ? "null" : "parsed JSON"}`);
+                      }
+                    }
+                  }
+                  if (modified) {
+                    strapi2.log.info(`[webbycommerce] \u2713 Sanitized JSON fields in content-manager request for ${contentTypeUid}`);
+                  }
+                } else {
+                  strapi2.log.debug(`[webbycommerce] Content type ${contentTypeUid} not found or has no attributes`);
+                }
+              }
+            } catch (error) {
+              strapi2.log.warn(`[webbycommerce] Error sanitizing JSON fields:`, error.message);
+            }
+          }
+          return next();
+        });
         strapi2.server.use(async (ctx, next) => {
           if (isAdminRoute(ctx.path)) {
             return next();
@@ -3302,9 +3618,11 @@ var require_bootstrap = __commonJS({
               const method = value.loginRegisterMethod || "default";
               if (method === "otp") {
                 ctx.badRequest(
-                  "Authentication method is set to OTP. Please use the OTP login/register endpoints."
+                  "Authentication method is set to OTP. Please use the OTP login/register endpoints or the unified /auth/unified endpoint."
                 );
                 return;
+              }
+              if (method === "both") {
               }
               if (ctx.path === "/api/auth/local/register") {
                 return next();
@@ -3342,6 +3660,18 @@ var require_bootstrap = __commonJS({
             "/webbycommerce/auth/verify-otp",
             `/${routePrefix}/auth/verify-otp`
           ]);
+          const methodPaths = /* @__PURE__ */ new Set([
+            "/api/webbycommerce/auth/method",
+            `/api/${routePrefix}/auth/method`,
+            "/webbycommerce/auth/method",
+            `/${routePrefix}/auth/method`
+          ]);
+          const unifiedAuthPaths = /* @__PURE__ */ new Set([
+            "/api/webbycommerce/auth/unified",
+            `/api/${routePrefix}/auth/unified`,
+            "/webbycommerce/auth/unified",
+            `/${routePrefix}/auth/unified`
+          ]);
           const profilePaths = /* @__PURE__ */ new Set([
             "/api/webbycommerce/auth/profile",
             `/api/${routePrefix}/auth/profile`,
@@ -3371,6 +3701,50 @@ var require_bootstrap = __commonJS({
             const authController = strapi2.plugin("webbycommerce").controller("auth");
             if (authController && typeof authController.verifyOtp === "function") {
               await authController.verifyOtp(ctx);
+              return;
+            }
+          }
+          if (ctx.method === "GET" && methodPaths.has(ctx.path)) {
+            ctx.state.route = {
+              info: {
+                type: "content-api",
+                pluginName: "webbycommerce"
+              }
+            };
+            const authController = strapi2.plugin("webbycommerce").controller("auth");
+            if (authController && typeof authController.getAuthMethod === "function") {
+              await authController.getAuthMethod(ctx);
+              return;
+            }
+          }
+          if (ctx.method === "POST" && unifiedAuthPaths.has(ctx.path)) {
+            ctx.state.route = {
+              info: {
+                type: "content-api",
+                pluginName: "webbycommerce"
+              }
+            };
+            if (!ctx.request.body || typeof ctx.request.body === "object" && Object.keys(ctx.request.body || {}).length === 0) {
+              try {
+                const contentType = ctx.request.header["content-type"] || "";
+                if (contentType.includes("application/json")) {
+                  const chunks = [];
+                  for await (const chunk of ctx.req) {
+                    chunks.push(chunk);
+                  }
+                  const rawBody = Buffer.concat(chunks).toString("utf8");
+                  if (rawBody && rawBody.trim()) {
+                    ctx.request.body = JSON.parse(rawBody);
+                    strapi2.log.debug(`[webbycommerce] Parsed request body for unified auth:`, ctx.request.body);
+                  }
+                }
+              } catch (error) {
+                strapi2.log.error(`[webbycommerce] Failed to parse request body for unified auth:`, error.message);
+              }
+            }
+            const authController = strapi2.plugin("webbycommerce").controller("auth");
+            if (authController && typeof authController.unifiedAuth === "function") {
+              await authController.unifiedAuth(ctx);
               return;
             }
           }
@@ -4894,6 +5268,420 @@ var require_bootstrap = __commonJS({
           }
           return next();
         });
+        strapi2.server.use(async (ctx, next) => {
+          if (ctx.path === "/content-type-builder/update-schema" && ctx.method === "POST") {
+            try {
+              let body = ctx.request.body;
+              if (!body || typeof body === "object" && Object.keys(body).length === 0) {
+                try {
+                  const contentType = ctx.request.header["content-type"] || "";
+                  if (contentType.includes("application/json")) {
+                    const chunks = [];
+                    const originalReq = ctx.req;
+                    for await (const chunk of originalReq) {
+                      chunks.push(chunk);
+                    }
+                    const rawBody = Buffer.concat(chunks).toString("utf8");
+                    if (rawBody && rawBody.trim()) {
+                      body = JSON.parse(rawBody);
+                      ctx.request.body = body;
+                      ctx.req = require("stream").Readable.from([Buffer.from(rawBody)]);
+                    }
+                  }
+                } catch (parseError) {
+                  strapi2.log.warn("[webbycommerce] Could not parse request body:", parseError.message);
+                }
+              }
+              body = body || {};
+              const data = body.data || body;
+              const contentTypes3 = data.contentTypes || [];
+              const components = data.components || [];
+              strapi2.log.info("[webbycommerce] ===== Processing content-type-builder update-schema request =====");
+              strapi2.log.info("[webbycommerce] Request body keys:", Object.keys(body));
+              strapi2.log.info("[webbycommerce] Data keys:", Object.keys(data));
+              strapi2.log.info("[webbycommerce] Content types to process:", contentTypes3.length);
+              strapi2.log.info("[webbycommerce] Components to process:", components.length);
+              if (contentTypes3.length === 0 && components.length === 0) {
+                strapi2.log.warn("[webbycommerce] No content types or components found in request body");
+                strapi2.log.warn("[webbycommerce] Body type:", typeof body);
+                strapi2.log.warn("[webbycommerce] Body stringified (first 500 chars):", JSON.stringify(body, null, 2).substring(0, 500));
+              }
+              let appDir;
+              if (strapi2.dirs && strapi2.dirs.app && strapi2.dirs.app.root) {
+                appDir = strapi2.dirs.app.root;
+                strapi2.log.info("[webbycommerce] Using strapi.dirs.app.root:", appDir);
+              } else if (strapi2.dirs && strapi2.dirs.root) {
+                appDir = strapi2.dirs.root;
+                strapi2.log.info("[webbycommerce] Using strapi.dirs.root:", appDir);
+              } else {
+                appDir = path.resolve(__dirname, "../..");
+                strapi2.log.info("[webbycommerce] Using fallback appDir (from __dirname):", appDir);
+                strapi2.log.info("[webbycommerce] __dirname is:", __dirname);
+              }
+              if (!strapi2.dirs) {
+                strapi2.dirs = {};
+              }
+              if (!strapi2.dirs.app) {
+                strapi2.dirs.app = {};
+              }
+              if (!strapi2.dirs.app.root) {
+                strapi2.dirs.app.root = appDir;
+                strapi2.log.info("[webbycommerce] Set strapi.dirs.app.root to:", appDir);
+              }
+              for (const component of components) {
+                if (component.uid && component.uid.includes(".")) {
+                  const uidParts = component.uid.split(".");
+                  if (uidParts.length >= 2) {
+                    const category = uidParts[0];
+                    const componentName = uidParts[1];
+                    const componentsDir = path.join(appDir, "src", "components", category);
+                    const componentDir = path.join(componentsDir, componentName);
+                    if (!fs.existsSync(componentsDir)) {
+                      fs.mkdirSync(componentsDir, { recursive: true });
+                      strapi2.log.info(`[webbycommerce] Created component category directory: ${componentsDir}`);
+                    }
+                    if (!fs.existsSync(componentDir)) {
+                      fs.mkdirSync(componentDir, { recursive: true });
+                      strapi2.log.info(`[webbycommerce] Created component directory: ${componentDir}`);
+                    }
+                    const componentSchemaPath = path.join(componentDir, "schema.json");
+                    let componentSchema = {};
+                    if (fs.existsSync(componentSchemaPath)) {
+                      try {
+                        componentSchema = JSON.parse(fs.readFileSync(componentSchemaPath, "utf8"));
+                      } catch (error) {
+                        strapi2.log.warn(`[webbycommerce] Could not parse existing component schema: ${error.message}`);
+                      }
+                    }
+                    if (!componentSchema.info) {
+                      componentSchema.info = {};
+                    }
+                    if (!componentSchema.info.displayName) {
+                      componentSchema.info.displayName = component.displayName || component.modelName || componentName || "New Component";
+                    }
+                    if (!componentSchema.info.description) {
+                      componentSchema.info.description = component.description || "";
+                    }
+                    if (!componentSchema.category || componentSchema.category === "undefined" || componentSchema.category === "Undefined") {
+                      componentSchema.category = component.category || "WebbyCommerce Shared";
+                    }
+                    if (!componentSchema.collectionName) {
+                      componentSchema.collectionName = "components_" + component.uid.replace(/\./g, "_");
+                    }
+                    if (!componentSchema.options) {
+                      componentSchema.options = {};
+                    }
+                    if (!componentSchema.attributes) {
+                      componentSchema.attributes = {};
+                    }
+                    fs.writeFileSync(componentSchemaPath, JSON.stringify(componentSchema, null, 2));
+                    strapi2.log.info(`[webbycommerce] ${fs.existsSync(componentSchemaPath) ? "Updated" : "Created"} component schema file: ${componentSchemaPath}`);
+                  }
+                }
+              }
+              for (const contentType of contentTypes3) {
+                if (contentType.uid && contentType.uid.startsWith("api::")) {
+                  const uidParts = contentType.uid.split("::");
+                  if (uidParts.length === 2) {
+                    const apiAndType = uidParts[1].split(".");
+                    if (apiAndType.length >= 2) {
+                      const apiName = apiAndType[0];
+                      const contentTypeName = apiAndType[1];
+                      const apiDir = path.join(appDir, "src", "api", apiName);
+                      const contentTypeDir = path.join(apiDir, "content-types", contentTypeName);
+                      strapi2.log.info(`[webbycommerce] Processing content type: ${contentType.uid}`);
+                      strapi2.log.info(`[webbycommerce] API Name: ${apiName}, Content Type Name: ${contentTypeName}`);
+                      strapi2.log.info(`[webbycommerce] App Directory: ${appDir}`);
+                      strapi2.log.info(`[webbycommerce] API Directory: ${apiDir}`);
+                      strapi2.log.info(`[webbycommerce] Content Type Directory: ${contentTypeDir}`);
+                      if (!fs.existsSync(apiDir)) {
+                        fs.mkdirSync(apiDir, { recursive: true });
+                        strapi2.log.info(`[webbycommerce] \u2713 Created API directory: ${apiDir}`);
+                      } else {
+                        strapi2.log.info(`[webbycommerce] \u2713 API directory already exists: ${apiDir}`);
+                      }
+                      if (!fs.existsSync(contentTypeDir)) {
+                        fs.mkdirSync(contentTypeDir, { recursive: true });
+                        strapi2.log.info(`[webbycommerce] \u2713 Created content type directory: ${contentTypeDir}`);
+                      } else {
+                        strapi2.log.info(`[webbycommerce] \u2713 Content type directory already exists: ${contentTypeDir}`);
+                      }
+                      const schemaPath = path.join(contentTypeDir, "schema.json");
+                      strapi2.log.info(`[webbycommerce] Schema path: ${schemaPath}`);
+                      let schemaNeedsUpdate = false;
+                      let currentSchema = {};
+                      if (fs.existsSync(schemaPath)) {
+                        try {
+                          currentSchema = JSON.parse(fs.readFileSync(schemaPath, "utf8"));
+                          if (!currentSchema || typeof currentSchema !== "object") {
+                            throw new Error("Invalid schema file");
+                          }
+                          strapi2.log.info(`[webbycommerce] \u2713 Schema file already exists and is valid`);
+                          const now = /* @__PURE__ */ new Date();
+                          fs.utimesSync(schemaPath, now, now);
+                        } catch (parseError) {
+                          strapi2.log.warn(`[webbycommerce] \u26A0 Schema file exists but is invalid, will be overwritten`);
+                          schemaNeedsUpdate = true;
+                        }
+                      } else {
+                        schemaNeedsUpdate = true;
+                      }
+                      if (schemaNeedsUpdate) {
+                        const minimalSchema = {
+                          kind: contentType.kind || "collectionType",
+                          collectionName: contentType.collectionName || (contentType.kind === "singleType" ? contentTypeName : `${contentTypeName}s`),
+                          info: {
+                            singularName: contentType.singularName || contentTypeName,
+                            pluralName: contentType.pluralName || (contentType.kind === "singleType" ? contentTypeName : `${contentTypeName}s`),
+                            displayName: contentType.displayName || contentType.modelName || contentTypeName,
+                            description: contentType.description || ""
+                          },
+                          options: {
+                            draftAndPublish: contentType.draftAndPublish !== void 0 ? contentType.draftAndPublish : false
+                          },
+                          attributes: {}
+                        };
+                        fs.writeFileSync(schemaPath, JSON.stringify(minimalSchema, null, 2));
+                        strapi2.log.info(`[webbycommerce] \u2713 Created/Updated schema file: ${schemaPath}`);
+                        strapi2.log.info(`[webbycommerce] \u2713 File watcher will detect change and trigger auto-restart`);
+                      }
+                      const controllersDir = path.join(apiDir, "controllers", contentTypeName);
+                      const servicesDir = path.join(apiDir, "services", contentTypeName);
+                      const routesDir = path.join(apiDir, "routes", contentTypeName);
+                      [controllersDir, servicesDir, routesDir].forEach((dir) => {
+                        if (!fs.existsSync(dir)) {
+                          fs.mkdirSync(dir, { recursive: true });
+                          strapi2.log.info(`[webbycommerce] \u2713 Created directory: ${dir}`);
+                        }
+                      });
+                      if (!fs.existsSync(schemaPath)) {
+                        strapi2.log.error(`[webbycommerce] \u2717 CRITICAL: Schema path does not exist after creation attempt: ${schemaPath}`);
+                      } else {
+                        strapi2.log.info(`[webbycommerce] \u2713 Final verification: Schema path exists: ${schemaPath}`);
+                      }
+                    } else {
+                      strapi2.log.warn(`[webbycommerce] \u26A0 Could not parse UID parts for: ${contentType.uid}`);
+                    }
+                  } else {
+                    strapi2.log.warn(`[webbycommerce] \u26A0 Invalid UID format: ${contentType.uid}`);
+                  }
+                } else {
+                  strapi2.log.warn(`[webbycommerce] \u26A0 Content type does not have UID or is not an API content type`);
+                }
+              }
+              strapi2.log.info("[webbycommerce] ===== Finished processing content-type-builder request =====");
+            } catch (error) {
+              strapi2.log.error("[webbycommerce] \u2717 Error ensuring API directory structure:", error.message);
+              strapi2.log.error("[webbycommerce] Error stack:", error.stack);
+            }
+          }
+          return next();
+        });
+        strapi2.server.use(async (ctx, next) => {
+          try {
+            await next();
+          } catch (error) {
+            if (ctx.path === "/content-type-builder/update-schema" && error.message && error.message.includes("path") && error.message.includes("undefined")) {
+              strapi2.log.error("[webbycommerce] Caught path undefined error, attempting to fix...");
+              try {
+                const body = ctx.request.body || {};
+                const data = body.data || body;
+                const contentTypes3 = data.contentTypes || [];
+                let appDir;
+                if (strapi2.dirs && strapi2.dirs.app && strapi2.dirs.app.root) {
+                  appDir = strapi2.dirs.app.root;
+                } else if (strapi2.dirs && strapi2.dirs.root) {
+                  appDir = strapi2.dirs.root;
+                } else {
+                  appDir = path.resolve(__dirname, "../..");
+                }
+                for (const contentType of contentTypes3) {
+                  if (contentType.uid && contentType.uid.startsWith("api::")) {
+                    const uidParts = contentType.uid.split("::");
+                    if (uidParts.length === 2) {
+                      const apiAndType = uidParts[1].split(".");
+                      if (apiAndType.length >= 2) {
+                        const apiName = apiAndType[0];
+                        const contentTypeName = apiAndType[1];
+                        const apiDir = path.join(appDir, "src", "api", apiName);
+                        const contentTypeDir = path.join(apiDir, "content-types", contentTypeName);
+                        const schemaPath = path.join(contentTypeDir, "schema.json");
+                        if (!fs.existsSync(contentTypeDir)) {
+                          fs.mkdirSync(contentTypeDir, { recursive: true });
+                          strapi2.log.info(`[webbycommerce] Created content type directory: ${contentTypeDir}`);
+                        }
+                        if (!fs.existsSync(schemaPath)) {
+                          const minimalSchema = {
+                            kind: contentType.kind || "collectionType",
+                            collectionName: contentType.collectionName || (contentType.kind === "singleType" ? contentTypeName : `${contentTypeName}s`),
+                            info: {
+                              singularName: contentType.singularName || contentTypeName,
+                              pluralName: contentType.pluralName || (contentType.kind === "singleType" ? contentTypeName : `${contentTypeName}s`),
+                              displayName: contentType.displayName || contentType.modelName || contentTypeName,
+                              description: contentType.description || ""
+                            },
+                            options: {
+                              draftAndPublish: contentType.draftAndPublish !== void 0 ? contentType.draftAndPublish : false
+                            },
+                            attributes: {}
+                          };
+                          fs.writeFileSync(schemaPath, JSON.stringify(minimalSchema, null, 2));
+                          strapi2.log.info(`[webbycommerce] Created schema file: ${schemaPath}`);
+                        }
+                      }
+                    }
+                  }
+                }
+                strapi2.log.info("[webbycommerce] Retrying content-type-builder request after fixing directories...");
+              } catch (fixError) {
+                strapi2.log.error("[webbycommerce] Failed to fix path error:", fixError.message);
+              }
+            }
+            throw error;
+          }
+        });
+        try {
+          const contentTypeBuilderPlugin = strapi2.plugin("content-type-builder");
+          if (contentTypeBuilderPlugin) {
+            const ctbController = contentTypeBuilderPlugin.controller("content-types");
+            if (ctbController && typeof ctbController.updateSchema === "function") {
+              const originalUpdateSchema = ctbController.updateSchema;
+              ctbController.updateSchema = async function(ctx) {
+                try {
+                  return await originalUpdateSchema.call(this, ctx);
+                } catch (error) {
+                  if (error.message && error.message.includes("path") && error.message.includes("undefined")) {
+                    strapi2.log.error("[webbycommerce] CONTROLLER: Caught path undefined error in updateSchema");
+                    const body = ctx.request.body || {};
+                    const data = body.data || body;
+                    const contentTypes3 = data.contentTypes || [];
+                    let appDir = strapi2.dirs?.app?.root || path.resolve(__dirname, "../..");
+                    for (const contentType of contentTypes3) {
+                      if (contentType.uid && contentType.uid.startsWith("api::")) {
+                        const uidParts = contentType.uid.split("::");
+                        if (uidParts.length === 2) {
+                          const apiAndType = uidParts[1].split(".");
+                          if (apiAndType.length >= 2) {
+                            const apiName = apiAndType[0];
+                            const contentTypeName = apiAndType[1];
+                            const contentTypeDir = path.join(appDir, "src", "api", apiName, "content-types", contentTypeName);
+                            const schemaPath = path.join(contentTypeDir, "schema.json");
+                            fs.mkdirSync(contentTypeDir, { recursive: true });
+                            if (!fs.existsSync(schemaPath)) {
+                              const minimalSchema = {
+                                kind: contentType.kind || "collectionType",
+                                collectionName: contentType.collectionName || (contentType.kind === "singleType" ? contentTypeName : `${contentTypeName}s`),
+                                info: {
+                                  singularName: contentType.singularName || contentTypeName,
+                                  pluralName: contentType.pluralName || (contentType.kind === "singleType" ? contentTypeName : `${contentTypeName}s`),
+                                  displayName: contentType.displayName || contentType.modelName || contentTypeName
+                                },
+                                options: {
+                                  draftAndPublish: contentType.draftAndPublish !== void 0 ? contentType.draftAndPublish : false
+                                },
+                                attributes: {}
+                              };
+                              fs.writeFileSync(schemaPath, JSON.stringify(minimalSchema, null, 2));
+                            }
+                          }
+                        }
+                      }
+                    }
+                    strapi2.log.info("[webbycommerce] CONTROLLER: Retrying updateSchema after fixing paths");
+                    return await originalUpdateSchema.call(this, ctx);
+                  }
+                  throw error;
+                }
+              };
+              strapi2.log.info("[webbycommerce] Patched content-type-builder updateSchema controller");
+            }
+            const ctbService = contentTypeBuilderPlugin.service("builder");
+            if (ctbService) {
+              if (ctbService.writeContentTypeSchema && typeof ctbService.writeContentTypeSchema === "function") {
+                const originalWriteContentTypeSchema = ctbService.writeContentTypeSchema;
+                ctbService.writeContentTypeSchema = function(uid, schema) {
+                  try {
+                    return originalWriteContentTypeSchema.call(this, uid, schema);
+                  } catch (error) {
+                    if (error.message && error.message.includes("path") && error.message.includes("undefined")) {
+                      strapi2.log.error("[webbycommerce] SERVICE: Caught path undefined error in writeContentTypeSchema");
+                      if (uid && uid.startsWith("api::")) {
+                        const uidParts = uid.split("::");
+                        if (uidParts.length === 2) {
+                          const apiAndType = uidParts[1].split(".");
+                          if (apiAndType.length >= 2) {
+                            const apiName = apiAndType[0];
+                            const contentTypeName = apiAndType[1];
+                            const appDir = strapi2.dirs?.app?.root || path.resolve(__dirname, "../..");
+                            const contentTypeDir = path.join(appDir, "src", "api", apiName, "content-types", contentTypeName);
+                            const schemaPath = path.join(contentTypeDir, "schema.json");
+                            fs.mkdirSync(contentTypeDir, { recursive: true });
+                            if (!fs.existsSync(schemaPath)) {
+                              fs.writeFileSync(schemaPath, JSON.stringify(schema || {}, null, 2));
+                            }
+                            return originalWriteContentTypeSchema.call(this, uid, schema);
+                          }
+                        }
+                      }
+                    }
+                    throw error;
+                  }
+                };
+                strapi2.log.info("[webbycommerce] Patched content-type-builder writeContentTypeSchema service");
+              }
+            }
+          }
+        } catch (patchError) {
+          strapi2.log.warn("[webbycommerce] Could not patch content-type-builder:", patchError.message);
+          strapi2.log.warn("[webbycommerce] Patch error stack:", patchError.stack);
+        }
+        const originalWriteFileSync = fs.writeFileSync;
+        fs.writeFileSync = function(filePath, data, options) {
+          if (filePath === void 0 || filePath === null) {
+            const error = new Error('The "path" argument must be of type string. Received undefined');
+            strapi2.log.error("[webbycommerce] FS PATCH: Caught undefined path in writeFileSync");
+            strapi2.log.error("[webbycommerce] FS PATCH: Stack trace:", new Error().stack);
+            throw error;
+          }
+          if (typeof filePath === "string" && !path.isAbsolute(filePath)) {
+            const appDir = strapi2.dirs?.app?.root || path.resolve(__dirname, "../..");
+            const absolutePath = path.resolve(appDir, filePath);
+            if (absolutePath.includes("content-types") && absolutePath.endsWith("schema.json")) {
+              const dir = path.dirname(absolutePath);
+              if (!fs.existsSync(dir)) {
+                fs.mkdirSync(dir, { recursive: true });
+                strapi2.log.info(`[webbycommerce] FS PATCH: Created directory for relative path: ${dir}`);
+              }
+              filePath = absolutePath;
+            }
+          }
+          return originalWriteFileSync.call(this, filePath, data, options);
+        };
+        const originalWriteFile = fs.writeFile;
+        fs.writeFile = function(filePath, data, options, callback) {
+          if (filePath === void 0 || filePath === null) {
+            const error = new Error('The "path" argument must be of type string. Received undefined');
+            strapi2.log.error("[webbycommerce] FS PATCH: Caught undefined path in writeFile");
+            if (callback && typeof callback === "function") {
+              return callback(error);
+            }
+            throw error;
+          }
+          if (typeof filePath === "string" && !path.isAbsolute(filePath)) {
+            const appDir = strapi2.dirs?.app?.root || path.resolve(__dirname, "../..");
+            const absolutePath = path.resolve(appDir, filePath);
+            if (absolutePath.includes("content-types") && absolutePath.endsWith("schema.json")) {
+              const dir = path.dirname(absolutePath);
+              if (!fs.existsSync(dir)) {
+                fs.mkdirSync(dir, { recursive: true });
+                strapi2.log.info(`[webbycommerce] FS PATCH: Created directory for relative path: ${dir}`);
+              }
+              filePath = absolutePath;
+            }
+          }
+          return originalWriteFile.call(this, filePath, data, options, callback);
+        };
+        strapi2.log.info("[webbycommerce] Patched fs.writeFileSync and fs.writeFile to catch undefined paths");
         let retryCount = 0;
         const maxRetries = 3;
         const retryDelay = 1e3;
@@ -4916,10 +5704,59 @@ var require_bootstrap = __commonJS({
           }
         };
         await registerWithRetry();
+        strapi2.db.lifecycles.subscribe({
+          models: ["*"],
+          // Listen to all models
+          async afterCreate(event) {
+          }
+        });
+        strapi2.server.use(async (ctx, next) => {
+          if (ctx.path === "/content-type-builder/update-schema" && ctx.method === "POST") {
+            await next();
+            if (ctx.status === 200 || ctx.status === 201) {
+              const body = ctx.request.body || {};
+              const data = body.data || body;
+              const contentTypes3 = data.contentTypes || [];
+              for (const contentType of contentTypes3) {
+                if (contentType.uid && contentType.uid.startsWith("api::")) {
+                  const uidParts = contentType.uid.split("::");
+                  if (uidParts.length === 2) {
+                    const apiAndType = uidParts[1].split(".");
+                    if (apiAndType.length >= 2) {
+                      const apiName = apiAndType[0];
+                      const contentTypeName = apiAndType[1];
+                      strapi2.log.info(`[webbycommerce] \u2713 New collection created: ${contentType.uid}`);
+                      strapi2.log.info(`[webbycommerce] \u2713 Collection will be auto-registered on next restart`);
+                      strapi2.log.info(`[webbycommerce] \u2713 Strapi will auto-restart in develop mode to register the new collection`);
+                      const appDir = strapi2.dirs?.app?.root || path.resolve(__dirname, "../..");
+                      const schemaPath = path.join(appDir, "src", "api", apiName, "content-types", contentTypeName, "schema.json");
+                      if (fs.existsSync(schemaPath)) {
+                        strapi2.log.info(`[webbycommerce] \u2713 Schema file confirmed: ${schemaPath}`);
+                        strapi2.log.info(`[webbycommerce] \u2713 Auto-restart should occur automatically in develop mode`);
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          } else {
+            await next();
+          }
+        });
+        try {
+          const allContentTypes = strapi2.contentTypes;
+          const apiContentTypes = Object.keys(allContentTypes).filter((uid) => uid.startsWith("api::"));
+          strapi2.log.info(`[webbycommerce] Currently registered API content types: ${apiContentTypes.length}`);
+          if (apiContentTypes.length > 0) {
+            strapi2.log.info(`[webbycommerce] Registered collections: ${apiContentTypes.join(", ")}`);
+          }
+        } catch (error) {
+        }
         strapi2.log.info("[webbycommerce] Plugin bootstrapped successfully");
         strapi2.log.info(
           "[webbycommerce] Health endpoint is available at: /webbycommerce/health and /api/webbycommerce/health"
         );
+        strapi2.log.info("[webbycommerce] Auto-restart enabled: Strapi will automatically restart when new collections are added");
         strapi2.log.info("[webbycommerce] ========================================");
       } catch (error) {
         strapi2.log.error("[webbycommerce] Bootstrap error:", error);
@@ -4998,8 +5835,8 @@ var require_controller = __commonJS({
         const currentValue = await store.get({ key: SETTINGS_KEY }) || {};
         const allowedOrigins = body.allowedOrigins !== void 0 ? sanitizeOrigins(body.allowedOrigins) : sanitizeOrigins(currentValue.allowedOrigins);
         let loginRegisterMethod = body.loginRegisterMethod !== void 0 ? body.loginRegisterMethod : currentValue.loginRegisterMethod || "default";
-        if (loginRegisterMethod !== "default" && loginRegisterMethod !== "otp") {
-          return ctx.badRequest('Invalid loginRegisterMethod. Must be "default" or "otp".');
+        if (loginRegisterMethod !== "default" && loginRegisterMethod !== "otp" && loginRegisterMethod !== "both") {
+          return ctx.badRequest('Invalid loginRegisterMethod. Must be "default", "otp", or "both".');
         }
         let routePrefix = body.routePrefix !== void 0 ? body.routePrefix : currentValue.routePrefix || "webbycommerce";
         routePrefix = routePrefix.trim().replace(/^\/+|\/+$/g, "").replace(/\/+/g, "/").replace(/[^a-zA-Z0-9\/_-]/g, "") || "webbycommerce";
@@ -5063,6 +5900,1824 @@ var require_controller = __commonJS({
         }
       }
     };
+  }
+});
+
+// node_modules/bcryptjs/dist/bcrypt.js
+var require_bcrypt = __commonJS({
+  "node_modules/bcryptjs/dist/bcrypt.js"(exports2, module2) {
+    (function(global, factory) {
+      if (typeof define === "function" && define["amd"])
+        define([], factory);
+      else if (typeof require === "function" && typeof module2 === "object" && module2 && module2["exports"])
+        module2["exports"] = factory();
+      else
+        (global["dcodeIO"] = global["dcodeIO"] || {})["bcrypt"] = factory();
+    })(exports2, function() {
+      "use strict";
+      var bcrypt = {};
+      var randomFallback = null;
+      function random(len) {
+        if (typeof module2 !== "undefined" && module2 && module2["exports"])
+          try {
+            return require("crypto")["randomBytes"](len);
+          } catch (e) {
+          }
+        try {
+          var a;
+          (self["crypto"] || self["msCrypto"])["getRandomValues"](a = new Uint32Array(len));
+          return Array.prototype.slice.call(a);
+        } catch (e) {
+        }
+        if (!randomFallback)
+          throw Error("Neither WebCryptoAPI nor a crypto module is available. Use bcrypt.setRandomFallback to set an alternative");
+        return randomFallback(len);
+      }
+      var randomAvailable = false;
+      try {
+        random(1);
+        randomAvailable = true;
+      } catch (e) {
+      }
+      randomFallback = null;
+      bcrypt.setRandomFallback = function(random2) {
+        randomFallback = random2;
+      };
+      bcrypt.genSaltSync = function(rounds, seed_length) {
+        rounds = rounds || GENSALT_DEFAULT_LOG2_ROUNDS;
+        if (typeof rounds !== "number")
+          throw Error("Illegal arguments: " + typeof rounds + ", " + typeof seed_length);
+        if (rounds < 4)
+          rounds = 4;
+        else if (rounds > 31)
+          rounds = 31;
+        var salt = [];
+        salt.push("$2a$");
+        if (rounds < 10)
+          salt.push("0");
+        salt.push(rounds.toString());
+        salt.push("$");
+        salt.push(base64_encode(random(BCRYPT_SALT_LEN), BCRYPT_SALT_LEN));
+        return salt.join("");
+      };
+      bcrypt.genSalt = function(rounds, seed_length, callback) {
+        if (typeof seed_length === "function")
+          callback = seed_length, seed_length = void 0;
+        if (typeof rounds === "function")
+          callback = rounds, rounds = void 0;
+        if (typeof rounds === "undefined")
+          rounds = GENSALT_DEFAULT_LOG2_ROUNDS;
+        else if (typeof rounds !== "number")
+          throw Error("illegal arguments: " + typeof rounds);
+        function _async(callback2) {
+          nextTick(function() {
+            try {
+              callback2(null, bcrypt.genSaltSync(rounds));
+            } catch (err) {
+              callback2(err);
+            }
+          });
+        }
+        if (callback) {
+          if (typeof callback !== "function")
+            throw Error("Illegal callback: " + typeof callback);
+          _async(callback);
+        } else
+          return new Promise(function(resolve, reject) {
+            _async(function(err, res) {
+              if (err) {
+                reject(err);
+                return;
+              }
+              resolve(res);
+            });
+          });
+      };
+      bcrypt.hashSync = function(s, salt) {
+        if (typeof salt === "undefined")
+          salt = GENSALT_DEFAULT_LOG2_ROUNDS;
+        if (typeof salt === "number")
+          salt = bcrypt.genSaltSync(salt);
+        if (typeof s !== "string" || typeof salt !== "string")
+          throw Error("Illegal arguments: " + typeof s + ", " + typeof salt);
+        return _hash(s, salt);
+      };
+      bcrypt.hash = function(s, salt, callback, progressCallback) {
+        function _async(callback2) {
+          if (typeof s === "string" && typeof salt === "number")
+            bcrypt.genSalt(salt, function(err, salt2) {
+              _hash(s, salt2, callback2, progressCallback);
+            });
+          else if (typeof s === "string" && typeof salt === "string")
+            _hash(s, salt, callback2, progressCallback);
+          else
+            nextTick(callback2.bind(this, Error("Illegal arguments: " + typeof s + ", " + typeof salt)));
+        }
+        if (callback) {
+          if (typeof callback !== "function")
+            throw Error("Illegal callback: " + typeof callback);
+          _async(callback);
+        } else
+          return new Promise(function(resolve, reject) {
+            _async(function(err, res) {
+              if (err) {
+                reject(err);
+                return;
+              }
+              resolve(res);
+            });
+          });
+      };
+      function safeStringCompare(known, unknown) {
+        var right = 0, wrong = 0;
+        for (var i = 0, k = known.length; i < k; ++i) {
+          if (known.charCodeAt(i) === unknown.charCodeAt(i))
+            ++right;
+          else
+            ++wrong;
+        }
+        if (right < 0)
+          return false;
+        return wrong === 0;
+      }
+      bcrypt.compareSync = function(s, hash) {
+        if (typeof s !== "string" || typeof hash !== "string")
+          throw Error("Illegal arguments: " + typeof s + ", " + typeof hash);
+        if (hash.length !== 60)
+          return false;
+        return safeStringCompare(bcrypt.hashSync(s, hash.substr(0, hash.length - 31)), hash);
+      };
+      bcrypt.compare = function(s, hash, callback, progressCallback) {
+        function _async(callback2) {
+          if (typeof s !== "string" || typeof hash !== "string") {
+            nextTick(callback2.bind(this, Error("Illegal arguments: " + typeof s + ", " + typeof hash)));
+            return;
+          }
+          if (hash.length !== 60) {
+            nextTick(callback2.bind(this, null, false));
+            return;
+          }
+          bcrypt.hash(s, hash.substr(0, 29), function(err, comp) {
+            if (err)
+              callback2(err);
+            else
+              callback2(null, safeStringCompare(comp, hash));
+          }, progressCallback);
+        }
+        if (callback) {
+          if (typeof callback !== "function")
+            throw Error("Illegal callback: " + typeof callback);
+          _async(callback);
+        } else
+          return new Promise(function(resolve, reject) {
+            _async(function(err, res) {
+              if (err) {
+                reject(err);
+                return;
+              }
+              resolve(res);
+            });
+          });
+      };
+      bcrypt.getRounds = function(hash) {
+        if (typeof hash !== "string")
+          throw Error("Illegal arguments: " + typeof hash);
+        return parseInt(hash.split("$")[2], 10);
+      };
+      bcrypt.getSalt = function(hash) {
+        if (typeof hash !== "string")
+          throw Error("Illegal arguments: " + typeof hash);
+        if (hash.length !== 60)
+          throw Error("Illegal hash length: " + hash.length + " != 60");
+        return hash.substring(0, 29);
+      };
+      var nextTick = typeof process !== "undefined" && process && typeof process.nextTick === "function" ? typeof setImmediate === "function" ? setImmediate : process.nextTick : setTimeout;
+      function stringToBytes(str) {
+        var out = [], i = 0;
+        utfx.encodeUTF16toUTF8(function() {
+          if (i >= str.length) return null;
+          return str.charCodeAt(i++);
+        }, function(b) {
+          out.push(b);
+        });
+        return out;
+      }
+      var BASE64_CODE = "./ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789".split("");
+      var BASE64_INDEX = [
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        0,
+        1,
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60,
+        61,
+        62,
+        63,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1
+      ];
+      var stringFromCharCode = String.fromCharCode;
+      function base64_encode(b, len) {
+        var off = 0, rs = [], c1, c2;
+        if (len <= 0 || len > b.length)
+          throw Error("Illegal len: " + len);
+        while (off < len) {
+          c1 = b[off++] & 255;
+          rs.push(BASE64_CODE[c1 >> 2 & 63]);
+          c1 = (c1 & 3) << 4;
+          if (off >= len) {
+            rs.push(BASE64_CODE[c1 & 63]);
+            break;
+          }
+          c2 = b[off++] & 255;
+          c1 |= c2 >> 4 & 15;
+          rs.push(BASE64_CODE[c1 & 63]);
+          c1 = (c2 & 15) << 2;
+          if (off >= len) {
+            rs.push(BASE64_CODE[c1 & 63]);
+            break;
+          }
+          c2 = b[off++] & 255;
+          c1 |= c2 >> 6 & 3;
+          rs.push(BASE64_CODE[c1 & 63]);
+          rs.push(BASE64_CODE[c2 & 63]);
+        }
+        return rs.join("");
+      }
+      function base64_decode(s, len) {
+        var off = 0, slen = s.length, olen = 0, rs = [], c1, c2, c3, c4, o, code;
+        if (len <= 0)
+          throw Error("Illegal len: " + len);
+        while (off < slen - 1 && olen < len) {
+          code = s.charCodeAt(off++);
+          c1 = code < BASE64_INDEX.length ? BASE64_INDEX[code] : -1;
+          code = s.charCodeAt(off++);
+          c2 = code < BASE64_INDEX.length ? BASE64_INDEX[code] : -1;
+          if (c1 == -1 || c2 == -1)
+            break;
+          o = c1 << 2 >>> 0;
+          o |= (c2 & 48) >> 4;
+          rs.push(stringFromCharCode(o));
+          if (++olen >= len || off >= slen)
+            break;
+          code = s.charCodeAt(off++);
+          c3 = code < BASE64_INDEX.length ? BASE64_INDEX[code] : -1;
+          if (c3 == -1)
+            break;
+          o = (c2 & 15) << 4 >>> 0;
+          o |= (c3 & 60) >> 2;
+          rs.push(stringFromCharCode(o));
+          if (++olen >= len || off >= slen)
+            break;
+          code = s.charCodeAt(off++);
+          c4 = code < BASE64_INDEX.length ? BASE64_INDEX[code] : -1;
+          o = (c3 & 3) << 6 >>> 0;
+          o |= c4;
+          rs.push(stringFromCharCode(o));
+          ++olen;
+        }
+        var res = [];
+        for (off = 0; off < olen; off++)
+          res.push(rs[off].charCodeAt(0));
+        return res;
+      }
+      var utfx = (function() {
+        "use strict";
+        var utfx2 = {};
+        utfx2.MAX_CODEPOINT = 1114111;
+        utfx2.encodeUTF8 = function(src, dst) {
+          var cp = null;
+          if (typeof src === "number")
+            cp = src, src = function() {
+              return null;
+            };
+          while (cp !== null || (cp = src()) !== null) {
+            if (cp < 128)
+              dst(cp & 127);
+            else if (cp < 2048)
+              dst(cp >> 6 & 31 | 192), dst(cp & 63 | 128);
+            else if (cp < 65536)
+              dst(cp >> 12 & 15 | 224), dst(cp >> 6 & 63 | 128), dst(cp & 63 | 128);
+            else
+              dst(cp >> 18 & 7 | 240), dst(cp >> 12 & 63 | 128), dst(cp >> 6 & 63 | 128), dst(cp & 63 | 128);
+            cp = null;
+          }
+        };
+        utfx2.decodeUTF8 = function(src, dst) {
+          var a, b, c, d, fail = function(b2) {
+            b2 = b2.slice(0, b2.indexOf(null));
+            var err = Error(b2.toString());
+            err.name = "TruncatedError";
+            err["bytes"] = b2;
+            throw err;
+          };
+          while ((a = src()) !== null) {
+            if ((a & 128) === 0)
+              dst(a);
+            else if ((a & 224) === 192)
+              (b = src()) === null && fail([a, b]), dst((a & 31) << 6 | b & 63);
+            else if ((a & 240) === 224)
+              ((b = src()) === null || (c = src()) === null) && fail([a, b, c]), dst((a & 15) << 12 | (b & 63) << 6 | c & 63);
+            else if ((a & 248) === 240)
+              ((b = src()) === null || (c = src()) === null || (d = src()) === null) && fail([a, b, c, d]), dst((a & 7) << 18 | (b & 63) << 12 | (c & 63) << 6 | d & 63);
+            else throw RangeError("Illegal starting byte: " + a);
+          }
+        };
+        utfx2.UTF16toUTF8 = function(src, dst) {
+          var c1, c2 = null;
+          while (true) {
+            if ((c1 = c2 !== null ? c2 : src()) === null)
+              break;
+            if (c1 >= 55296 && c1 <= 57343) {
+              if ((c2 = src()) !== null) {
+                if (c2 >= 56320 && c2 <= 57343) {
+                  dst((c1 - 55296) * 1024 + c2 - 56320 + 65536);
+                  c2 = null;
+                  continue;
+                }
+              }
+            }
+            dst(c1);
+          }
+          if (c2 !== null) dst(c2);
+        };
+        utfx2.UTF8toUTF16 = function(src, dst) {
+          var cp = null;
+          if (typeof src === "number")
+            cp = src, src = function() {
+              return null;
+            };
+          while (cp !== null || (cp = src()) !== null) {
+            if (cp <= 65535)
+              dst(cp);
+            else
+              cp -= 65536, dst((cp >> 10) + 55296), dst(cp % 1024 + 56320);
+            cp = null;
+          }
+        };
+        utfx2.encodeUTF16toUTF8 = function(src, dst) {
+          utfx2.UTF16toUTF8(src, function(cp) {
+            utfx2.encodeUTF8(cp, dst);
+          });
+        };
+        utfx2.decodeUTF8toUTF16 = function(src, dst) {
+          utfx2.decodeUTF8(src, function(cp) {
+            utfx2.UTF8toUTF16(cp, dst);
+          });
+        };
+        utfx2.calculateCodePoint = function(cp) {
+          return cp < 128 ? 1 : cp < 2048 ? 2 : cp < 65536 ? 3 : 4;
+        };
+        utfx2.calculateUTF8 = function(src) {
+          var cp, l = 0;
+          while ((cp = src()) !== null)
+            l += utfx2.calculateCodePoint(cp);
+          return l;
+        };
+        utfx2.calculateUTF16asUTF8 = function(src) {
+          var n = 0, l = 0;
+          utfx2.UTF16toUTF8(src, function(cp) {
+            ++n;
+            l += utfx2.calculateCodePoint(cp);
+          });
+          return [n, l];
+        };
+        return utfx2;
+      })();
+      Date.now = Date.now || function() {
+        return +/* @__PURE__ */ new Date();
+      };
+      var BCRYPT_SALT_LEN = 16;
+      var GENSALT_DEFAULT_LOG2_ROUNDS = 10;
+      var BLOWFISH_NUM_ROUNDS = 16;
+      var MAX_EXECUTION_TIME = 100;
+      var P_ORIG = [
+        608135816,
+        2242054355,
+        320440878,
+        57701188,
+        2752067618,
+        698298832,
+        137296536,
+        3964562569,
+        1160258022,
+        953160567,
+        3193202383,
+        887688300,
+        3232508343,
+        3380367581,
+        1065670069,
+        3041331479,
+        2450970073,
+        2306472731
+      ];
+      var S_ORIG = [
+        3509652390,
+        2564797868,
+        805139163,
+        3491422135,
+        3101798381,
+        1780907670,
+        3128725573,
+        4046225305,
+        614570311,
+        3012652279,
+        134345442,
+        2240740374,
+        1667834072,
+        1901547113,
+        2757295779,
+        4103290238,
+        227898511,
+        1921955416,
+        1904987480,
+        2182433518,
+        2069144605,
+        3260701109,
+        2620446009,
+        720527379,
+        3318853667,
+        677414384,
+        3393288472,
+        3101374703,
+        2390351024,
+        1614419982,
+        1822297739,
+        2954791486,
+        3608508353,
+        3174124327,
+        2024746970,
+        1432378464,
+        3864339955,
+        2857741204,
+        1464375394,
+        1676153920,
+        1439316330,
+        715854006,
+        3033291828,
+        289532110,
+        2706671279,
+        2087905683,
+        3018724369,
+        1668267050,
+        732546397,
+        1947742710,
+        3462151702,
+        2609353502,
+        2950085171,
+        1814351708,
+        2050118529,
+        680887927,
+        999245976,
+        1800124847,
+        3300911131,
+        1713906067,
+        1641548236,
+        4213287313,
+        1216130144,
+        1575780402,
+        4018429277,
+        3917837745,
+        3693486850,
+        3949271944,
+        596196993,
+        3549867205,
+        258830323,
+        2213823033,
+        772490370,
+        2760122372,
+        1774776394,
+        2652871518,
+        566650946,
+        4142492826,
+        1728879713,
+        2882767088,
+        1783734482,
+        3629395816,
+        2517608232,
+        2874225571,
+        1861159788,
+        326777828,
+        3124490320,
+        2130389656,
+        2716951837,
+        967770486,
+        1724537150,
+        2185432712,
+        2364442137,
+        1164943284,
+        2105845187,
+        998989502,
+        3765401048,
+        2244026483,
+        1075463327,
+        1455516326,
+        1322494562,
+        910128902,
+        469688178,
+        1117454909,
+        936433444,
+        3490320968,
+        3675253459,
+        1240580251,
+        122909385,
+        2157517691,
+        634681816,
+        4142456567,
+        3825094682,
+        3061402683,
+        2540495037,
+        79693498,
+        3249098678,
+        1084186820,
+        1583128258,
+        426386531,
+        1761308591,
+        1047286709,
+        322548459,
+        995290223,
+        1845252383,
+        2603652396,
+        3431023940,
+        2942221577,
+        3202600964,
+        3727903485,
+        1712269319,
+        422464435,
+        3234572375,
+        1170764815,
+        3523960633,
+        3117677531,
+        1434042557,
+        442511882,
+        3600875718,
+        1076654713,
+        1738483198,
+        4213154764,
+        2393238008,
+        3677496056,
+        1014306527,
+        4251020053,
+        793779912,
+        2902807211,
+        842905082,
+        4246964064,
+        1395751752,
+        1040244610,
+        2656851899,
+        3396308128,
+        445077038,
+        3742853595,
+        3577915638,
+        679411651,
+        2892444358,
+        2354009459,
+        1767581616,
+        3150600392,
+        3791627101,
+        3102740896,
+        284835224,
+        4246832056,
+        1258075500,
+        768725851,
+        2589189241,
+        3069724005,
+        3532540348,
+        1274779536,
+        3789419226,
+        2764799539,
+        1660621633,
+        3471099624,
+        4011903706,
+        913787905,
+        3497959166,
+        737222580,
+        2514213453,
+        2928710040,
+        3937242737,
+        1804850592,
+        3499020752,
+        2949064160,
+        2386320175,
+        2390070455,
+        2415321851,
+        4061277028,
+        2290661394,
+        2416832540,
+        1336762016,
+        1754252060,
+        3520065937,
+        3014181293,
+        791618072,
+        3188594551,
+        3933548030,
+        2332172193,
+        3852520463,
+        3043980520,
+        413987798,
+        3465142937,
+        3030929376,
+        4245938359,
+        2093235073,
+        3534596313,
+        375366246,
+        2157278981,
+        2479649556,
+        555357303,
+        3870105701,
+        2008414854,
+        3344188149,
+        4221384143,
+        3956125452,
+        2067696032,
+        3594591187,
+        2921233993,
+        2428461,
+        544322398,
+        577241275,
+        1471733935,
+        610547355,
+        4027169054,
+        1432588573,
+        1507829418,
+        2025931657,
+        3646575487,
+        545086370,
+        48609733,
+        2200306550,
+        1653985193,
+        298326376,
+        1316178497,
+        3007786442,
+        2064951626,
+        458293330,
+        2589141269,
+        3591329599,
+        3164325604,
+        727753846,
+        2179363840,
+        146436021,
+        1461446943,
+        4069977195,
+        705550613,
+        3059967265,
+        3887724982,
+        4281599278,
+        3313849956,
+        1404054877,
+        2845806497,
+        146425753,
+        1854211946,
+        1266315497,
+        3048417604,
+        3681880366,
+        3289982499,
+        290971e4,
+        1235738493,
+        2632868024,
+        2414719590,
+        3970600049,
+        1771706367,
+        1449415276,
+        3266420449,
+        422970021,
+        1963543593,
+        2690192192,
+        3826793022,
+        1062508698,
+        1531092325,
+        1804592342,
+        2583117782,
+        2714934279,
+        4024971509,
+        1294809318,
+        4028980673,
+        1289560198,
+        2221992742,
+        1669523910,
+        35572830,
+        157838143,
+        1052438473,
+        1016535060,
+        1802137761,
+        1753167236,
+        1386275462,
+        3080475397,
+        2857371447,
+        1040679964,
+        2145300060,
+        2390574316,
+        1461121720,
+        2956646967,
+        4031777805,
+        4028374788,
+        33600511,
+        2920084762,
+        1018524850,
+        629373528,
+        3691585981,
+        3515945977,
+        2091462646,
+        2486323059,
+        586499841,
+        988145025,
+        935516892,
+        3367335476,
+        2599673255,
+        2839830854,
+        265290510,
+        3972581182,
+        2759138881,
+        3795373465,
+        1005194799,
+        847297441,
+        406762289,
+        1314163512,
+        1332590856,
+        1866599683,
+        4127851711,
+        750260880,
+        613907577,
+        1450815602,
+        3165620655,
+        3734664991,
+        3650291728,
+        3012275730,
+        3704569646,
+        1427272223,
+        778793252,
+        1343938022,
+        2676280711,
+        2052605720,
+        1946737175,
+        3164576444,
+        3914038668,
+        3967478842,
+        3682934266,
+        1661551462,
+        3294938066,
+        4011595847,
+        840292616,
+        3712170807,
+        616741398,
+        312560963,
+        711312465,
+        1351876610,
+        322626781,
+        1910503582,
+        271666773,
+        2175563734,
+        1594956187,
+        70604529,
+        3617834859,
+        1007753275,
+        1495573769,
+        4069517037,
+        2549218298,
+        2663038764,
+        504708206,
+        2263041392,
+        3941167025,
+        2249088522,
+        1514023603,
+        1998579484,
+        1312622330,
+        694541497,
+        2582060303,
+        2151582166,
+        1382467621,
+        776784248,
+        2618340202,
+        3323268794,
+        2497899128,
+        2784771155,
+        503983604,
+        4076293799,
+        907881277,
+        423175695,
+        432175456,
+        1378068232,
+        4145222326,
+        3954048622,
+        3938656102,
+        3820766613,
+        2793130115,
+        2977904593,
+        26017576,
+        3274890735,
+        3194772133,
+        1700274565,
+        1756076034,
+        4006520079,
+        3677328699,
+        720338349,
+        1533947780,
+        354530856,
+        688349552,
+        3973924725,
+        1637815568,
+        332179504,
+        3949051286,
+        53804574,
+        2852348879,
+        3044236432,
+        1282449977,
+        3583942155,
+        3416972820,
+        4006381244,
+        1617046695,
+        2628476075,
+        3002303598,
+        1686838959,
+        431878346,
+        2686675385,
+        1700445008,
+        1080580658,
+        1009431731,
+        832498133,
+        3223435511,
+        2605976345,
+        2271191193,
+        2516031870,
+        1648197032,
+        4164389018,
+        2548247927,
+        300782431,
+        375919233,
+        238389289,
+        3353747414,
+        2531188641,
+        2019080857,
+        1475708069,
+        455242339,
+        2609103871,
+        448939670,
+        3451063019,
+        1395535956,
+        2413381860,
+        1841049896,
+        1491858159,
+        885456874,
+        4264095073,
+        4001119347,
+        1565136089,
+        3898914787,
+        1108368660,
+        540939232,
+        1173283510,
+        2745871338,
+        3681308437,
+        4207628240,
+        3343053890,
+        4016749493,
+        1699691293,
+        1103962373,
+        3625875870,
+        2256883143,
+        3830138730,
+        1031889488,
+        3479347698,
+        1535977030,
+        4236805024,
+        3251091107,
+        2132092099,
+        1774941330,
+        1199868427,
+        1452454533,
+        157007616,
+        2904115357,
+        342012276,
+        595725824,
+        1480756522,
+        206960106,
+        497939518,
+        591360097,
+        863170706,
+        2375253569,
+        3596610801,
+        1814182875,
+        2094937945,
+        3421402208,
+        1082520231,
+        3463918190,
+        2785509508,
+        435703966,
+        3908032597,
+        1641649973,
+        2842273706,
+        3305899714,
+        1510255612,
+        2148256476,
+        2655287854,
+        3276092548,
+        4258621189,
+        236887753,
+        3681803219,
+        274041037,
+        1734335097,
+        3815195456,
+        3317970021,
+        1899903192,
+        1026095262,
+        4050517792,
+        356393447,
+        2410691914,
+        3873677099,
+        3682840055,
+        3913112168,
+        2491498743,
+        4132185628,
+        2489919796,
+        1091903735,
+        1979897079,
+        3170134830,
+        3567386728,
+        3557303409,
+        857797738,
+        1136121015,
+        1342202287,
+        507115054,
+        2535736646,
+        337727348,
+        3213592640,
+        1301675037,
+        2528481711,
+        1895095763,
+        1721773893,
+        3216771564,
+        62756741,
+        2142006736,
+        835421444,
+        2531993523,
+        1442658625,
+        3659876326,
+        2882144922,
+        676362277,
+        1392781812,
+        170690266,
+        3921047035,
+        1759253602,
+        3611846912,
+        1745797284,
+        664899054,
+        1329594018,
+        3901205900,
+        3045908486,
+        2062866102,
+        2865634940,
+        3543621612,
+        3464012697,
+        1080764994,
+        553557557,
+        3656615353,
+        3996768171,
+        991055499,
+        499776247,
+        1265440854,
+        648242737,
+        3940784050,
+        980351604,
+        3713745714,
+        1749149687,
+        3396870395,
+        4211799374,
+        3640570775,
+        1161844396,
+        3125318951,
+        1431517754,
+        545492359,
+        4268468663,
+        3499529547,
+        1437099964,
+        2702547544,
+        3433638243,
+        2581715763,
+        2787789398,
+        1060185593,
+        1593081372,
+        2418618748,
+        4260947970,
+        69676912,
+        2159744348,
+        86519011,
+        2512459080,
+        3838209314,
+        1220612927,
+        3339683548,
+        133810670,
+        1090789135,
+        1078426020,
+        1569222167,
+        845107691,
+        3583754449,
+        4072456591,
+        1091646820,
+        628848692,
+        1613405280,
+        3757631651,
+        526609435,
+        236106946,
+        48312990,
+        2942717905,
+        3402727701,
+        1797494240,
+        859738849,
+        992217954,
+        4005476642,
+        2243076622,
+        3870952857,
+        3732016268,
+        765654824,
+        3490871365,
+        2511836413,
+        1685915746,
+        3888969200,
+        1414112111,
+        2273134842,
+        3281911079,
+        4080962846,
+        172450625,
+        2569994100,
+        980381355,
+        4109958455,
+        2819808352,
+        2716589560,
+        2568741196,
+        3681446669,
+        3329971472,
+        1835478071,
+        660984891,
+        3704678404,
+        4045999559,
+        3422617507,
+        3040415634,
+        1762651403,
+        1719377915,
+        3470491036,
+        2693910283,
+        3642056355,
+        3138596744,
+        1364962596,
+        2073328063,
+        1983633131,
+        926494387,
+        3423689081,
+        2150032023,
+        4096667949,
+        1749200295,
+        3328846651,
+        309677260,
+        2016342300,
+        1779581495,
+        3079819751,
+        111262694,
+        1274766160,
+        443224088,
+        298511866,
+        1025883608,
+        3806446537,
+        1145181785,
+        168956806,
+        3641502830,
+        3584813610,
+        1689216846,
+        3666258015,
+        3200248200,
+        1692713982,
+        2646376535,
+        4042768518,
+        1618508792,
+        1610833997,
+        3523052358,
+        4130873264,
+        2001055236,
+        3610705100,
+        2202168115,
+        4028541809,
+        2961195399,
+        1006657119,
+        2006996926,
+        3186142756,
+        1430667929,
+        3210227297,
+        1314452623,
+        4074634658,
+        4101304120,
+        2273951170,
+        1399257539,
+        3367210612,
+        3027628629,
+        1190975929,
+        2062231137,
+        2333990788,
+        2221543033,
+        2438960610,
+        1181637006,
+        548689776,
+        2362791313,
+        3372408396,
+        3104550113,
+        3145860560,
+        296247880,
+        1970579870,
+        3078560182,
+        3769228297,
+        1714227617,
+        3291629107,
+        3898220290,
+        166772364,
+        1251581989,
+        493813264,
+        448347421,
+        195405023,
+        2709975567,
+        677966185,
+        3703036547,
+        1463355134,
+        2715995803,
+        1338867538,
+        1343315457,
+        2802222074,
+        2684532164,
+        233230375,
+        2599980071,
+        2000651841,
+        3277868038,
+        1638401717,
+        4028070440,
+        3237316320,
+        6314154,
+        819756386,
+        300326615,
+        590932579,
+        1405279636,
+        3267499572,
+        3150704214,
+        2428286686,
+        3959192993,
+        3461946742,
+        1862657033,
+        1266418056,
+        963775037,
+        2089974820,
+        2263052895,
+        1917689273,
+        448879540,
+        3550394620,
+        3981727096,
+        150775221,
+        3627908307,
+        1303187396,
+        508620638,
+        2975983352,
+        2726630617,
+        1817252668,
+        1876281319,
+        1457606340,
+        908771278,
+        3720792119,
+        3617206836,
+        2455994898,
+        1729034894,
+        1080033504,
+        976866871,
+        3556439503,
+        2881648439,
+        1522871579,
+        1555064734,
+        1336096578,
+        3548522304,
+        2579274686,
+        3574697629,
+        3205460757,
+        3593280638,
+        3338716283,
+        3079412587,
+        564236357,
+        2993598910,
+        1781952180,
+        1464380207,
+        3163844217,
+        3332601554,
+        1699332808,
+        1393555694,
+        1183702653,
+        3581086237,
+        1288719814,
+        691649499,
+        2847557200,
+        2895455976,
+        3193889540,
+        2717570544,
+        1781354906,
+        1676643554,
+        2592534050,
+        3230253752,
+        1126444790,
+        2770207658,
+        2633158820,
+        2210423226,
+        2615765581,
+        2414155088,
+        3127139286,
+        673620729,
+        2805611233,
+        1269405062,
+        4015350505,
+        3341807571,
+        4149409754,
+        1057255273,
+        2012875353,
+        2162469141,
+        2276492801,
+        2601117357,
+        993977747,
+        3918593370,
+        2654263191,
+        753973209,
+        36408145,
+        2530585658,
+        25011837,
+        3520020182,
+        2088578344,
+        530523599,
+        2918365339,
+        1524020338,
+        1518925132,
+        3760827505,
+        3759777254,
+        1202760957,
+        3985898139,
+        3906192525,
+        674977740,
+        4174734889,
+        2031300136,
+        2019492241,
+        3983892565,
+        4153806404,
+        3822280332,
+        352677332,
+        2297720250,
+        60907813,
+        90501309,
+        3286998549,
+        1016092578,
+        2535922412,
+        2839152426,
+        457141659,
+        509813237,
+        4120667899,
+        652014361,
+        1966332200,
+        2975202805,
+        55981186,
+        2327461051,
+        676427537,
+        3255491064,
+        2882294119,
+        3433927263,
+        1307055953,
+        942726286,
+        933058658,
+        2468411793,
+        3933900994,
+        4215176142,
+        1361170020,
+        2001714738,
+        2830558078,
+        3274259782,
+        1222529897,
+        1679025792,
+        2729314320,
+        3714953764,
+        1770335741,
+        151462246,
+        3013232138,
+        1682292957,
+        1483529935,
+        471910574,
+        1539241949,
+        458788160,
+        3436315007,
+        1807016891,
+        3718408830,
+        978976581,
+        1043663428,
+        3165965781,
+        1927990952,
+        4200891579,
+        2372276910,
+        3208408903,
+        3533431907,
+        1412390302,
+        2931980059,
+        4132332400,
+        1947078029,
+        3881505623,
+        4168226417,
+        2941484381,
+        1077988104,
+        1320477388,
+        886195818,
+        18198404,
+        3786409e3,
+        2509781533,
+        112762804,
+        3463356488,
+        1866414978,
+        891333506,
+        18488651,
+        661792760,
+        1628790961,
+        3885187036,
+        3141171499,
+        876946877,
+        2693282273,
+        1372485963,
+        791857591,
+        2686433993,
+        3759982718,
+        3167212022,
+        3472953795,
+        2716379847,
+        445679433,
+        3561995674,
+        3504004811,
+        3574258232,
+        54117162,
+        3331405415,
+        2381918588,
+        3769707343,
+        4154350007,
+        1140177722,
+        4074052095,
+        668550556,
+        3214352940,
+        367459370,
+        261225585,
+        2610173221,
+        4209349473,
+        3468074219,
+        3265815641,
+        314222801,
+        3066103646,
+        3808782860,
+        282218597,
+        3406013506,
+        3773591054,
+        379116347,
+        1285071038,
+        846784868,
+        2669647154,
+        3771962079,
+        3550491691,
+        2305946142,
+        453669953,
+        1268987020,
+        3317592352,
+        3279303384,
+        3744833421,
+        2610507566,
+        3859509063,
+        266596637,
+        3847019092,
+        517658769,
+        3462560207,
+        3443424879,
+        370717030,
+        4247526661,
+        2224018117,
+        4143653529,
+        4112773975,
+        2788324899,
+        2477274417,
+        1456262402,
+        2901442914,
+        1517677493,
+        1846949527,
+        2295493580,
+        3734397586,
+        2176403920,
+        1280348187,
+        1908823572,
+        3871786941,
+        846861322,
+        1172426758,
+        3287448474,
+        3383383037,
+        1655181056,
+        3139813346,
+        901632758,
+        1897031941,
+        2986607138,
+        3066810236,
+        3447102507,
+        1393639104,
+        373351379,
+        950779232,
+        625454576,
+        3124240540,
+        4148612726,
+        2007998917,
+        544563296,
+        2244738638,
+        2330496472,
+        2058025392,
+        1291430526,
+        424198748,
+        50039436,
+        29584100,
+        3605783033,
+        2429876329,
+        2791104160,
+        1057563949,
+        3255363231,
+        3075367218,
+        3463963227,
+        1469046755,
+        985887462
+      ];
+      var C_ORIG = [
+        1332899944,
+        1700884034,
+        1701343084,
+        1684370003,
+        1668446532,
+        1869963892
+      ];
+      function _encipher(lr, off, P, S) {
+        var n, l = lr[off], r = lr[off + 1];
+        l ^= P[0];
+        n = S[l >>> 24];
+        n += S[256 | l >> 16 & 255];
+        n ^= S[512 | l >> 8 & 255];
+        n += S[768 | l & 255];
+        r ^= n ^ P[1];
+        n = S[r >>> 24];
+        n += S[256 | r >> 16 & 255];
+        n ^= S[512 | r >> 8 & 255];
+        n += S[768 | r & 255];
+        l ^= n ^ P[2];
+        n = S[l >>> 24];
+        n += S[256 | l >> 16 & 255];
+        n ^= S[512 | l >> 8 & 255];
+        n += S[768 | l & 255];
+        r ^= n ^ P[3];
+        n = S[r >>> 24];
+        n += S[256 | r >> 16 & 255];
+        n ^= S[512 | r >> 8 & 255];
+        n += S[768 | r & 255];
+        l ^= n ^ P[4];
+        n = S[l >>> 24];
+        n += S[256 | l >> 16 & 255];
+        n ^= S[512 | l >> 8 & 255];
+        n += S[768 | l & 255];
+        r ^= n ^ P[5];
+        n = S[r >>> 24];
+        n += S[256 | r >> 16 & 255];
+        n ^= S[512 | r >> 8 & 255];
+        n += S[768 | r & 255];
+        l ^= n ^ P[6];
+        n = S[l >>> 24];
+        n += S[256 | l >> 16 & 255];
+        n ^= S[512 | l >> 8 & 255];
+        n += S[768 | l & 255];
+        r ^= n ^ P[7];
+        n = S[r >>> 24];
+        n += S[256 | r >> 16 & 255];
+        n ^= S[512 | r >> 8 & 255];
+        n += S[768 | r & 255];
+        l ^= n ^ P[8];
+        n = S[l >>> 24];
+        n += S[256 | l >> 16 & 255];
+        n ^= S[512 | l >> 8 & 255];
+        n += S[768 | l & 255];
+        r ^= n ^ P[9];
+        n = S[r >>> 24];
+        n += S[256 | r >> 16 & 255];
+        n ^= S[512 | r >> 8 & 255];
+        n += S[768 | r & 255];
+        l ^= n ^ P[10];
+        n = S[l >>> 24];
+        n += S[256 | l >> 16 & 255];
+        n ^= S[512 | l >> 8 & 255];
+        n += S[768 | l & 255];
+        r ^= n ^ P[11];
+        n = S[r >>> 24];
+        n += S[256 | r >> 16 & 255];
+        n ^= S[512 | r >> 8 & 255];
+        n += S[768 | r & 255];
+        l ^= n ^ P[12];
+        n = S[l >>> 24];
+        n += S[256 | l >> 16 & 255];
+        n ^= S[512 | l >> 8 & 255];
+        n += S[768 | l & 255];
+        r ^= n ^ P[13];
+        n = S[r >>> 24];
+        n += S[256 | r >> 16 & 255];
+        n ^= S[512 | r >> 8 & 255];
+        n += S[768 | r & 255];
+        l ^= n ^ P[14];
+        n = S[l >>> 24];
+        n += S[256 | l >> 16 & 255];
+        n ^= S[512 | l >> 8 & 255];
+        n += S[768 | l & 255];
+        r ^= n ^ P[15];
+        n = S[r >>> 24];
+        n += S[256 | r >> 16 & 255];
+        n ^= S[512 | r >> 8 & 255];
+        n += S[768 | r & 255];
+        l ^= n ^ P[16];
+        lr[off] = r ^ P[BLOWFISH_NUM_ROUNDS + 1];
+        lr[off + 1] = l;
+        return lr;
+      }
+      function _streamtoword(data, offp) {
+        for (var i = 0, word = 0; i < 4; ++i)
+          word = word << 8 | data[offp] & 255, offp = (offp + 1) % data.length;
+        return { key: word, offp };
+      }
+      function _key(key, P, S) {
+        var offset = 0, lr = [0, 0], plen = P.length, slen = S.length, sw;
+        for (var i = 0; i < plen; i++)
+          sw = _streamtoword(key, offset), offset = sw.offp, P[i] = P[i] ^ sw.key;
+        for (i = 0; i < plen; i += 2)
+          lr = _encipher(lr, 0, P, S), P[i] = lr[0], P[i + 1] = lr[1];
+        for (i = 0; i < slen; i += 2)
+          lr = _encipher(lr, 0, P, S), S[i] = lr[0], S[i + 1] = lr[1];
+      }
+      function _ekskey(data, key, P, S) {
+        var offp = 0, lr = [0, 0], plen = P.length, slen = S.length, sw;
+        for (var i = 0; i < plen; i++)
+          sw = _streamtoword(key, offp), offp = sw.offp, P[i] = P[i] ^ sw.key;
+        offp = 0;
+        for (i = 0; i < plen; i += 2)
+          sw = _streamtoword(data, offp), offp = sw.offp, lr[0] ^= sw.key, sw = _streamtoword(data, offp), offp = sw.offp, lr[1] ^= sw.key, lr = _encipher(lr, 0, P, S), P[i] = lr[0], P[i + 1] = lr[1];
+        for (i = 0; i < slen; i += 2)
+          sw = _streamtoword(data, offp), offp = sw.offp, lr[0] ^= sw.key, sw = _streamtoword(data, offp), offp = sw.offp, lr[1] ^= sw.key, lr = _encipher(lr, 0, P, S), S[i] = lr[0], S[i + 1] = lr[1];
+      }
+      function _crypt(b, salt, rounds, callback, progressCallback) {
+        var cdata = C_ORIG.slice(), clen = cdata.length, err;
+        if (rounds < 4 || rounds > 31) {
+          err = Error("Illegal number of rounds (4-31): " + rounds);
+          if (callback) {
+            nextTick(callback.bind(this, err));
+            return;
+          } else
+            throw err;
+        }
+        if (salt.length !== BCRYPT_SALT_LEN) {
+          err = Error("Illegal salt length: " + salt.length + " != " + BCRYPT_SALT_LEN);
+          if (callback) {
+            nextTick(callback.bind(this, err));
+            return;
+          } else
+            throw err;
+        }
+        rounds = 1 << rounds >>> 0;
+        var P, S, i = 0, j;
+        if (Int32Array) {
+          P = new Int32Array(P_ORIG);
+          S = new Int32Array(S_ORIG);
+        } else {
+          P = P_ORIG.slice();
+          S = S_ORIG.slice();
+        }
+        _ekskey(salt, b, P, S);
+        function next() {
+          if (progressCallback)
+            progressCallback(i / rounds);
+          if (i < rounds) {
+            var start = Date.now();
+            for (; i < rounds; ) {
+              i = i + 1;
+              _key(b, P, S);
+              _key(salt, P, S);
+              if (Date.now() - start > MAX_EXECUTION_TIME)
+                break;
+            }
+          } else {
+            for (i = 0; i < 64; i++)
+              for (j = 0; j < clen >> 1; j++)
+                _encipher(cdata, j << 1, P, S);
+            var ret = [];
+            for (i = 0; i < clen; i++)
+              ret.push((cdata[i] >> 24 & 255) >>> 0), ret.push((cdata[i] >> 16 & 255) >>> 0), ret.push((cdata[i] >> 8 & 255) >>> 0), ret.push((cdata[i] & 255) >>> 0);
+            if (callback) {
+              callback(null, ret);
+              return;
+            } else
+              return ret;
+          }
+          if (callback)
+            nextTick(next);
+        }
+        if (typeof callback !== "undefined") {
+          next();
+        } else {
+          var res;
+          while (true)
+            if (typeof (res = next()) !== "undefined")
+              return res || [];
+        }
+      }
+      function _hash(s, salt, callback, progressCallback) {
+        var err;
+        if (typeof s !== "string" || typeof salt !== "string") {
+          err = Error("Invalid string / salt: Not a string");
+          if (callback) {
+            nextTick(callback.bind(this, err));
+            return;
+          } else
+            throw err;
+        }
+        var minor, offset;
+        if (salt.charAt(0) !== "$" || salt.charAt(1) !== "2") {
+          err = Error("Invalid salt version: " + salt.substring(0, 2));
+          if (callback) {
+            nextTick(callback.bind(this, err));
+            return;
+          } else
+            throw err;
+        }
+        if (salt.charAt(2) === "$")
+          minor = String.fromCharCode(0), offset = 3;
+        else {
+          minor = salt.charAt(2);
+          if (minor !== "a" && minor !== "b" && minor !== "y" || salt.charAt(3) !== "$") {
+            err = Error("Invalid salt revision: " + salt.substring(2, 4));
+            if (callback) {
+              nextTick(callback.bind(this, err));
+              return;
+            } else
+              throw err;
+          }
+          offset = 4;
+        }
+        if (salt.charAt(offset + 2) > "$") {
+          err = Error("Missing salt rounds");
+          if (callback) {
+            nextTick(callback.bind(this, err));
+            return;
+          } else
+            throw err;
+        }
+        var r1 = parseInt(salt.substring(offset, offset + 1), 10) * 10, r2 = parseInt(salt.substring(offset + 1, offset + 2), 10), rounds = r1 + r2, real_salt = salt.substring(offset + 3, offset + 25);
+        s += minor >= "a" ? "\0" : "";
+        var passwordb = stringToBytes(s), saltb = base64_decode(real_salt, BCRYPT_SALT_LEN);
+        function finish(bytes) {
+          var res = [];
+          res.push("$2");
+          if (minor >= "a")
+            res.push(minor);
+          res.push("$");
+          if (rounds < 10)
+            res.push("0");
+          res.push(rounds.toString());
+          res.push("$");
+          res.push(base64_encode(saltb, saltb.length));
+          res.push(base64_encode(bytes, C_ORIG.length * 4 - 1));
+          return res.join("");
+        }
+        if (typeof callback == "undefined")
+          return finish(_crypt(passwordb, saltb, rounds));
+        else {
+          _crypt(passwordb, saltb, rounds, function(err2, bytes) {
+            if (err2)
+              callback(err2, null);
+            else
+              callback(null, finish(bytes));
+          }, progressCallback);
+        }
+      }
+      bcrypt.encodeBase64 = base64_encode;
+      bcrypt.decodeBase64 = base64_decode;
+      return bcrypt;
+    });
+  }
+});
+
+// node_modules/bcryptjs/index.js
+var require_bcryptjs = __commonJS({
+  "node_modules/bcryptjs/index.js"(exports2, module2) {
+    module2.exports = require_bcrypt();
   }
 });
 
@@ -16855,6 +19510,7 @@ var require_auth = __commonJS({
   "server/src/controllers/auth.js"(exports2, module2) {
     "use strict";
     var PLUGIN_ID = "webbycommerce";
+    var bcrypt = require_bcryptjs();
     var { sendEmail } = require_send_email();
     var { ensureEcommercePermission } = require_check_ecommerce_permission();
     var getStore = () => {
@@ -17246,6 +19902,547 @@ var require_auth = __commonJS({
         }
       },
       /**
+       * Get current authentication method
+       * Returns which authentication method is currently enabled (default or otp)
+       * This endpoint is public and can be used by frontend to determine which auth flow to use
+       */
+      async getAuthMethod(ctx) {
+        try {
+          const method = await getLoginMethod();
+          ctx.send({
+            method,
+            message: `Current authentication method: ${method}`
+          });
+        } catch (error) {
+          strapi.log.error(`[${PLUGIN_ID}] Error in getAuthMethod:`, error);
+          ctx.send({
+            method: "default",
+            message: "Current authentication method: default"
+          });
+        }
+      },
+      /**
+       * Unified Login/Register endpoint
+       * Supports both OTP and default (email/password) authentication methods
+       * Automatically detects which method to use based on request body
+       * 
+       * For OTP method:
+       *   - First call: Send email/mobile to receive OTP (step: 'request')
+       *   - Second call: Verify OTP to complete login (step: 'verify')
+       * 
+       * For Default method:
+       *   - Single call: Send email/username and password to login
+       *   - Register: Send username, email, and password to register
+       */
+      async unifiedAuth(ctx) {
+        try {
+          const hasPermission = await ensureEcommercePermission(ctx);
+          if (!hasPermission) {
+            return;
+          }
+          if (!ctx.request.body || typeof ctx.request.body !== "object") {
+            return ctx.badRequest("Request body is required. Please provide authentication credentials.");
+          }
+          const {
+            step,
+            // 'request' or 'verify' for OTP, 'login' or 'register' for default
+            authMethod,
+            // 'otp' or 'default' (optional, auto-detected if not provided)
+            // OTP fields
+            email,
+            mobile,
+            type,
+            // 'email' or 'mobile' for OTP
+            otp,
+            // OTP code for verification
+            // Default fields
+            identifier,
+            // email or username for default login
+            password,
+            // password for default login
+            username
+            // username for default register
+          } = ctx.request.body;
+          strapi.log.debug(`[${PLUGIN_ID}] Unified auth request:`, {
+            step,
+            authMethod,
+            hasEmail: !!email,
+            hasMobile: !!mobile,
+            hasType: !!type,
+            hasOtp: !!otp,
+            hasIdentifier: !!identifier,
+            hasPassword: !!password,
+            hasUsername: !!username
+          });
+          const configuredMethod = await getLoginMethod();
+          let detectedMethod = authMethod;
+          if (!detectedMethod) {
+            if ((email || mobile) && type) {
+              detectedMethod = "otp";
+            } else if (identifier && password || username && email && password) {
+              detectedMethod = "default";
+            } else {
+              detectedMethod = configuredMethod;
+            }
+          }
+          if (configuredMethod !== "both") {
+            if (detectedMethod === "otp" && configuredMethod !== "otp") {
+              return ctx.badRequest("OTP authentication is not enabled. Please enable it in plugin settings or use the unified endpoint.");
+            }
+            if (detectedMethod === "default" && configuredMethod !== "default") {
+              return ctx.badRequest("Default authentication is not enabled. Please enable it in plugin settings or use the unified endpoint.");
+            }
+          }
+          if (detectedMethod === "otp") {
+            if (step === "request" || !step && !otp) {
+              let normalizedEmail = email?.toLowerCase();
+              if (!type || type !== "email" && type !== "mobile") {
+                return ctx.badRequest('Type must be "email" or "mobile" for OTP authentication.');
+              }
+              let identifier2 = type === "email" ? normalizedEmail : mobile;
+              if (!identifier2) {
+                return ctx.badRequest(
+                  `${type === "email" ? "Email" : "Mobile number"} is required.`
+                );
+              }
+              let user = await strapi.db.query("plugin::users-permissions.user").findOne({
+                where: type === "email" ? { email: normalizedEmail } : { phone_no: mobile }
+              });
+              let isNewUser = false;
+              if (!user) {
+                let generatedUsername = "";
+                if (type === "email" && email) {
+                  let base = email.split("@")[0].replace(/[^a-zA-Z]/g, "").toLowerCase();
+                  if (!base) base = "user";
+                  base = base.substring(0, 4);
+                  const digitsNeeded = 8 - base.length;
+                  const min = Math.pow(10, digitsNeeded - 1);
+                  const max = Math.pow(10, digitsNeeded) - 1;
+                  let randomDigits = String(Math.floor(Math.random() * (max - min + 1)) + min);
+                  generatedUsername = (base + randomDigits).substring(0, 8);
+                } else if (type === "mobile" && mobile) {
+                  const prefix = "webby";
+                  const randomDigits = String(Math.floor(100 + Math.random() * 900));
+                  generatedUsername = prefix + randomDigits;
+                } else {
+                  generatedUsername = "user" + String(Math.floor(1e3 + Math.random() * 9e3));
+                }
+                const existing = await strapi.db.query("plugin::users-permissions.user").findOne({
+                  where: { username: generatedUsername }
+                });
+                if (existing) {
+                  if (type === "mobile") {
+                    generatedUsername = "webby" + String(Math.floor(100 + Math.random() * 900));
+                  } else {
+                    generatedUsername = generatedUsername.substring(0, 4) + String(Math.floor(1e3 + Math.random() * 9e3));
+                    generatedUsername = generatedUsername.substring(0, 8);
+                  }
+                }
+                const defaultRole = await strapi.db.query("plugin::users-permissions.role").findOne({ where: { type: "public" } });
+                user = await strapi.plugin("users-permissions").service("user").add({
+                  email: type === "email" ? normalizedEmail : null,
+                  phone_no: type === "mobile" ? mobile : null,
+                  username: generatedUsername,
+                  confirmed: false,
+                  role: defaultRole?.id || 2
+                });
+                isNewUser = true;
+              }
+              const otpCode = Math.floor(1e5 + Math.random() * 9e5);
+              const otpDigits = otpCode.toString().split("");
+              try {
+                const db = strapi.db;
+                const knex = db.connection;
+                const tableName = "up_users";
+                const client = db.config.connection.client;
+                if (client === "postgres") {
+                  await knex.raw(
+                    `UPDATE ${tableName} SET otp = ?, is_otp_verified = ? WHERE id = ?`,
+                    [otpCode, false, user.id]
+                  );
+                } else if (client === "mysql" || client === "mysql2") {
+                  await knex.raw(
+                    `UPDATE \`${tableName}\` SET \`otp\` = ?, \`is_otp_verified\` = ? WHERE \`id\` = ?`,
+                    [otpCode, false, user.id]
+                  );
+                } else {
+                  await knex.raw(
+                    `UPDATE ${tableName} SET otp = ?, is_otp_verified = ? WHERE id = ?`,
+                    [otpCode, false, user.id]
+                  );
+                }
+              } catch (err) {
+                const { extendUserSchemaWithOtpFields } = require_extend_user_schema();
+                await extendUserSchemaWithOtpFields(strapi);
+                const db = strapi.db;
+                const knex = db.connection;
+                const tableName = "up_users";
+                const client = db.config.connection.client;
+                if (client === "postgres") {
+                  await knex.raw(
+                    `UPDATE ${tableName} SET otp = ?, is_otp_verified = ? WHERE id = ?`,
+                    [otpCode, false, user.id]
+                  );
+                } else if (client === "mysql" || client === "mysql2") {
+                  await knex.raw(
+                    `UPDATE \`${tableName}\` SET \`otp\` = ?, \`is_otp_verified\` = ? WHERE \`id\` = ?`,
+                    [otpCode, false, user.id]
+                  );
+                } else {
+                  await knex.raw(
+                    `UPDATE ${tableName} SET otp = ?, is_otp_verified = ? WHERE id = ?`,
+                    [otpCode, false, user.id]
+                  );
+                }
+              }
+              let emailSent = false;
+              if (type === "email") {
+                const otpEmailHTML = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <title>OTP Confirmation</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #f4f4f4; font-family: Arial, sans-serif;">
+    <table align="center" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width: 650px; margin: 0 auto; background-color: #ffffff;">
+        <tr>
+            <td align="center" style="padding: 60px 20px 8px;">
+                <h1 style="font-weight: bold; color: #111; font-size: 32px; margin: 0;">Your OTP Code for Secure Access</h1>
+            </td>
+        </tr>
+        <tr>
+            <td align="center" style="padding: 16px 30px;">
+                <p style="font-size: 16px; color: #333333; line-height: 24px; margin: 0; max-width: 500px;">
+                    To complete your account verification, please use the One-Time Password (OTP) provided below. For security reasons, this OTP will expire in 10 minutes and can only be used once.
+                </p>
+            </td>
+        </tr>
+        <tr>
+            <td align="center" style="padding: 30px 0;">
+                <table cellpadding="0" cellspacing="0" border="0" style="margin: 0 auto;">
+                    <tr>
+                        <td style="padding: 0 6px;">
+                            <table cellpadding="0" cellspacing="0" border="0" style="width: 60px; height: 60px; border: 1px solid #0156D559; border-radius: 8px; background-color: #f8f9fa;">
+                                <tr>
+                                    <td align="center" style="font-size: 28px; font-weight: bold; color: #111;">${otpDigits[0]}</td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td style="padding: 0 6px;">
+                            <table cellpadding="0" cellspacing="0" border="0" style="width: 60px; height: 60px; border: 1px solid #0156D559; border-radius: 8px; background-color: #f8f9fa;">
+                                <tr>
+                                    <td align="center" style="font-size: 28px; font-weight: bold; color: #111;">${otpDigits[1]}</td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td style="padding: 0 6px;">
+                            <table cellpadding="0" cellspacing="0" border="0" style="width: 60px; height: 60px; border: 1px solid #0156D559; border-radius: 8px; background-color: #f8f9fa;">
+                                <tr>
+                                    <td align="center" style="font-size: 28px; font-weight: bold; color: #111;">${otpDigits[2]}</td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td style="padding: 0 6px;">
+                            <table cellpadding="0" cellspacing="0" border="0" style="width: 60px; height: 60px; border: 1px solid #0156D559; border-radius: 8px; background-color: #f8f9fa;">
+                                <tr>
+                                    <td align="center" style="font-size: 28px; font-weight: bold; color: #111;">${otpDigits[3]}</td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td style="padding: 0 6px;">
+                            <table cellpadding="0" cellspacing="0" border="0" style="width: 60px; height: 60px; border: 1px solid #0156D559; border-radius: 8px; background-color: #f8f9fa;">
+                                <tr>
+                                    <td align="center" style="font-size: 28px; font-weight: bold; color: #111;">${otpDigits[4]}</td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td style="padding: 0 6px;">
+                            <table cellpadding="0" cellspacing="0" border="0" style="width: 60px; height: 60px; border: 1px solid #0156D559; border-radius: 8px; background-color: #f8f9fa;">
+                                <tr>
+                                    <td align="center" style="font-size: 28px; font-weight: bold; color: #111;">${otpDigits[5]}</td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
+            `;
+                try {
+                  await sendEmail({
+                    to: email,
+                    subject: "Your OTP Code - Strapi WebbyCommerce",
+                    html: otpEmailHTML
+                  });
+                  emailSent = true;
+                } catch (emailError) {
+                  strapi.log.error(
+                    `[${PLUGIN_ID}] Failed to send OTP email (userId: ${user.id}, email: ${email}):`,
+                    emailError
+                  );
+                }
+              } else if (type === "mobile") {
+                strapi.log.info(`[${PLUGIN_ID}] OTP for mobile ${mobile}: ${otpCode}`);
+              }
+              ctx.send({
+                success: true,
+                step: "request",
+                method: "otp",
+                message: emailSent ? `OTP sent to ${type}.` : type === "email" ? "User created. OTP email could not be sent; please check email configuration on the server." : `OTP sent to ${type}.`,
+                userId: user.id,
+                isNewUser,
+                emailSent,
+                nextStep: "verify"
+              });
+              return;
+            }
+            if (step === "verify" || !step && otp) {
+              if (!otp || !(type === "email" && email || type === "mobile" && mobile)) {
+                return ctx.badRequest(
+                  `${type === "email" ? "Email" : "Mobile number"} and OTP are required.`
+                );
+              }
+              const identifier2 = type === "email" ? email.toLowerCase() : mobile;
+              const user = await strapi.db.query("plugin::users-permissions.user").findOne({
+                where: { [type === "email" ? "email" : "phone_no"]: identifier2 }
+              });
+              if (!user) return ctx.badRequest("User not found.");
+              const db = strapi.db;
+              const knex = db.connection;
+              const tableName = "up_users";
+              const client = db.config.connection.client;
+              let userOtpData;
+              let columnsExist = false;
+              try {
+                if (client === "postgres") {
+                  const result = await knex.raw(
+                    `SELECT otp, is_otp_verified FROM ${tableName} WHERE id = ?`,
+                    [user.id]
+                  );
+                  userOtpData = result.rows[0];
+                  columnsExist = userOtpData && userOtpData.hasOwnProperty("otp") && userOtpData.hasOwnProperty("is_otp_verified");
+                } else if (client === "mysql" || client === "mysql2") {
+                  const result = await knex.raw(
+                    `SELECT \`otp\`, \`is_otp_verified\` FROM \`${tableName}\` WHERE \`id\` = ?`,
+                    [user.id]
+                  );
+                  userOtpData = result[0][0];
+                  columnsExist = userOtpData && userOtpData.hasOwnProperty("otp") && userOtpData.hasOwnProperty("is_otp_verified");
+                } else {
+                  const result = await knex.raw(
+                    `SELECT otp, is_otp_verified FROM ${tableName} WHERE id = ?`,
+                    [user.id]
+                  );
+                  userOtpData = result[0];
+                  columnsExist = userOtpData && userOtpData.hasOwnProperty("otp") && userOtpData.hasOwnProperty("is_otp_verified");
+                }
+              } catch (queryErr) {
+                strapi.log.warn(`[${PLUGIN_ID}] OTP columns not found, attempting to add them:`, queryErr.message);
+                columnsExist = false;
+              }
+              if (!columnsExist) {
+                const { extendUserSchemaWithOtpFields } = require_extend_user_schema();
+                await extendUserSchemaWithOtpFields(strapi);
+                await new Promise((resolve) => setTimeout(resolve, 200));
+                try {
+                  if (client === "postgres") {
+                    const result = await knex.raw(
+                      `SELECT otp, is_otp_verified FROM ${tableName} WHERE id = ?`,
+                      [user.id]
+                    );
+                    userOtpData = result.rows[0];
+                    columnsExist = userOtpData && userOtpData.hasOwnProperty("otp") && userOtpData.hasOwnProperty("is_otp_verified");
+                  } else if (client === "mysql" || client === "mysql2") {
+                    const result = await knex.raw(
+                      `SELECT \`otp\`, \`is_otp_verified\` FROM \`${tableName}\` WHERE \`id\` = ?`,
+                      [user.id]
+                    );
+                    userOtpData = result[0][0];
+                    columnsExist = userOtpData && userOtpData.hasOwnProperty("otp") && userOtpData.hasOwnProperty("is_otp_verified");
+                  } else {
+                    const result = await knex.raw(
+                      `SELECT otp, is_otp_verified FROM ${tableName} WHERE id = ?`,
+                      [user.id]
+                    );
+                    userOtpData = result[0];
+                    columnsExist = userOtpData && userOtpData.hasOwnProperty("otp") && userOtpData.hasOwnProperty("is_otp_verified");
+                  }
+                } catch (retryErr) {
+                  return ctx.badRequest(
+                    "OTP fields are not available. Please restart Strapi after extending the user schema."
+                  );
+                }
+              }
+              const userOtp = userOtpData?.otp;
+              const isOtpVerified = userOtpData?.is_otp_verified;
+              if (isOtpVerified) return ctx.badRequest("User already verified.");
+              if (userOtp !== parseInt(otp, 10)) return ctx.badRequest("Invalid OTP.");
+              try {
+                if (client === "postgres") {
+                  await knex.raw(
+                    `UPDATE ${tableName} SET is_otp_verified = ?, confirmed = true, otp = NULL WHERE id = ?`,
+                    [true, user.id]
+                  );
+                } else if (client === "mysql" || client === "mysql2") {
+                  await knex.raw(
+                    `UPDATE \`${tableName}\` SET \`is_otp_verified\` = ?, \`confirmed\` = true, \`otp\` = NULL WHERE \`id\` = ?`,
+                    [true, user.id]
+                  );
+                } else {
+                  await knex.raw(
+                    `UPDATE ${tableName} SET is_otp_verified = ?, confirmed = 1, otp = NULL WHERE id = ?`,
+                    [true, user.id]
+                  );
+                }
+              } catch (dbErr) {
+                strapi.log.error(`[${PLUGIN_ID}] Database error during OTP verification:`, dbErr);
+                return ctx.badRequest(
+                  "OTP fields are not available in the user schema. Please extend the user schema as described in the plugin README."
+                );
+              }
+              const jwt = strapi.plugins["users-permissions"].services.jwt.issue({
+                id: user.id
+              });
+              ctx.send({
+                success: true,
+                step: "verify",
+                method: "otp",
+                message: "Login successfully!",
+                jwt,
+                user: {
+                  id: user.id,
+                  username: user.username,
+                  email: user.email,
+                  phone_no: user.phone_no
+                }
+              });
+              return;
+            }
+            return ctx.badRequest('Invalid step for OTP authentication. Use "request" or "verify".');
+          }
+          if (detectedMethod === "default") {
+            if (step === "login" || !step && identifier && password) {
+              if (!identifier || !password) {
+                return ctx.badRequest("Identifier (email/username) and password are required for login.");
+              }
+              const userService = strapi.plugin("users-permissions").service("user");
+              const jwt = strapi.plugins["users-permissions"].services.jwt;
+              const user = await strapi.db.query("plugin::users-permissions.user").findOne({
+                where: {
+                  $or: [
+                    { email: identifier.toLowerCase() },
+                    { username: identifier }
+                  ]
+                },
+                populate: ["role"]
+              });
+              if (!user) {
+                return ctx.badRequest("Invalid identifier or password.");
+              }
+              if (!user.password) {
+                return ctx.badRequest("Invalid identifier or password.");
+              }
+              const validPassword = await bcrypt.compare(password, user.password);
+              if (!validPassword) {
+                return ctx.badRequest("Invalid identifier or password.");
+              }
+              if (user.blocked) {
+                return ctx.badRequest("Your account has been blocked.");
+              }
+              const token = jwt.issue({
+                id: user.id
+              });
+              ctx.send({
+                success: true,
+                step: "login",
+                method: "default",
+                message: "Login successfully!",
+                jwt: token,
+                user: {
+                  id: user.id,
+                  username: user.username,
+                  email: user.email,
+                  phone_no: user.phone_no,
+                  role: user.role ? {
+                    id: user.role.id,
+                    name: user.role.name,
+                    type: user.role.type
+                  } : null
+                }
+              });
+              return;
+            }
+            if (step === "register" || !step && username && email && password) {
+              if (!username || !email || !password) {
+                return ctx.badRequest("Username, email, and password are required for registration.");
+              }
+              const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+              if (!emailRegex.test(email.trim())) {
+                return ctx.badRequest("Invalid email format.");
+              }
+              const existingUser = await strapi.db.query("plugin::users-permissions.user").findOne({
+                where: {
+                  $or: [
+                    { email: email.toLowerCase() },
+                    { username }
+                  ]
+                }
+              });
+              if (existingUser) {
+                return ctx.badRequest("Email or username already exists.");
+              }
+              const defaultRole = await strapi.db.query("plugin::users-permissions.role").findOne({ where: { type: "public" } });
+              const user = await strapi.plugin("users-permissions").service("user").add({
+                username: username.trim(),
+                email: email.trim().toLowerCase(),
+                password,
+                confirmed: true,
+                // Auto-confirm for default method
+                role: defaultRole?.id || 2
+              });
+              const jwt = strapi.plugins["users-permissions"].services.jwt.issue({
+                id: user.id
+              });
+              ctx.send({
+                success: true,
+                step: "register",
+                method: "default",
+                message: "Registration successful!",
+                jwt,
+                user: {
+                  id: user.id,
+                  username: user.username,
+                  email: user.email,
+                  role: user.role ? {
+                    id: user.role.id,
+                    name: user.role.name,
+                    type: user.role.type
+                  } : null
+                }
+              });
+              return;
+            }
+            return ctx.badRequest('Invalid step for default authentication. Use "login" or "register".');
+          }
+          return ctx.badRequest(
+            'Invalid request. Please provide valid authentication credentials. For OTP: provide step="request" with email/mobile and type, or step="verify" with OTP code. For default: provide step="login" with identifier and password, or step="register" with username, email, and password.'
+          );
+        } catch (error) {
+          strapi.log.error(`[${PLUGIN_ID}] Error in unifiedAuth:`, error);
+          strapi.log.error(`[${PLUGIN_ID}] Error stack:`, error.stack);
+          strapi.log.error(`[${PLUGIN_ID}] Request body:`, JSON.stringify(ctx.request.body, null, 2));
+          if (error.message) {
+            return ctx.internalServerError(`Authentication failed: ${error.message}`);
+          }
+          ctx.internalServerError("Authentication failed. Please try again.");
+        }
+      },
+      /**
        * Get authenticated user profile
        * Returns all user details for the authenticated user
        */
@@ -17382,7 +20579,10 @@ var require_auth = __commonJS({
             if (!currentUser) {
               return ctx.notFound("User not found.");
             }
-            const validPassword = await strapi.plugin("users-permissions").service("users-permissions").validatePassword(currentPassword, currentUser.password);
+            if (!currentUser.password) {
+              return ctx.badRequest("Current password is incorrect.");
+            }
+            const validPassword = await bcrypt.compare(currentPassword, currentUser.password);
             if (!validPassword) {
               return ctx.badRequest("Current password is incorrect.");
             }
@@ -21376,7 +24576,7 @@ var require_shipping = __commonJS({
             availableMethods = availableMethods.concat(methods);
           }
           const uniqueMethods = availableMethods.filter(
-            (method, index, self) => index === self.findIndex((m) => String(m.id) === String(method.id))
+            (method, index, self2) => index === self2.findIndex((m) => String(m.id) === String(method.id))
           );
           const methodsWithCosts = [];
           for (const method of uniqueMethods) {
@@ -21413,7 +24613,7 @@ var require_shipping = __commonJS({
           }
           const finalMethods = await applyShippingRules(methodsWithCosts, cart_items, shipping_address);
           const uniqueFinalMethods = finalMethods.filter(
-            (method, index, self) => index === self.findIndex((m) => String(m.id) === String(method.id))
+            (method, index, self2) => index === self2.findIndex((m) => String(m.id) === String(method.id))
           );
           ctx.send({
             data: uniqueFinalMethods,
@@ -23457,7 +26657,7 @@ var require_shipping2 = __commonJS({
             availableMethods = availableMethods.concat(methods);
           }
           const uniqueMethods = availableMethods.filter(
-            (method, index, self) => index === self.findIndex((m) => String(m.id) === String(method.id))
+            (method, index, self2) => index === self2.findIndex((m) => String(m.id) === String(method.id))
           );
           const methodsWithCosts = [];
           for (const method of uniqueMethods) {
@@ -23494,7 +26694,7 @@ var require_shipping2 = __commonJS({
           }
           const finalMethods = await this.applyShippingRules(methodsWithCosts, cartItems, shippingAddress);
           const uniqueFinalMethods = finalMethods.filter(
-            (method, index, self) => index === self.findIndex((m) => String(m.id) === String(method.id))
+            (method, index, self2) => index === self2.findIndex((m) => String(m.id) === String(method.id))
           );
           return {
             methods: uniqueFinalMethods,
@@ -23867,3 +27067,12 @@ module.exports = {
   routes,
   services
 };
+/*! Bundled license information:
+
+bcryptjs/dist/bcrypt.js:
+  (**
+   * @license bcrypt.js (c) 2013 Daniel Wirtz <dcode@dcode.io>
+   * Released under the Apache License, Version 2.0
+   * see: https://github.com/dcodeIO/bcrypt.js for details
+   *)
+*/
