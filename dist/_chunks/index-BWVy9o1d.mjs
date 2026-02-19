@@ -1,7 +1,6 @@
-"use strict";
-const React = require("react");
-const jsxRuntime = require("react/jsx-runtime");
-const icons = require("@strapi/icons");
+import { useRef, useEffect } from "react";
+import { jsx } from "react/jsx-runtime";
+import { ShoppingCart } from "@strapi/icons";
 const __variableDynamicImportRuntimeHelper = (glob, path, segs) => {
   const v = glob[path];
   if (v) {
@@ -39,8 +38,8 @@ const provideCheckUserHasPermissions = () => {
 };
 provideCheckUserHasPermissions();
 const Initializer = () => {
-  const hasInitialized = React.useRef(false);
-  React.useEffect(() => {
+  const hasInitialized = useRef(false);
+  useEffect(() => {
     if (!hasInitialized.current) {
       hasInitialized.current = true;
       provideCheckUserHasPermissions();
@@ -58,7 +57,7 @@ const Initializer = () => {
   }, []);
   return null;
 };
-const PluginIcon = () => /* @__PURE__ */ jsxRuntime.jsx(icons.ShoppingCart, {});
+const PluginIcon = () => /* @__PURE__ */ jsx(ShoppingCart, {});
 if (typeof globalThis !== "undefined") {
   if (!globalThis.checkUserHasPermissions) {
     globalThis.checkUserHasPermissions = async () => true;
@@ -93,7 +92,7 @@ const index = {
           defaultMessage: "Configure"
         },
         to: `${PLUGIN_ID}`,
-        Component: () => Promise.resolve().then(() => require("./Settings-DZXAkI24.js"))
+        Component: () => import("./Settings-BonPzbwr.mjs")
       }
     );
   },
@@ -107,14 +106,14 @@ const index = {
       locales.map(async (locale) => {
         if (locale === "en") {
           try {
-            const { default: data } = await Promise.resolve().then(() => require("./en-CiQ97iC8.js"));
+            const { default: data } = await import("./en-DE15m4xZ.mjs");
             return { data, locale };
           } catch {
             return { data: {}, locale };
           }
         }
         try {
-          const { default: data } = await __variableDynamicImportRuntimeHelper(/* @__PURE__ */ Object.assign({ "./translations/en.json": () => Promise.resolve().then(() => require("./en-CiQ97iC8.js")) }), `./translations/${locale}.json`, 3);
+          const { default: data } = await __variableDynamicImportRuntimeHelper(/* @__PURE__ */ Object.assign({ "./translations/en.json": () => import("./en-DE15m4xZ.mjs") }), `./translations/${locale}.json`, 3);
           return { data, locale };
         } catch {
           return { data: {}, locale };
@@ -123,5 +122,7 @@ const index = {
     );
   }
 };
-exports.PLUGIN_ID = PLUGIN_ID;
-exports.index = index;
+export {
+  PLUGIN_ID as P,
+  index as i
+};

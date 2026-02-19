@@ -3326,6 +3326,24 @@ var require_bootstrap = __commonJS({
                       const apiDir = path.join(appDir, "src", "api", apiName);
                       const contentTypeDir = path.join(apiDir, "content-types", contentTypeName);
                       const schemaPath = path.join(contentTypeDir, "schema.json");
+                      if (contentType.action === "delete") {
+                        strapi2.log.info(`[webbycommerce] EARLY: Deleting collection: ${contentType.uid}`);
+                        if (fs.existsSync(schemaPath)) {
+                          fs.unlinkSync(schemaPath);
+                          strapi2.log.info(`[webbycommerce] EARLY: \u2713 Deleted schema file: ${schemaPath}`);
+                        }
+                        if (fs.existsSync(contentTypeDir)) {
+                          try {
+                            fs.rmSync(contentTypeDir, { recursive: true, force: true });
+                            strapi2.log.info(`[webbycommerce] EARLY: \u2713 Deleted content type directory: ${contentTypeDir}`);
+                          } catch (error) {
+                            strapi2.log.warn(`[webbycommerce] EARLY: Could not delete directory: ${error.message}`);
+                          }
+                        }
+                        ctx.state.schemaFileCreated = true;
+                        ctx.state.schemaDeleted = true;
+                        continue;
+                      }
                       fs.mkdirSync(contentTypeDir, { recursive: true });
                       let existingSchema = {};
                       if (fs.existsSync(schemaPath)) {
@@ -3338,6 +3356,16 @@ var require_bootstrap = __commonJS({
                       const attributes = { ...existingSchema.attributes || {} };
                       if (contentType.attributes && Array.isArray(contentType.attributes)) {
                         for (const attr of contentType.attributes) {
+                          const action = attr.action || "update";
+                          if (action === "delete" && attr.name) {
+                            if (attributes[attr.name]) {
+                              delete attributes[attr.name];
+                              strapi2.log.info(`[webbycommerce] EARLY: \u2713 Deleted attribute: ${attr.name}`);
+                            } else {
+                              strapi2.log.warn(`[webbycommerce] EARLY: Attribute not found for deletion: ${attr.name}`);
+                            }
+                            continue;
+                          }
                           if (attr.name && attr.properties) {
                             const attributeDef = { ...attr.properties };
                             if (attributeDef.type === "component") {
@@ -3359,7 +3387,6 @@ var require_bootstrap = __commonJS({
                               }
                             }
                             attributes[attr.name] = attributeDef;
-                            const action = attr.action || "update";
                             strapi2.log.info(`[webbycommerce] EARLY: ${action === "create" ? "Added" : "Updated"} attribute: ${attr.name} (type: ${attributeDef.type || "unknown"})`);
                           }
                         }
@@ -3443,11 +3470,24 @@ var require_bootstrap = __commonJS({
                   }
                 }
               }
-              if (ctx.state.schemaFileCreated && contentTypes3.length > 0) {
+              const hasContentTypes = (ctx.state.schemaFileCreated || ctx.state.schemaDeleted) && contentTypes3.length > 0;
+              const hasComponents = ctx.state.componentsCreated === true || ctx.state.componentsDeleted === true;
+              strapi2.log.info(`[webbycommerce] EARLY: Checking early return conditions...`);
+              strapi2.log.info(`[webbycommerce] EARLY: hasContentTypes=${hasContentTypes}, hasComponents=${hasComponents}`);
+              strapi2.log.info(`[webbycommerce] EARLY: ctx.state.schemaFileCreated=${ctx.state.schemaFileCreated}, ctx.state.componentsCreated=${ctx.state.componentsCreated}`);
+              strapi2.log.info(`[webbycommerce] EARLY: contentTypes.length=${contentTypes3.length}, components.length=${components.length}`);
+              if (hasContentTypes || hasComponents) {
                 strapi2.log.info(`[webbycommerce] EARLY: \u2713 Schema file(s) created successfully`);
+                if (hasContentTypes) {
+                  strapi2.log.info(`[webbycommerce] EARLY: \u2713 Created ${contentTypes3.length} content type(s)`);
+                }
+                if (hasComponents) {
+                  strapi2.log.info(`[webbycommerce] EARLY: \u2713 Created ${components.length} component(s)`);
+                }
                 strapi2.log.info(`[webbycommerce] EARLY: \u2713 File watcher will detect change and trigger auto-restart`);
-                strapi2.log.info(`[webbycommerce] EARLY: \u2713 After restart, collection will be automatically registered with all fields/components`);
+                strapi2.log.info(`[webbycommerce] EARLY: \u2713 After restart, collections and components will be automatically registered with all fields`);
                 ctx.status = 200;
+                ctx.set("Content-Type", "application/json");
                 ctx.body = {
                   data: {
                     contentTypes: contentTypes3.map((ct) => {
@@ -3471,15 +3511,30 @@ var require_bootstrap = __commonJS({
                         }
                       };
                     }),
-                    components: (components || []).map((comp) => ({
-                      uid: comp.uid,
-                      category: comp.uid ? comp.uid.split(".")[0] : "",
-                      apiID: comp.uid
-                    }))
+                    components: (components || []).map((comp) => {
+                      const uidParts = comp.uid ? comp.uid.split(".") : [];
+                      return {
+                        uid: comp.uid,
+                        category: uidParts[0] || "",
+                        apiID: comp.uid,
+                        schema: {
+                          collectionName: comp.collectionName || "components_" + comp.uid.replace(/\./g, "_"),
+                          info: {
+                            displayName: comp.displayName || comp.modelName || uidParts[1] || "New Component",
+                            description: comp.description || ""
+                          }
+                        }
+                      };
+                    })
                   }
                 };
                 strapi2.log.info(`[webbycommerce] EARLY: \u2713 Success response sent - request handled`);
+                strapi2.log.info(`[webbycommerce] EARLY: \u2713 Returning early to prevent Strapi from processing request again`);
                 return;
+              } else {
+                strapi2.log.warn(`[webbycommerce] EARLY: \u26A0 Not returning early - conditions not met`);
+                strapi2.log.warn(`[webbycommerce] EARLY: \u26A0 schemaFileCreated=${ctx.state.schemaFileCreated}, componentsCreated=${ctx.state.componentsCreated}`);
+                strapi2.log.warn(`[webbycommerce] EARLY: \u26A0 contentTypes.length=${contentTypes3.length}, components.length=${components.length}`);
               }
             } catch (error) {
               strapi2.log.error("[webbycommerce] EARLY: Error in content-type-builder fix:", error.message);
@@ -5328,54 +5383,107 @@ var require_bootstrap = __commonJS({
                 strapi2.dirs.app.root = appDir;
                 strapi2.log.info("[webbycommerce] Set strapi.dirs.app.root to:", appDir);
               }
+              let componentsCreated = false;
               for (const component of components) {
                 if (component.uid && component.uid.includes(".")) {
                   const uidParts = component.uid.split(".");
                   if (uidParts.length >= 2) {
                     const category = uidParts[0];
                     const componentName = uidParts[1];
+                    strapi2.log.info(`[webbycommerce] EARLY: Processing component: ${component.uid}`);
                     const componentsDir = path.join(appDir, "src", "components", category);
-                    const componentDir = path.join(componentsDir, componentName);
-                    if (!fs.existsSync(componentsDir)) {
-                      fs.mkdirSync(componentsDir, { recursive: true });
-                      strapi2.log.info(`[webbycommerce] Created component category directory: ${componentsDir}`);
-                    }
-                    if (!fs.existsSync(componentDir)) {
-                      fs.mkdirSync(componentDir, { recursive: true });
-                      strapi2.log.info(`[webbycommerce] Created component directory: ${componentDir}`);
-                    }
-                    const componentSchemaPath = path.join(componentDir, "schema.json");
-                    let componentSchema = {};
+                    fs.mkdirSync(componentsDir, { recursive: true });
+                    const componentSchemaPath = path.join(componentsDir, `${componentName}.json`);
+                    let existingComponentSchema = {};
                     if (fs.existsSync(componentSchemaPath)) {
                       try {
-                        componentSchema = JSON.parse(fs.readFileSync(componentSchemaPath, "utf8"));
+                        existingComponentSchema = JSON.parse(fs.readFileSync(componentSchemaPath, "utf8"));
                       } catch (error) {
-                        strapi2.log.warn(`[webbycommerce] Could not parse existing component schema: ${error.message}`);
+                        strapi2.log.warn(`[webbycommerce] EARLY: Could not parse existing component schema: ${error.message}`);
+                        existingComponentSchema = {};
                       }
                     }
-                    if (!componentSchema.info) {
-                      componentSchema.info = {};
+                    if (component.action === "delete") {
+                      strapi2.log.info(`[webbycommerce] EARLY: Deleting component: ${component.uid}`);
+                      if (fs.existsSync(componentSchemaPath)) {
+                        fs.unlinkSync(componentSchemaPath);
+                        strapi2.log.info(`[webbycommerce] EARLY: \u2713 Deleted component file: ${componentSchemaPath}`);
+                      }
+                      ctx.state.componentsCreated = true;
+                      ctx.state.componentsDeleted = true;
+                      continue;
                     }
-                    if (!componentSchema.info.displayName) {
-                      componentSchema.info.displayName = component.displayName || component.modelName || componentName || "New Component";
+                    const componentAttributes = { ...existingComponentSchema.attributes || {} };
+                    if (component.attributes && Array.isArray(component.attributes)) {
+                      for (const attr of component.attributes) {
+                        const action = attr.action || "update";
+                        if (action === "delete" && attr.name) {
+                          if (componentAttributes[attr.name]) {
+                            delete componentAttributes[attr.name];
+                            strapi2.log.info(`[webbycommerce] EARLY: \u2713 Deleted component attribute: ${attr.name}`);
+                          } else {
+                            strapi2.log.warn(`[webbycommerce] EARLY: Component attribute not found for deletion: ${attr.name}`);
+                          }
+                          continue;
+                        }
+                        if (attr.name && attr.properties) {
+                          const attributeDef = { ...attr.properties };
+                          componentAttributes[attr.name] = attributeDef;
+                          strapi2.log.info(`[webbycommerce] EARLY: ${action === "create" ? "Added" : "Updated"} component attribute: ${attr.name} (type: ${attributeDef.type || "unknown"})`);
+                        }
+                      }
                     }
-                    if (!componentSchema.info.description) {
-                      componentSchema.info.description = component.description || "";
+                    const componentSchema = {
+                      collectionName: component.collectionName || existingComponentSchema.collectionName || "components_" + component.uid.replace(/\./g, "_"),
+                      info: {
+                        displayName: component.displayName || component.modelName || existingComponentSchema.info?.displayName || componentName || "New Component",
+                        description: component.description || existingComponentSchema.info?.description || "",
+                        icon: component.icon || existingComponentSchema.info?.icon || ""
+                      },
+                      options: component.options || existingComponentSchema.options || {},
+                      attributes: componentAttributes
+                    };
+                    const componentSchemaJson = JSON.stringify(componentSchema, null, 2);
+                    fs.writeFileSync(componentSchemaPath, componentSchemaJson, "utf8");
+                    if (fs.existsSync(componentSchemaPath)) {
+                      try {
+                        const verifyComponentSchema = JSON.parse(fs.readFileSync(componentSchemaPath, "utf8"));
+                        const fileStats = fs.statSync(componentSchemaPath);
+                        strapi2.log.info(`[webbycommerce] ========================================`);
+                        strapi2.log.info(`[webbycommerce] \u2713 COMPONENT SCHEMA CREATED/UPDATED`);
+                        strapi2.log.info(`[webbycommerce] ========================================`);
+                        strapi2.log.info(`[webbycommerce] \u2713 Component: ${component.uid}`);
+                        strapi2.log.info(`[webbycommerce] \u2713 File: ${componentSchemaPath}`);
+                        strapi2.log.info(`[webbycommerce] \u2713 File size: ${fileStats.size} bytes`);
+                        strapi2.log.info(`[webbycommerce] \u2713 Schema is valid JSON`);
+                        strapi2.log.info(`[webbycommerce] \u2713 Display name: ${verifyComponentSchema.info?.displayName || "N/A"}`);
+                        strapi2.log.info(`[webbycommerce] \u2713 Total attributes: ${Object.keys(verifyComponentSchema.attributes || {}).length}`);
+                        const attrNames = Object.keys(verifyComponentSchema.attributes || {});
+                        if (attrNames.length > 0) {
+                          strapi2.log.info(`[webbycommerce] \u2713 Component attributes:`);
+                          attrNames.forEach((attrName) => {
+                            const attr = verifyComponentSchema.attributes[attrName];
+                            const attrType = attr.type || "unknown";
+                            strapi2.log.info(`[webbycommerce]   - ${attrName}: ${attrType}`);
+                          });
+                        }
+                        strapi2.log.info(`[webbycommerce] \u2713 File will trigger auto-restart`);
+                        strapi2.log.info(`[webbycommerce] \u2713 After restart, component will be registered with all fields`);
+                        strapi2.log.info(`[webbycommerce] ========================================`);
+                        fs.chmodSync(componentSchemaPath, 420);
+                        const now = /* @__PURE__ */ new Date();
+                        fs.utimesSync(componentSchemaPath, now, now);
+                        fs.fsyncSync(fs.openSync(componentSchemaPath, "r+"));
+                        componentsCreated = true;
+                        ctx.state.componentsCreated = true;
+                        strapi2.log.info(`[webbycommerce] EARLY: \u2713 Set ctx.state.componentsCreated = true for component ${component.uid}`);
+                        strapi2.log.info(`[webbycommerce] EARLY: \u2713 Component file synced to disk - file watcher will detect change`);
+                      } catch (verifyError) {
+                        strapi2.log.error(`[webbycommerce] \u2717 Component schema verification failed: ${verifyError.message}`);
+                      }
+                    } else {
+                      strapi2.log.error(`[webbycommerce] \u2717 Component schema file was not created: ${componentSchemaPath}`);
                     }
-                    if (!componentSchema.category || componentSchema.category === "undefined" || componentSchema.category === "Undefined") {
-                      componentSchema.category = component.category || "WebbyCommerce Shared";
-                    }
-                    if (!componentSchema.collectionName) {
-                      componentSchema.collectionName = "components_" + component.uid.replace(/\./g, "_");
-                    }
-                    if (!componentSchema.options) {
-                      componentSchema.options = {};
-                    }
-                    if (!componentSchema.attributes) {
-                      componentSchema.attributes = {};
-                    }
-                    fs.writeFileSync(componentSchemaPath, JSON.stringify(componentSchema, null, 2));
-                    strapi2.log.info(`[webbycommerce] ${fs.existsSync(componentSchemaPath) ? "Updated" : "Created"} component schema file: ${componentSchemaPath}`);
                   }
                 }
               }
@@ -5389,11 +5497,27 @@ var require_bootstrap = __commonJS({
                       const contentTypeName = apiAndType[1];
                       const apiDir = path.join(appDir, "src", "api", apiName);
                       const contentTypeDir = path.join(apiDir, "content-types", contentTypeName);
+                      const schemaPath = path.join(contentTypeDir, "schema.json");
                       strapi2.log.info(`[webbycommerce] Processing content type: ${contentType.uid}`);
                       strapi2.log.info(`[webbycommerce] API Name: ${apiName}, Content Type Name: ${contentTypeName}`);
-                      strapi2.log.info(`[webbycommerce] App Directory: ${appDir}`);
-                      strapi2.log.info(`[webbycommerce] API Directory: ${apiDir}`);
-                      strapi2.log.info(`[webbycommerce] Content Type Directory: ${contentTypeDir}`);
+                      if (contentType.action === "delete") {
+                        strapi2.log.info(`[webbycommerce] Deleting collection: ${contentType.uid}`);
+                        if (fs.existsSync(schemaPath)) {
+                          fs.unlinkSync(schemaPath);
+                          strapi2.log.info(`[webbycommerce] \u2713 Deleted schema file: ${schemaPath}`);
+                        }
+                        if (fs.existsSync(contentTypeDir)) {
+                          try {
+                            fs.rmSync(contentTypeDir, { recursive: true, force: true });
+                            strapi2.log.info(`[webbycommerce] \u2713 Deleted content type directory: ${contentTypeDir}`);
+                          } catch (error) {
+                            strapi2.log.warn(`[webbycommerce] Could not delete directory: ${error.message}`);
+                          }
+                        }
+                        ctx.state.schemaFileCreated = true;
+                        ctx.state.schemaDeleted = true;
+                        continue;
+                      }
                       if (!fs.existsSync(apiDir)) {
                         fs.mkdirSync(apiDir, { recursive: true });
                         strapi2.log.info(`[webbycommerce] \u2713 Created API directory: ${apiDir}`);
@@ -5406,7 +5530,6 @@ var require_bootstrap = __commonJS({
                       } else {
                         strapi2.log.info(`[webbycommerce] \u2713 Content type directory already exists: ${contentTypeDir}`);
                       }
-                      const schemaPath = path.join(contentTypeDir, "schema.json");
                       strapi2.log.info(`[webbycommerce] Schema path: ${schemaPath}`);
                       let schemaNeedsUpdate = false;
                       let currentSchema = {};
@@ -5427,23 +5550,49 @@ var require_bootstrap = __commonJS({
                         schemaNeedsUpdate = true;
                       }
                       if (schemaNeedsUpdate) {
-                        const minimalSchema = {
-                          kind: contentType.kind || "collectionType",
-                          collectionName: contentType.collectionName || (contentType.kind === "singleType" ? contentTypeName : `${contentTypeName}s`),
+                        const attributes = { ...currentSchema.attributes || {} };
+                        if (contentType.attributes && Array.isArray(contentType.attributes)) {
+                          for (const attr of contentType.attributes) {
+                            const action = attr.action || "update";
+                            if (action === "delete" && attr.name) {
+                              if (attributes[attr.name]) {
+                                delete attributes[attr.name];
+                                strapi2.log.info(`[webbycommerce] \u2713 Deleted attribute: ${attr.name}`);
+                              }
+                              continue;
+                            }
+                            if (attr.name && attr.properties) {
+                              attributes[attr.name] = { ...attr.properties };
+                              strapi2.log.info(`[webbycommerce] ${action === "create" ? "Added" : "Updated"} attribute: ${attr.name}`);
+                            }
+                          }
+                        }
+                        const schema = {
+                          kind: contentType.kind || currentSchema.kind || "collectionType",
+                          collectionName: contentType.collectionName || currentSchema.collectionName || (contentType.kind === "singleType" ? contentTypeName : `${contentTypeName}s`),
                           info: {
-                            singularName: contentType.singularName || contentTypeName,
-                            pluralName: contentType.pluralName || (contentType.kind === "singleType" ? contentTypeName : `${contentTypeName}s`),
-                            displayName: contentType.displayName || contentType.modelName || contentTypeName,
-                            description: contentType.description || ""
+                            singularName: contentType.singularName || currentSchema.info?.singularName || contentTypeName,
+                            pluralName: contentType.pluralName || currentSchema.info?.pluralName || (contentType.kind === "singleType" ? contentTypeName : `${contentTypeName}s`),
+                            displayName: contentType.displayName || contentType.modelName || currentSchema.info?.displayName || contentTypeName,
+                            description: contentType.description || currentSchema.info?.description || ""
                           },
                           options: {
-                            draftAndPublish: contentType.draftAndPublish !== void 0 ? contentType.draftAndPublish : false
+                            draftAndPublish: contentType.draftAndPublish !== void 0 ? contentType.draftAndPublish : currentSchema.options?.draftAndPublish !== void 0 ? currentSchema.options.draftAndPublish : false
                           },
-                          attributes: {}
+                          pluginOptions: contentType.pluginOptions || currentSchema.pluginOptions || {
+                            "content-manager": {
+                              visible: true
+                            },
+                            "content-api": {
+                              visible: true
+                            }
+                          },
+                          attributes
                         };
-                        fs.writeFileSync(schemaPath, JSON.stringify(minimalSchema, null, 2));
+                        fs.writeFileSync(schemaPath, JSON.stringify(schema, null, 2));
                         strapi2.log.info(`[webbycommerce] \u2713 Created/Updated schema file: ${schemaPath}`);
                         strapi2.log.info(`[webbycommerce] \u2713 File watcher will detect change and trigger auto-restart`);
+                        ctx.state.schemaFileCreated = true;
                       }
                       const controllersDir = path.join(apiDir, "controllers", contentTypeName);
                       const servicesDir = path.join(apiDir, "services", contentTypeName);
@@ -5470,6 +5619,67 @@ var require_bootstrap = __commonJS({
                 }
               }
               strapi2.log.info("[webbycommerce] ===== Finished processing content-type-builder request =====");
+              const hasContentTypes = (ctx.state.schemaFileCreated || ctx.state.schemaDeleted) && contentTypes3.length > 0;
+              const hasComponents = ctx.state.componentsCreated === true || ctx.state.componentsDeleted === true;
+              strapi2.log.info(`[webbycommerce] EARLY (SECOND): Checking early return conditions...`);
+              strapi2.log.info(`[webbycommerce] EARLY (SECOND): hasContentTypes=${hasContentTypes}, hasComponents=${hasComponents}`);
+              strapi2.log.info(`[webbycommerce] EARLY (SECOND): ctx.state.schemaFileCreated=${ctx.state.schemaFileCreated}, ctx.state.componentsCreated=${ctx.state.componentsCreated}`);
+              if (hasContentTypes || hasComponents) {
+                strapi2.log.info(`[webbycommerce] EARLY (SECOND): \u2713 Schema file(s) created successfully`);
+                if (hasContentTypes) {
+                  strapi2.log.info(`[webbycommerce] EARLY (SECOND): \u2713 Created ${contentTypes3.length} content type(s)`);
+                }
+                if (hasComponents) {
+                  strapi2.log.info(`[webbycommerce] EARLY (SECOND): \u2713 Created ${components.length} component(s)`);
+                }
+                strapi2.log.info(`[webbycommerce] EARLY (SECOND): \u2713 File watcher will detect change and trigger auto-restart`);
+                strapi2.log.info(`[webbycommerce] EARLY (SECOND): \u2713 After restart, collections and components will be automatically registered with all fields`);
+                ctx.status = 200;
+                ctx.set("Content-Type", "application/json");
+                ctx.body = {
+                  data: {
+                    contentTypes: contentTypes3.map((ct) => {
+                      const uidParts = ct.uid.split("::");
+                      const apiAndType = uidParts.length === 2 ? uidParts[1].split(".") : [];
+                      return {
+                        uid: ct.uid,
+                        apiID: ct.uid,
+                        schema: {
+                          kind: ct.kind || "collectionType",
+                          collectionName: ct.collectionName || (ct.kind === "singleType" ? apiAndType[1] : `${apiAndType[1]}s`),
+                          info: {
+                            singularName: ct.singularName || apiAndType[1],
+                            pluralName: ct.pluralName || (ct.kind === "singleType" ? apiAndType[1] : `${apiAndType[1]}s`),
+                            displayName: ct.displayName || ct.modelName || apiAndType[1],
+                            description: ct.description || ""
+                          },
+                          options: {
+                            draftAndPublish: ct.draftAndPublish !== void 0 ? ct.draftAndPublish : false
+                          }
+                        }
+                      };
+                    }),
+                    components: (components || []).map((comp) => {
+                      const uidParts = comp.uid ? comp.uid.split(".") : [];
+                      return {
+                        uid: comp.uid,
+                        category: uidParts[0] || "",
+                        apiID: comp.uid,
+                        schema: {
+                          collectionName: comp.collectionName || "components_" + comp.uid.replace(/\./g, "_"),
+                          info: {
+                            displayName: comp.displayName || comp.modelName || uidParts[1] || "New Component",
+                            description: comp.description || ""
+                          }
+                        }
+                      };
+                    })
+                  }
+                };
+                strapi2.log.info(`[webbycommerce] EARLY (SECOND): \u2713 Success response sent - request handled`);
+                strapi2.log.info(`[webbycommerce] EARLY (SECOND): \u2713 Returning early to prevent Strapi from processing request again`);
+                return;
+              }
             } catch (error) {
               strapi2.log.error("[webbycommerce] \u2717 Error ensuring API directory structure:", error.message);
               strapi2.log.error("[webbycommerce] Error stack:", error.stack);
@@ -5750,13 +5960,61 @@ var require_bootstrap = __commonJS({
           if (apiContentTypes.length > 0) {
             strapi2.log.info(`[webbycommerce] Registered collections: ${apiContentTypes.join(", ")}`);
           }
+          try {
+            let componentKeys = [];
+            if (strapi2.components && strapi2.components instanceof Map) {
+              componentKeys = Array.from(strapi2.components.keys());
+            } else if (strapi2.get && typeof strapi2.get === "function") {
+              const components = strapi2.get("components");
+              if (components instanceof Map) {
+                componentKeys = Array.from(components.keys());
+              } else if (components && typeof components === "object") {
+                componentKeys = Object.keys(components);
+              }
+            } else if (strapi2.components && typeof strapi2.components === "object") {
+              componentKeys = Object.keys(strapi2.components);
+            }
+            const userComponents = componentKeys.filter(
+              (uid) => (uid.startsWith("shared.") || uid.includes(".")) && !uid.startsWith("plugin::")
+            );
+            strapi2.log.info(`[webbycommerce] Currently registered user components: ${userComponents.length}`);
+            if (userComponents.length > 0) {
+              strapi2.log.info(`[webbycommerce] Registered components: ${userComponents.join(", ")}`);
+            } else {
+              strapi2.log.warn(`[webbycommerce] \u26A0 No user components found - checking component files...`);
+              const appDir = strapi2.dirs?.app?.root || path.resolve(__dirname, "../..");
+              const componentsDir = path.join(appDir, "src", "components");
+              if (fs.existsSync(componentsDir)) {
+                const categoryDirs = fs.readdirSync(componentsDir, { withFileTypes: true }).filter((dirent) => dirent.isDirectory()).map((dirent) => dirent.name);
+                let totalComponentFiles = 0;
+                for (const category of categoryDirs) {
+                  const categoryPath = path.join(componentsDir, category);
+                  const files = fs.readdirSync(categoryPath, { withFileTypes: true }).filter((dirent) => dirent.isFile() && dirent.name.endsWith(".json")).map((dirent) => dirent.name);
+                  for (const jsonFile of files) {
+                    const componentName = jsonFile.replace(".json", "");
+                    const componentPath = path.join(categoryPath, jsonFile);
+                    if (fs.existsSync(componentPath)) {
+                      totalComponentFiles++;
+                      strapi2.log.info(`[webbycommerce]   - Found component file: ${category}.${componentName} at ${componentPath}`);
+                    }
+                  }
+                }
+                if (totalComponentFiles > 0) {
+                  strapi2.log.warn(`[webbycommerce] \u26A0 Found ${totalComponentFiles} component files but Strapi hasn't loaded them yet`);
+                  strapi2.log.warn(`[webbycommerce] \u26A0 Components should appear after Strapi finishes loading - try refreshing the browser`);
+                }
+              }
+            }
+          } catch (compError) {
+            strapi2.log.debug(`[webbycommerce] Could not list components: ${compError.message}`);
+          }
         } catch (error) {
         }
         strapi2.log.info("[webbycommerce] Plugin bootstrapped successfully");
         strapi2.log.info(
           "[webbycommerce] Health endpoint is available at: /webbycommerce/health and /api/webbycommerce/health"
         );
-        strapi2.log.info("[webbycommerce] Auto-restart enabled: Strapi will automatically restart when new collections are added");
+        strapi2.log.info("[webbycommerce] Auto-restart enabled: Strapi will automatically restart when new collections or components are added");
         strapi2.log.info("[webbycommerce] ========================================");
       } catch (error) {
         strapi2.log.error("[webbycommerce] Bootstrap error:", error);
