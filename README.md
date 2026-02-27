@@ -1,6 +1,13 @@
 # WebbyCommerce Plugin
 
+
 A complete, production-ready ecommerce solution for Strapi CMS. This plugin provides a comprehensive backend for managing ecommerce functionality without requiring developers to manually create content types, routes, or controllers. Simply install, configure, and start building your online store.
+
+## 📺 Demo Video
+
+![WebbyCommerce Plugin](public/uploads/Webbycommerce.png)
+
+- **YouTube**: [https://youtu.be/CWXKxQ9i7o8](https://youtu.be/CWXKxQ9i7o8)
 
 ## 🎯 Plugin Goal
 
