@@ -1,0 +1,37 @@
+{
+  "collectionName": "components_shared_content_blocks",
+  "info": {
+    "displayName": "Content Block",
+    "description": "A reusable component for managing title, description, button, and images."
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": false,
+      "description": "The main title or heading"
+    },
+    "description": {
+      "type": "string",
+      "required": false,
+      "description": "The description or body text content"
+    },
+    "button_text": {
+      "type": "string",
+      "required": false,
+      "description": "The text displayed on the button"
+    },
+    "button_link": {
+      "type": "string",
+      "required": false,
+      "description": "The URL or link for the button"
+    },
+    "images": {
+      "type": "media",
+      "multiple": true,
+      "required": false,
+      "allowedTypes": ["images"],
+      "description": "Images associated with this content block"
+    }
+  }
+}

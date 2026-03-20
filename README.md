@@ -5,7 +5,8 @@ A complete, production-ready ecommerce solution for Strapi CMS. This plugin prov
 
 ## 📺 Demo Video
 
-![WebbyCommerce Plugin](public/uploads/Webbycommerce.png)
+[![WebbyCommerce Plugin](https://raw.githubusercontent.com/webbycrown/webbycommerce/main/public/uploads/Webbycommerce.png)](https://youtu.be/CWXKxQ9i7o8)
+
 
 - **YouTube**: [https://youtu.be/CWXKxQ9i7o8](https://youtu.be/CWXKxQ9i7o8)
 
@@ -70,7 +71,7 @@ When prompted **"Would you like to seed example data? (y/n):"**, answer **`y`**.
 
 #### Option B: Seed from Strapi Admin (works even if you answered `n`)
 
-- Go to **Strapi Admin → Settings → Advanced Ecommerce**
+- Go to **Strapi Admin → Settings → WebbyCommerce**
 - Click **"Seed Demo Data"**
 
 #### Option C: Seed via `.env` flag (programmatic / CI-friendly)
@@ -201,7 +202,7 @@ The plugin creates an `Address` content type automatically with the following fi
 
 ## 📚 API Documentation
 
-All API endpoints are documented in the Strapi admin panel under **Settings → Advanced Ecommerce → API Collections**. Each endpoint includes:
+All API endpoints are documented in the Strapi admin panel under **Settings → WebbyCommerce → API Collections**. Each endpoint includes:
 
 - Request/Response examples
 - Authentication requirements
