@@ -3,6 +3,8 @@
 
 A complete, production-ready ecommerce solution for Strapi CMS. This plugin provides a comprehensive backend for managing ecommerce functionality without requiring developers to manually create content types, routes, or controllers. Simply install, configure, and start building your online store.
 
+
+
 ## 📺 Demo Video
 
 [![WebbyCommerce Plugin](https://raw.githubusercontent.com/webbycrown/webbycommerce/main/public/uploads/Webbycommerce.png)](https://youtu.be/CWXKxQ9i7o8)
@@ -67,7 +69,9 @@ You can populate your store with sample products/categories/etc using any of the
 npx strapi-ecommerce-setup
 ```
 
-When prompted **"Would you like to seed example data? (y/n):"**, answer **`y`**.
+Run this from your Strapi project root. When prompted **"Would you like to seed example data? (y/n):"**, answer **`y`**.
+This command will set `STRAPI_PLUGIN_ADVANCED_ECOMMERCE_SEED_DATA=true` in your Strapi project’s `.env`.
+Restart Strapi to seed demo data.
 
 #### Option B: Seed from Strapi Admin (works even if you answered `n`)
 

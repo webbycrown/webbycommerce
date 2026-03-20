@@ -18,6 +18,31 @@ const log = (msg) => {
 };
 
 /**
+ * Upsert a key/value pair in a dotenv-style file.
+ * - Replaces only exact `KEY=...` lines.
+ * - Creates the file if it doesn't exist.
+ */
+function upsertEnvVar(envFilePath, key, value) {
+  const os = require('os');
+  const eol = os.EOL;
+  const desiredLine = `${key}=${value}`;
+
+  let current = '';
+  if (fs.existsSync(envFilePath)) {
+    current = fs.readFileSync(envFilePath, 'utf8');
+  }
+
+  const keyRegex = new RegExp(`^${key}=.*$`, 'm');
+  if (keyRegex.test(current)) {
+    return current.replace(keyRegex, desiredLine);
+  }
+
+  const needsNewline = current.length > 0 && !current.endsWith('\n') && !current.endsWith('\r\n');
+  if (!current.length) return desiredLine + eol;
+  return current + (needsNewline ? eol : '') + desiredLine + eol;
+}
+
+/**
  * Setup script for @webbycrown/webbycommerce
  */
 async function setup() {
@@ -118,9 +143,31 @@ async function setup() {
     const shouldSeed = seedAnswer.toLowerCase().trim() === 'y';
 
     if (shouldSeed) {
-      // Set environment variable for seeding
-      process.env.STRAPI_PLUGIN_ADVANCED_ECOMMERCE_SEED_DATA = 'true';
-      print('✅ Demo data will be seeded when you start Strapi.');
+      const key = 'STRAPI_PLUGIN_ADVANCED_ECOMMERCE_SEED_DATA';
+      const value = 'true';
+
+      // Set environment variable for the current process (useful if user starts Strapi from the same command context).
+      process.env[key] = value;
+
+      // Also persist it to `.env` so the next Strapi startup actually seeds.
+      // Usually this script is executed from the Strapi project root, not from within `node_modules`.
+      const isLikelyStrapiProject =
+        fs.existsSync(path.join(projectRoot, 'config')) &&
+        fs.existsSync(path.join(projectRoot, 'package.json'));
+
+      if (isLikelyStrapiProject) {
+        try {
+          const envFilePath = path.join(projectRoot, '.env');
+          const updated = upsertEnvVar(envFilePath, key, value);
+          fs.writeFileSync(envFilePath, updated, 'utf8');
+          print(`✅ Set ${key}=true in ${path.join(projectRoot, '.env')}. Restart Strapi to seed demo data.`);
+        } catch (e) {
+          print(`⚠️  Could not update .env automatically (${e.message}). You can manually set ${key}=true and restart Strapi.`);
+        }
+      } else {
+        print(`✅ Demo data will be seeded when you start Strapi (set ${key}=true in your Strapi project's .env).`);
+      }
+
       print('');
     } else {
       print('ℹ️  Demo data seeding skipped.');

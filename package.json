@@ -65,6 +65,11 @@
     "description": "Complete ecommerce solution for Strapi: products, cart, orders, payments, and more with role-based permissions."
   },
   "description": "Complete ecommerce solution for Strapi: products, cart, orders, payments, and more with role-based permissions.",
+  "homepage": "https://github.com/webbycrown/webbycommerce#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/webbycrown/webbycommerce.git"
+  },
   "license": "MIT",
   "author": {
     "name": "WebbyCrown",
