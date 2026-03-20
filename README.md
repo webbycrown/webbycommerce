@@ -592,6 +592,12 @@ Authorization: Bearer YOUR_JWT_TOKEN
 
 ## 📜 Changelog
 
+## [2.0.0] - Patch Release
+
+### Changed
+- [Strapi v5] Converted WebbyCommerce to a source-based plugin structure (uses `admin/src` and `server/src` directly; removed dist-first packaging) for Strapi Marketplace compatibility.
+
+
 ## [1.2.1] - Patch Release
 
 ### Fixed
