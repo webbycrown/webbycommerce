@@ -25,6 +25,7 @@
   "files": [
     "admin",
     "server",
+    "public",
     "bin",
     "strapi-server.js",
     "README.md",

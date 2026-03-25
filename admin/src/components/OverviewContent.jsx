@@ -6,12 +6,17 @@ import { Mail, Phone } from '@strapi/icons';
 
 import { PLUGIN_ID } from '../pluginId';
 import pluginPackage from '../../../package.json';
-import webbyCommercePreviewImage from '../../../public/uploads/Webbycommerce.png';
-import apiImage from '../../../public/uploads/api.png';
-import authImage from '../../../public/uploads/auth.png';
-import cartsImage from '../../../public/uploads/carts.png';
-import productsImage from '../../../public/uploads/products.png';
-import shippingImage from '../../../public/uploads/shipping.png';
+
+// Use remote URLs for images so npm-published packages don't need to bundle `public/uploads`.
+// Matches your requested format:
+// https://raw.githubusercontent.com/<owner>/<repo>/<branch>/public/uploads/<file>
+const ASSET_BASE_URL = 'https://raw.githubusercontent.com/webbycrown/webbycommerce/main/public/uploads/';
+const webbyCommercePreviewImage = `${ASSET_BASE_URL}Webbycommerce.png`;
+const apiImage = `${ASSET_BASE_URL}api.png`;
+const authImage = `${ASSET_BASE_URL}auth.png`;
+const cartsImage = `${ASSET_BASE_URL}carts.png`;
+const productsImage = `${ASSET_BASE_URL}products.png`;
+const shippingImage = `${ASSET_BASE_URL}shipping.png`;
 
 const VIDEO_LINK = 'https://youtu.be/CWXKxQ9i7o8';
 const VIDEO_PREVIEW_IMAGE = webbyCommercePreviewImage;
