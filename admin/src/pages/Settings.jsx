@@ -5,6 +5,7 @@ import { useIntl } from 'react-intl';
 import { Main, Box, Flex, Typography, Button } from '@strapi/design-system';
 
 import { PLUGIN_ID } from '../pluginId';
+import OverviewContent from '../components/OverviewContent';
 import ConfigureContent from '../components/ConfigureContent';
 import ApiCollectionsContent from '../components/ApiCollectionsContent';
 import LoginRegisterContent from '../components/LoginRegisterContent';
@@ -13,7 +14,7 @@ import SmtpContent from '../components/SmtpContent';
 
 const Settings = () => {
   const { formatMessage } = useIntl();
-  const [activeView, setActiveView] = useState('configure');
+  const [activeView, setActiveView] = useState('overview');
 
   const titleId = `${PLUGIN_ID}-settings-title`;
 
@@ -24,13 +25,19 @@ const Settings = () => {
           <Typography id={titleId} variant="alpha" as="h1">
             {formatMessage({
               id: `${PLUGIN_ID}.settings.section`,
-              defaultMessage: 'Advanced Ecommerce',
+              defaultMessage: 'WebbyCommerce',
             })}
           </Typography>
         </Box>
 
         <Box background="neutral0" padding={6} shadow="filterShadow" hasRadius>
           <Flex gap={2} marginBottom={6} wrap="wrap">
+            <Button
+              variant={activeView === 'overview' ? 'default' : 'tertiary'}
+              onClick={() => setActiveView('overview')}
+            >
+              Overview
+            </Button>
             <Button
               variant={activeView === 'configure' ? 'default' : 'tertiary'}
               onClick={() => setActiveView('configure')}
@@ -78,6 +85,7 @@ const Settings = () => {
             </Button>
           </Flex>
 
+          {activeView === 'overview' && <OverviewContent />}
           {activeView === 'configure' && <ConfigureContent />}
           {activeView === 'login-register' && <LoginRegisterContent />}
           {activeView === 'shipping-type' && <ShippingTypeContent />}
@@ -90,4 +98,3 @@ const Settings = () => {
 };
 
 export default Settings;
-
