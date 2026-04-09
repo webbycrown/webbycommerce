@@ -129,7 +129,7 @@ const SectionCard = ({ title, children }) => (
 );
 
 const StepCard = ({ index, text }) => (
-  <Box background="neutral0" borderColor="neutral200" hasRadius padding={4} shadow="tableShadow">
+  <Box background="neutral0" borderColor="neutral200" hasRadius padding={4} shadow="tableShadow" style={{ width: '100%' }}>
     <Box
       background="primary100"
       borderColor="primary200"
