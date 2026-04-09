@@ -27,9 +27,10 @@ Direct link: https://www.webbycrown.com/guides/webbycommerce-plugin/quick-start
 
 ## 📺 Demo Video
 
-[![WebbyCommerce Plugin](public/uploads/webby-commerce.png)](https://youtu.be/CWXKxQ9i7o8)
+[![WebbyCommerce Plugin](https://raw.githubusercontent.com/webbycrown/webbycommerce/main/public/uploads/webby-commerce.png)](https://youtu.be/CWXKxQ9i7o8)
 
-- **YouTube**: [https://youtu.be/CWXKxQ9i7o8](https://youtu.be/CWXKxQ9i7o8)
+
+▶️ **[Watch Full Video on YouTube](https://youtu.be/CWXKxQ9i7o8)**
 
 ## 🎯 Plugin Goal
 
