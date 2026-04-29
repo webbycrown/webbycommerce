@@ -55,7 +55,11 @@
     },
     "stock_status": {
       "type": "enumeration",
-      "enum": ["in_stock", "out_of_stock", "on_backorder"],
+      "enum": [
+        "in_stock",
+        "out_of_stock",
+        "on_backorder"
+      ],
       "default": "in_stock",
       "required": false
     },
@@ -68,7 +72,9 @@
       "type": "media",
       "multiple": true,
       "required": false,
-      "allowedTypes": ["images"]
+      "allowedTypes": [
+        "images"
+      ]
     },
     "product_categories": {
       "type": "relation",
@@ -99,6 +105,39 @@
       "relation": "manyToMany",
       "target": "plugin::webbycommerce.compare",
       "inversedBy": "products"
+    },
+    "download_file": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "files"
+      ]
+    },
+    "download_link": {
+      "type": "string"
+    },
+    "download_limit": {
+      "type": "integer",
+      "default": 0
+    },
+    "external_url": {
+      "type": "string"
+    },
+    "external_button_text": {
+      "type": "string",
+      "default": "Buy Now"
+    },
+    "grouped_products": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "plugin::webbycommerce.product",
+      "mappedBy": "parent_product"
+    },
+    "parent_product": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::webbycommerce.product",
+      "inversedBy": "grouped_products"
     }
   }
 }

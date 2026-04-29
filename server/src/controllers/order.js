@@ -28,7 +28,7 @@ module.exports = {
         payment_method,
         shipping_method,
         notes,
-        tax_amount,
+        // tax_amount,
         shipping_amount,
         discount_amount
       } = ctx.request.body;
@@ -59,13 +59,13 @@ module.exports = {
 
       const cartItems = cart?.id
         ? await strapi.db.query('plugin::webbycommerce.cart-item').findMany({
-            where: { cart: cart.id },
-            populate: {
-              product: {
-                populate: ['images'],
-              },
+          where: { cart: cart.id },
+          populate: {
+            product: {
+              populate: ['images'],
             },
-          })
+          },
+        })
         : [];
 
       if (cartItems.length === 0) {
@@ -109,10 +109,44 @@ module.exports = {
       }
 
       // Calculate totals using values from request (default to 0 if not provided)
-      const taxAmount = tax_amount != null ? (parseFloat(tax_amount) || 0) : 0;
-      const finalShippingAmount = shipping_amount != null ? (parseFloat(shipping_amount) || 0) : 0;
-      const finalDiscountAmount = discount_amount != null ? (parseFloat(discount_amount) || 0) : 0;
+      // const taxAmount = tax_amount != null ? (parseFloat(tax_amount) || 0) : 0;
+      // const taxAmount = await strapi
+      //   .plugin("webbycommerce")
+      //   .service("taxService")
+      //   .calculateTax({
+      //     items: orderItems,               // better: per-item support
+      //     subtotal,
+      //     address: shipping_address,      // or billing_address (your rule)
+      //     shipping: finalShippingAmount,
+      //   });
+      // const finalShippingAmount = shipping_amount != null ? (parseFloat(shipping_amount) || 0) : 0;
+      // const finalDiscountAmount = discount_amount != null ? (parseFloat(discount_amount) || 0) : 0;
+      // const total = subtotal + taxAmount + finalShippingAmount - finalDiscountAmount;
+
+
+      // ✅ FIRST define values
+      const finalShippingAmount = shipping_amount != null
+        ? (parseFloat(shipping_amount) || 0)
+        : 0;
+
+      const finalDiscountAmount = discount_amount != null
+        ? (parseFloat(discount_amount) || 0)
+        : 0;
+
+      // ✅ THEN call tax service
+      const taxAmount = await strapi
+        .plugin("webbycommerce")
+        .service("taxService")
+        .calculateTax({
+          items: orderItems,
+          subtotal,
+          address: shipping_address,
+          shipping: finalShippingAmount,
+        });
+
+      // ✅ THEN total
       const total = subtotal + taxAmount + finalShippingAmount - finalDiscountAmount;
+
 
       // Generate unique order number
       const orderNumber = await this.generateOrderNumber();
@@ -241,7 +275,7 @@ module.exports = {
         let formattedItems = [];
         if (order.items && order.items.length > 0) {
           const itemIds = order.items.map(item => typeof item === 'object' && item.id ? item.id : item);
-          
+
           const products = await strapi.db.query('plugin::webbycommerce.product').findMany({
             where: {
               id: { $in: itemIds },
@@ -359,7 +393,7 @@ module.exports = {
 
       // Determine if id is a numeric ID or an order_number (starts with ORD-)
       const isOrderNumber = id.toString().startsWith('ORD-');
-      
+
       const whereClause = {
         user: user.id, // Filter by user ID directly for security
       };
@@ -386,7 +420,7 @@ module.exports = {
       if (order.items && order.items.length > 0) {
         // Items might be just IDs, so fetch full product details
         const itemIds = order.items.map(item => typeof item === 'object' && item.id ? item.id : item);
-        
+
         const products = await strapi.db.query('plugin::webbycommerce.product').findMany({
           where: {
             id: { $in: itemIds },
@@ -499,7 +533,7 @@ module.exports = {
       let order;
       try {
         order = await strapi.db.query('plugin::webbycommerce.order').findOne({
-          where: { 
+          where: {
             id: orderId,
             user: user.id, // Filter by user ID directly for security
           },
@@ -510,7 +544,7 @@ module.exports = {
         if (!order && orderId !== id) {
           strapi.log.info(`[cancelOrder] Order not found with normalized ID ${orderId}, trying original ID ${id}`);
           order = await strapi.db.query('plugin::webbycommerce.order').findOne({
-            where: { 
+            where: {
               id: id,
               user: user.id,
             },
@@ -534,12 +568,12 @@ module.exports = {
       // Check if order can be cancelled
       const orderStatus = order.status || '';
       const cancellableStatuses = ['pending', 'processing'];
-      
+
       if (!orderStatus) {
         strapi.log.warn(`[cancelOrder] Order ${order.id} has no status`);
         return ctx.badRequest('Order status is invalid');
       }
-      
+
       if (!cancellableStatuses.includes(orderStatus)) {
         if (orderStatus === 'cancelled') {
           return ctx.badRequest('Order is already cancelled');
@@ -583,7 +617,7 @@ module.exports = {
           for (const item of order.items) {
             // item is a product object from the manyToMany relation
             const productId = typeof item === 'object' && item.id ? item.id : item;
-            
+
             if (!productId) {
               strapi.log.warn(`[cancelOrder] Skipping item with invalid ID for order ${order.id}`);
               continue;
@@ -652,18 +686,18 @@ module.exports = {
       strapi.log.error(`[cancelOrder] Error name:`, error.name);
       strapi.log.error(`[cancelOrder] Error message:`, error.message);
       strapi.log.error(`[cancelOrder] Error stack:`, error.stack);
-      
+
       // Provide more detailed error message
       const errorMessage = error.message || 'Unknown error occurred';
       const errorDetails = error.details ? JSON.stringify(error.details) : '';
-      
+
       strapi.log.error(`[cancelOrder] Full error details:`, {
         name: error.name,
         message: errorMessage,
         details: errorDetails,
         stack: error.stack,
       });
-      
+
       return ctx.badRequest(`Failed to cancel order: ${errorMessage}${errorDetails ? ` - ${errorDetails}` : ''}`);
     }
   },
@@ -792,7 +826,7 @@ module.exports = {
       }
 
       const order = await strapi.db.query('plugin::webbycommerce.order').findOne({
-        where: { 
+        where: {
           id: id,
           user: user.id, // Filter by user ID directly for security
         },
@@ -859,7 +893,7 @@ module.exports = {
       // Format items for email
       // Note: order.items is a manyToMany relation to products, not order items with quantities
       let itemsHtml = '<li>No items found</li>';
-      
+
       if (orderWithItems && orderWithItems.items && Array.isArray(orderWithItems.items) && orderWithItems.items.length > 0) {
         // Items are product objects, not order items with quantities
         // Since we don't have quantities stored, we'll just show product names
@@ -870,7 +904,7 @@ module.exports = {
           // We don't have quantity, so we'll show the product name and price
           return `<li>${productName} - $${parseFloat(productPrice).toFixed(2)}</li>`;
         }).filter(item => item !== '').join('');
-        
+
         if (!itemsHtml) {
           itemsHtml = '<li>No items found</li>';
         }
@@ -972,7 +1006,7 @@ module.exports = {
       for (const item of order.items) {
         // item is a product object from the manyToMany relation
         const productId = typeof item === 'object' && item.id ? item.id : item;
-        
+
         if (!productId) {
           strapi.log.warn(`[restoreOrderStock] Skipping item with invalid ID for order ${order.id}`);
           continue;
