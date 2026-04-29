@@ -8,6 +8,7 @@ const order = require('./order');
 const payment = require('./payment');
 const product = require('./product');
 const productTag = require('./productTag');
+const productReview = require('./productReview');
 const productCategory = require('./category');
 const productVariation = require('./productVariation');
 const cart = require('./cart');
@@ -24,6 +25,7 @@ module.exports = {
   payment,
   product,
   productTag,
+  productReview,
   productCategory,
   productVariation,
   cart,

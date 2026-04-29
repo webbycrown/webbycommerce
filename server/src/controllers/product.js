@@ -42,6 +42,7 @@ module.exports = {
         orderBy: { createdAt: 'desc' },
         populate: {
           product_categories: true,
+          parent_product: true,
           tags: true,
           images: true,
           variations: {
@@ -142,6 +143,12 @@ module.exports = {
         images: true,
         variations: true,
         download_file: true,
+        parent_product: true,
+        reviews: {
+          populate: {
+            user: true
+          }
+        },
         grouped_products: {
           populate: {
             images: true,

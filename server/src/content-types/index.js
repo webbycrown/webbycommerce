@@ -20,6 +20,7 @@ const shippingMethod = require('./shipping-method');
 const shippingRate = require('./shipping-rate');
 const shippingRule = require('./shipping-rule');
 const taxRate = require('./tax-rate');
+const productReview = require('./product-review');
 
 module.exports = {
   address,
@@ -41,4 +42,5 @@ module.exports = {
   'shipping-rate': shippingRate,
   'shipping-rule': shippingRule,
   'tax-rate': taxRate,
+  'product-review': productReview,
 };
