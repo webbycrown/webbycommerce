@@ -58,16 +58,16 @@ module.exports = {
 
       const products = await strapi.db.query('plugin::webbycommerce.product').findMany(queryOptions);
 
-      const responseMeta = shouldGetAll 
+      const responseMeta = shouldGetAll
         ? { total, returned: products.length, pagination: false }
-        : { 
-            total, 
-            limit: parseInt(limit, 10), 
-            start: parseInt(start, 10),
-            pagination: true,
-            page: Math.floor(parseInt(start, 10) / parseInt(limit, 10)) + 1,
-            pageCount: Math.ceil(total / parseInt(limit, 10))
-          };
+        : {
+          total,
+          limit: parseInt(limit, 10),
+          start: parseInt(start, 10),
+          pagination: true,
+          page: Math.floor(parseInt(start, 10) / parseInt(limit, 10)) + 1,
+          pageCount: Math.ceil(total / parseInt(limit, 10))
+        };
 
       ctx.send({ data: products, meta: responseMeta });
     } catch (error) {
@@ -136,13 +136,33 @@ module.exports = {
         return;
       }
 
+      const populateData = {
+        product_categories: true,
+        tags: true,
+        images: true,
+        variations: true,
+        download_file: true,
+        grouped_products: {
+          populate: {
+            images: true,
+            product_categories: true,
+            tags: true,
+          },
+        },
+        parent_product: {
+          populate: {
+            images: true,
+          },
+        },
+      };
+
       // Strapi v5 can store draft + published versions as separate rows (document model).
       // For storefront APIs we only want published records.
       const results = await strapi.db.query('plugin::webbycommerce.product').findMany({
         where: { slug, publishedAt: { $notNull: true } },
         limit: 1,
         orderBy: { publishedAt: 'desc', id: 'desc' },
-        populate: ['product_categories', 'tags', 'images', 'variations'],
+        populate: populateData,
       });
 
       const product = results?.[0];
@@ -216,21 +236,21 @@ module.exports = {
       // Prepare relation IDs
       let categoryIds = [];
       if (product_categories && Array.isArray(product_categories) && product_categories.length > 0) {
-        categoryIds = product_categories.map(id => 
+        categoryIds = product_categories.map(id =>
           typeof id === 'object' && id.id ? id.id : id
         );
       }
 
       let tagIds = [];
       if (tags && Array.isArray(tags) && tags.length > 0) {
-        tagIds = tags.map(id => 
+        tagIds = tags.map(id =>
           typeof id === 'object' && id.id ? id.id : id
         );
       }
 
       let imageIds = [];
       if (images && Array.isArray(images) && images.length > 0) {
-        imageIds = images.map(id => 
+        imageIds = images.map(id =>
           typeof id === 'object' && id.id ? id.id : id
         );
       }
@@ -371,19 +391,19 @@ module.exports = {
         };
 
         if (productData.product_categories && Array.isArray(productData.product_categories) && productData.product_categories.length > 0) {
-          relations.product_categories = productData.product_categories.map(id => 
+          relations.product_categories = productData.product_categories.map(id =>
             typeof id === 'object' && id.id ? id.id : id
           );
         }
 
         if (productData.tags && Array.isArray(productData.tags) && productData.tags.length > 0) {
-          relations.tags = productData.tags.map(id => 
+          relations.tags = productData.tags.map(id =>
             typeof id === 'object' && id.id ? id.id : id
           );
         }
 
         if (productData.images && Array.isArray(productData.images) && productData.images.length > 0) {
-          relations.images = productData.images.map(id => 
+          relations.images = productData.images.map(id =>
             typeof id === 'object' && id.id ? id.id : id
           );
         }
@@ -874,17 +894,17 @@ module.exports = {
 
       // Normalize relation IDs
       if (Array.isArray(relations.product_categories) && relations.product_categories.length > 0) {
-        relations.product_categories = relations.product_categories.map(id => 
+        relations.product_categories = relations.product_categories.map(id =>
           typeof id === 'object' && id.id ? id.id : id
         );
       }
       if (Array.isArray(relations.tags) && relations.tags.length > 0) {
-        relations.tags = relations.tags.map(id => 
+        relations.tags = relations.tags.map(id =>
           typeof id === 'object' && id.id ? id.id : id
         );
       }
       if (Array.isArray(relations.images) && relations.images.length > 0) {
-        relations.images = relations.images.map(id => 
+        relations.images = relations.images.map(id =>
           typeof id === 'object' && id.id ? id.id : id
         );
       }

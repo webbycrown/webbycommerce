@@ -5,9 +5,7 @@
 [![Strapi](https://img.shields.io/badge/Strapi-5.x-blue.svg)](https://strapi.io/)
 [![Strapi Market](https://img.shields.io/badge/Strapi%20Market-Plugin-7A5AF8?style=flat-square&logo=strapi)](https://market.strapi.io/plugins/@webbycrown-webbycommerce)
 
-
 A complete, production-ready ecommerce solution for Strapi CMS. This plugin provides a comprehensive backend for managing ecommerce functionality without requiring developers to manually create content types, routes, or controllers. Simply install, configure, and start building your online store.
-
 
 - **NPM Package**: [@webbycrown/webbycommerce](https://www.npmjs.com/package/@webbycrown/webbycommerce)
 
@@ -28,7 +26,6 @@ Direct link: https://www.webbycrown.com/guides/webbycommerce-plugin/quick-start
 ## 📺 Demo Video
 
 [![WebbyCommerce Plugin](https://raw.githubusercontent.com/webbycrown/webbycommerce/main/public/uploads/webby-commerce.png)](https://youtu.be/CWXKxQ9i7o8)
-
 
 ▶️ **[Watch Full Video on YouTube](https://youtu.be/CWXKxQ9i7o8)**
 
@@ -56,9 +53,9 @@ Add the plugin to your `config/plugins.js`:
 
 ```javascript
 module.exports = ({ env }) => ({
-  'webbycommerce': {
+  webbycommerce: {
     enabled: true,
-    resolve: require.resolve('@webbycrown/webbycommerce'),
+    resolve: require.resolve("@webbycrown/webbycommerce"),
   },
 });
 ```
@@ -69,13 +66,12 @@ If you're developing locally, you can enable it from the local path:
 
 ```javascript
 module.exports = ({ env }) => ({
-  'webbycommerce': {
+  webbycommerce: {
     enabled: true,
-    resolve: './src/plugins/webbycommerce',
+    resolve: "./src/plugins/webbycommerce",
   },
 });
 ```
-
 
 ## ⚙️ Initial Setup
 
@@ -123,6 +119,7 @@ Under the **WebbyCommerce** section, enable the **Enable** permission to allow a
 Navigate to **Settings → WebbyCommerce** in the Strapi admin panel. You'll find several configuration tabs:
 
 #### **Configure Tab**
+
 - **Allowed Frontend Domains**: Add your frontend domain(s) for CORS and security
 - **API Route Prefix**: Customize the API route prefix (default: `webbycommerce`)
   - Examples: `/api/ecommerce`, `/api/v1`, `/api/shop`
@@ -131,11 +128,13 @@ Navigate to **Settings → WebbyCommerce** in the Strapi admin panel. You'll fin
   - From Email and From Name
 
 #### **Login/Register Tab**
+
 - **Authentication Method**: Choose between:
   - **Default (Email/Password)**: Uses Strapi's built-in authentication
   - **OTP (Email/Mobile Verification)**: One-time password authentication
 
 #### **Shipping Type Tab**
+
 - **Single Address Mode**: Users can have only one billing and one shipping address
 - **Multiple Address Mode**: Users can create unlimited addresses
 
@@ -144,6 +143,7 @@ Navigate to **Settings → WebbyCommerce** in the Strapi admin panel. You'll fin
 The plugin automatically extends the user schema with ecommerce-specific fields. The plugin will attempt to automatically add OTP fields to the user schema when it starts up.
 
 **Required Fields:**
+
 - `username` (string, required, unique)
 - `email` (email, required)
 - `phone_no` (string, required, unique)
@@ -151,10 +151,12 @@ The plugin automatically extends the user schema with ecommerce-specific fields.
 - `last_name` (string, required)
 
 **Optional Fields:**
+
 - `display_name` (string)
 - `company_name` (string)
 
 **OTP Fields (required if using OTP authentication):**
+
 - `otp` (integer, nullable) - Stores the OTP code
 - `isOtpVerified` (boolean, default: false) - Tracks if OTP has been verified
 
@@ -167,11 +169,13 @@ The plugin automatically adds OTP fields to the user schema on startup. If you s
 If the automatic schema extension doesn't work, create a schema extension file in your main Strapi project:
 
 1. Create the directory structure:
+
    ```
    src/extensions/users-permissions/content-types/user/
    ```
 
 2. Create `schema.json` in that directory with the following content:
+
    ```json
    {
      "kind": "collectionType",
@@ -207,6 +211,7 @@ If the automatic schema extension doesn't work, create a schema extension file i
 The plugin creates an `Address` content type automatically with the following fields:
 
 **Required Fields:**
+
 - `type` (integer, 0=billing, 1=shipping)
 - `first_name` (string)
 - `last_name` (string)
@@ -218,10 +223,12 @@ The plugin creates an `Address` content type automatically with the following fi
 - `email_address` (email, required for billing addresses)
 
 **Optional Fields:**
+
 - `company_name` (string)
 - `region` (string)
 
 **Relations:**
+
 - `user` (manyToOne → plugin::users-permissions.user)
 
 ## 📚 API Documentation
@@ -255,6 +262,7 @@ Authorization: Bearer YOUR_JWT_TOKEN
 When **Default** authentication method is selected:
 
 #### Login
+
 ```
 POST /api/auth/local
 Content-Type: application/json
@@ -266,6 +274,7 @@ Content-Type: application/json
 ```
 
 #### Register
+
 ```
 POST /api/auth/local/register
 Content-Type: application/json
@@ -282,6 +291,7 @@ Content-Type: application/json
 When **OTP** authentication method is selected:
 
 #### Login/Register (Send OTP)
+
 ```
 POST /api/{prefix}/auth/login-register
 Content-Type: application/json
@@ -293,6 +303,7 @@ Content-Type: application/json
 ```
 
 **Response:**
+
 ```json
 {
   "message": "OTP sent to email.",
@@ -303,6 +314,7 @@ Content-Type: application/json
 ```
 
 #### Verify OTP
+
 ```
 POST /api/{prefix}/auth/verify-otp
 Content-Type: application/json
@@ -315,6 +327,7 @@ Content-Type: application/json
 ```
 
 **Response:**
+
 ```json
 {
   "message": "Login successfully!",
@@ -331,12 +344,14 @@ Content-Type: application/json
 ## 👤 User Profile APIs
 
 ### Get Profile
+
 ```
 GET /api/{prefix}/auth/profile
 Authorization: Bearer YOUR_JWT_TOKEN
 ```
 
 **Response:**
+
 ```json
 {
   "user": {
@@ -364,6 +379,7 @@ Authorization: Bearer YOUR_JWT_TOKEN
 **Note:** All fields (except password) are always returned, using `null` for missing values.
 
 ### Update Profile
+
 ```
 PUT /api/{prefix}/auth/profile
 Authorization: Bearer YOUR_JWT_TOKEN
@@ -382,17 +398,20 @@ Content-Type: application/json
 ```
 
 **Required Fields:**
+
 - `first_name`
 - `last_name`
 - `email` (must be unique)
 - `phone_no` (must be unique)
 
 **Optional Fields:**
+
 - `display_name`
 - `company_name`
 - `currentPassword` and `newPassword` (only available when Default authentication method is enabled)
 
 **Response:**
+
 ```json
 {
   "message": "Profile updated successfully.",
@@ -415,15 +434,18 @@ Content-Type: application/json
 ## 📍 Address Management APIs
 
 ### Get All Addresses
+
 ```
 GET /api/{prefix}/addresses
 Authorization: Bearer YOUR_JWT_TOKEN
 ```
 
 **Query Parameters:**
+
 - `type` (optional): Filter by type (0=billing, 1=shipping)
 
 **Response:**
+
 ```json
 {
   "data": [
@@ -448,12 +470,14 @@ Authorization: Bearer YOUR_JWT_TOKEN
 ```
 
 ### Get Single Address
+
 ```
 GET /api/{prefix}/addresses/:id
 Authorization: Bearer YOUR_JWT_TOKEN
 ```
 
 ### Create Address
+
 ```
 POST /api/{prefix}/addresses
 Authorization: Bearer YOUR_JWT_TOKEN
@@ -475,6 +499,7 @@ Content-Type: application/json
 ```
 
 **Required Fields:**
+
 - `type` (0=billing, 1=shipping)
 - `first_name`
 - `last_name`
@@ -486,17 +511,21 @@ Content-Type: application/json
 - `email_address` (required for billing addresses, type=0)
 
 **Optional Fields:**
+
 - `company_name`
 - `region`
 
 **Single Address Mode:**
+
 - In single address mode, only one billing (type=0) and one shipping (type=1) address are allowed per user
 - Attempting to create a duplicate address type returns `403 Forbidden`
 
 **Multiple Address Mode:**
+
 - Users can create unlimited addresses
 
 ### Update Address
+
 ```
 PUT /api/{prefix}/addresses/:id
 Authorization: Bearer YOUR_JWT_TOKEN
@@ -511,6 +540,7 @@ Content-Type: application/json
 All fields are optional. Only provided fields will be updated.
 
 ### Delete Address
+
 ```
 DELETE /api/{prefix}/addresses/:id
 Authorization: Bearer YOUR_JWT_TOKEN
@@ -519,26 +549,30 @@ Authorization: Bearer YOUR_JWT_TOKEN
 ## 🔒 Security Features
 
 ### Permission System
+
 - All endpoints require the **Enable** permission to be granted in Users & Permissions
 - Custom permission checking via `ensureEcommercePermission` utility
 
 ### Origin Validation
+
 - CORS protection through allowed frontend domains configuration
 - API token validation for additional security layers
 
 ### Authentication Enforcement
+
 - JWT token validation for protected endpoints
 - User-specific data isolation (users can only access their own data)
 
 ### Input Validation
+
 - Comprehensive field validation (required fields, email format, etc.)
 - Type checking and sanitization
 - Unique constraint validation (email, phone_no)
 
-
 ### Key Components
 
 **Controllers:**
+
 - `auth.js`: Authentication and profile management
 - `address.js`: Address CRUD operations
 - `controller.js`: Plugin settings management
@@ -553,16 +587,19 @@ Authorization: Bearer YOUR_JWT_TOKEN
 - `coupon.js`: Coupon CRUD operations
 
 **Utilities:**
+
 - `check-ecommerce-permission.js`: Permission validation
 - `send-email.js`: Email sending (SMTP or Strapi email plugin)
 
 ### Database Schema
 
 **User Extensions:**
+
 - Custom fields added to `plugin::users-permissions.user`
 - Relations to addresses
 
 **Address Content Type:**
+
 - Created automatically as `api::address.address`
 - Many-to-one relation with users
 
@@ -574,6 +611,7 @@ Authorization: Bearer YOUR_JWT_TOKEN
    - The API Collections page in admin panel
 
 3. Check logs for errors:
+
 ```bash
 # Strapi logs will show plugin-specific errors with [webbycommerce] prefix
 ```
@@ -581,30 +619,36 @@ Authorization: Bearer YOUR_JWT_TOKEN
 ## 🐛 Troubleshooting
 
 ### OTP Not Sending
+
 - Check SMTP configuration in **Configure** tab
 - Verify email plugin is configured (fallback)
 - Check server logs for email errors
 
 ### 401 Unauthorized Errors
+
 - Verify JWT token is valid and not expired
 - Check that **Enable** permission is granted in Users & Permissions
 - Ensure token is included in `Authorization: Bearer <token>` header
 
 ### 403 Forbidden on Address Creation
+
 - Check shipping type mode (single vs multiple)
 - In single mode, update existing address instead of creating duplicate
 
 ### 404 Not Found
+
 - Verify route prefix matches configuration
 - Check that plugin is enabled in `config/plugins.js`
 - Restart Strapi after configuration changes
 
 ### Schema Errors
+
 - Ensure user schema extension is properly configured
 - Restart Strapi after schema changes
 - Check that all required fields are present in schema
 
 ### API Collections
+
 - The API Collections page in admin panel shows all available endpoints
 - Use this page to test endpoints and view responses
 
@@ -612,49 +656,65 @@ Authorization: Bearer YOUR_JWT_TOKEN
 
 ## 📜 Changelog
 
+## [2.0.2] - New feature
+
+### Added
+
+- Introduced new product types support
+- Implemented tax rate system with dynamic calculation logic
+
 ## [2.0.1] - Patch Release
 
 ### ✏️ Changes
+
 - 📝 Updated the README file for improved clarity and structure
 - 📄 Added overview pages for better documentation and user guidance
 
 ## [2.0.0] - Patch Release
 
 ### Changed
-- [Strapi v5] Converted WebbyCommerce to a source-based plugin structure (uses `admin/src` and `server/src` directly; removed dist-first packaging) for Strapi Marketplace compatibility.
 
+- [Strapi v5] Converted WebbyCommerce to a source-based plugin structure (uses `admin/src` and `server/src` directly; removed dist-first packaging) for Strapi Marketplace compatibility.
 
 ## [1.2.1] - Patch Release
 
 ### Fixed
-- Fixed bugs of update schema 
+
+- Fixed bugs of update schema
 
 ## [1.2.0] - New feature
 
 ### Added
+
 - Created auth login method API
 - Created unified auth method API
 
 ### Fixed
-- Fixed bugs of update schema 
+
+- Fixed bugs of update schema
 
 ## [1.1.2] - Patch Release
+
 - Fixed bugs and resolved issues with the category slug API.
 
 ## [1.1.0] - New feature
+
 - Added Bulk Product API
 
 ## [1.0.2] – Patch Release
 
 ### Fixed
+
 - Fix critical bugs
 
 ## [1.0.1] – Patch Release
 
 ### Changed
+
 - Updated README documentation
 
 ### Fixed
+
 - Resolved reported bugs
 
 ## [1.0.0] – Initial Stable Release
@@ -662,6 +722,7 @@ Authorization: Bearer YOUR_JWT_TOKEN
 🎉 First production-ready release of WebbyCommerce, a complete ecommerce backend plugin for Strapi CMS.
 
 ✨ Added
+
 #### Core Plugin
 
 - Drop-in ecommerce backend for Strapi with zero manual setup
@@ -731,9 +792,9 @@ Authorization: Bearer YOUR_JWT_TOKEN
 - cURL examples for testing
 - Clear plugin-specific logging with [webbycommerce] prefix
 
-
 ## Author
 
 **WebbyCrown**
+
 - Email: info@webbycrown.com
 - Website: https://webbycrown.com

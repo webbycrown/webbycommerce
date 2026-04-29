@@ -1,0 +1,63 @@
+{
+  "kind": "collectionType",
+  "collectionName": "tax_rates",
+  "info": {
+    "singularName": "tax-rate",
+    "pluralName": "tax-rates",
+    "displayName": "Tax Rate"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "country": {
+      "type": "string",
+      "required": true
+    },
+    "state": {
+      "type": "string"
+    },
+    "city": {
+      "type": "string"
+    },
+    "postcode": {
+      "type": "string"
+    },
+    "rate": {
+      "type": "decimal",
+      "required": true
+    },
+    "priority": {
+      "type": "integer",
+      "default": 1
+    },
+    "compound": {
+      "type": "boolean",
+      "default": false
+    },
+    "apply_to_shipping": {
+      "type": "boolean",
+      "default": true
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    },
+    "tax_type": {
+      "type": "enumeration",
+      "enum": [
+        "percentage",
+        "fixed"
+      ],
+      "default": "percentage",
+      "required": true
+    },
+    "max_amount": {
+      "type": "decimal"
+    }
+  }
+}

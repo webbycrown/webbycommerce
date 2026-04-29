@@ -5,6 +5,7 @@ const compare = require('./compare');
 const cart = require('./cart');
 const wishlist = require('./wishlist');
 const shipping = require('./shipping');
+const taxService = require('./taxService');
 
 module.exports = {
   service,
@@ -12,5 +13,6 @@ module.exports = {
   cart,
   wishlist,
   shipping,
+  taxService,
 };
 
