@@ -1,6 +1,6 @@
 # WebbyCommerce Plugin
 
-[![npm version](https://img.shields.io/badge/npm-2.0.1-CB3837?style=flat-square&logo=npm)](https://www.npmjs.com/package/@webbycrown/webbycommerce)
+[![npm version](https://img.shields.io/badge/npm-2.0.2-CB3837?style=flat-square&logo=npm)](https://www.npmjs.com/package/@webbycrown/webbycommerce)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/webbycrown/webbycommerce/blame/main/LICENSE)
 [![Strapi](https://img.shields.io/badge/Strapi-5.x-blue.svg)](https://strapi.io/)
 [![Strapi Market](https://img.shields.io/badge/Strapi%20Market-Plugin-7A5AF8?style=flat-square&logo=strapi)](https://market.strapi.io/plugins/@webbycrown-webbycommerce)
@@ -17,9 +17,9 @@ A complete, production-ready ecommerce solution for Strapi CMS. This plugin prov
 
 📺 **Learn how to use WebbyCommerce Plugin with our step-by-step guide**
 
-[![Open User Guide](https://img.shields.io/badge/Open%20User%20Guide-Getting%20Started-2563eb?style=for-the-badge)](https://www.webbycrown.com/guides/webbycommerce-plugin/quick-start)
+[![Open User Guide](https://img.shields.io/badge/Open%20User%20Guide-Getting%20Started-2563eb?style=for-the-badge)](https://www.webbycrown.com/guides/webbycommerce-strapi-ecommerce-guide/)
 
-Direct link: https://www.webbycrown.com/guides/webbycommerce-plugin/quick-start
+Direct link: https://www.webbycrown.com/guides/webbycommerce-strapi-ecommerce-guide/
 
 ---
 
@@ -662,6 +662,7 @@ Authorization: Bearer YOUR_JWT_TOKEN
 
 - Introduced new product types support
 - Implemented tax rate system with dynamic calculation logic
+- product-review system add.
 
 ## [2.0.1] - Patch Release
 

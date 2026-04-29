@@ -181,6 +181,15 @@ module.exports = {
         },
       },
       {
+        method: 'POST',
+        path: '/product-reviews',
+        handler: 'productReview.create',
+        config: {
+          auth: false, // require login
+          policies: [],
+        },
+      },
+      {
         method: 'GET',
         path: '/tags',
         handler: 'productTag.getTags',

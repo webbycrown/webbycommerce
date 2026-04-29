@@ -121,7 +121,7 @@
       "default": 0
     },
     "external_url": {
-      "type": "string"
+      "type": "text"
     },
     "external_button_text": {
       "type": "string",
@@ -138,6 +138,12 @@
       "relation": "manyToOne",
       "target": "plugin::webbycommerce.product",
       "inversedBy": "grouped_products"
+    },
+    "reviews": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "plugin::webbycommerce.product-review",
+      "mappedBy": "product"
     }
   }
 }
